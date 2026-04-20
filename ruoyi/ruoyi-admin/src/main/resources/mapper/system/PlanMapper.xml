@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PlanMapper">
+    
+    <resultMap type="Plan" id="PlanResult">
+        <result property="id"    column="id"    />
+        <result property="imgurl"    column="imgurl"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="level"    column="level"    />
+        <result property="datetime"    column="datetime"    />
+        <result property="plannedConsumption"    column="planned_consumption"    />
+    </resultMap>
+
+    <sql id="selectPlanVo">
+        select id, imgurl, title, content, level, datetime, planned_consumption from plan
+    </sql>
+
+    <select id="selectPlanList" parameterType="Plan" resultMap="PlanResult">
+        <include refid="selectPlanVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="imgurl != null  and imgurl != ''"> and imgurl = #{imgurl}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="level != null  and level != ''"> and level = #{level}</if>
+            <if test="datetime != null "> and datetime = #{datetime}</if>
+            <if test="plannedConsumption != null  and plannedConsumption != ''"> and planned_consumption = #{plannedConsumption}</if>
+        </where>
+    </select>
+    
+    <select id="selectPlanById" parameterType="Long" resultMap="PlanResult">
+        <include refid="selectPlanVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPlan" parameterType="Plan" useGeneratedKeys="true" keyProperty="id">
+        insert into plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="imgurl != null">imgurl,</if>
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="level != null">level,</if>
+            <if test="datetime != null">datetime,</if>
+            <if test="plannedConsumption != null">planned_consumption,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="imgurl != null">#{imgurl},</if>
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="level != null">#{level},</if>
+            <if test="datetime != null">#{datetime},</if>
+            <if test="plannedConsumption != null">#{plannedConsumption},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePlan" parameterType="Plan">
+        update plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="imgurl != null">imgurl = #{imgurl},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="datetime != null">datetime = #{datetime},</if>
+            <if test="plannedConsumption != null">planned_consumption = #{plannedConsumption},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePlanById" parameterType="Long">
+        delete from plan where id = #{id}
+    </delete>
+
+    <delete id="deletePlanByIds" parameterType="String">
+        delete from plan where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

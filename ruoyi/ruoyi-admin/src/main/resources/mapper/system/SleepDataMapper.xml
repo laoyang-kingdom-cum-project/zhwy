@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SleepDataMapper">
+    
+    <resultMap type="SleepData" id="SleepDataResult">
+        <result property="id"    column="id"    />
+        <result property="recordDate"    column="record_date"    />
+        <result property="totalSleepTime"    column="total_sleep_time"    />
+        <result property="deepSleepTime"    column="deep_sleep_time"    />
+        <result property="lightSleepTime"    column="light_sleep_time"    />
+        <result property="remSleepTime"    column="rem_sleep_time"    />
+        <result property="averageHeartRate"    column="average_heart_rate"    />
+        <result property="averageOxygenSaturation"    column="average_oxygen_saturation"    />
+        <result property="averageBreathingRate"    column="average_breathing_rate"    />
+        <result property="sleepQualityScore"    column="sleep_quality_score"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectSleepDataVo">
+        select id, record_date, total_sleep_time, deep_sleep_time, light_sleep_time, rem_sleep_time, average_heart_rate, average_oxygen_saturation, average_breathing_rate, sleep_quality_score, userid from sleep_data
+    </sql>
+
+    <select id="selectSleepDataList" parameterType="SleepData" resultMap="SleepDataResult">
+        <include refid="selectSleepDataVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="params.beginRecordDate != null and params.beginRecordDate != '' and params.endRecordDate != null and params.endRecordDate != ''"> and record_date between #{params.beginRecordDate} and #{params.endRecordDate}</if>
+            <if test="totalSleepTime != null  and totalSleepTime != ''"> and total_sleep_time = #{totalSleepTime}</if>
+            <if test="deepSleepTime != null  and deepSleepTime != ''"> and deep_sleep_time = #{deepSleepTime}</if>
+            <if test="lightSleepTime != null  and lightSleepTime != ''"> and light_sleep_time = #{lightSleepTime}</if>
+            <if test="remSleepTime != null  and remSleepTime != ''"> and rem_sleep_time = #{remSleepTime}</if>
+            <if test="averageHeartRate != null  and averageHeartRate != ''"> and average_heart_rate = #{averageHeartRate}</if>
+            <if test="averageOxygenSaturation != null  and averageOxygenSaturation != ''"> and average_oxygen_saturation = #{averageOxygenSaturation}</if>
+            <if test="averageBreathingRate != null  and averageBreathingRate != ''"> and average_breathing_rate = #{averageBreathingRate}</if>
+            <if test="sleepQualityScore != null  and sleepQualityScore != ''"> and sleep_quality_score = #{sleepQualityScore}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectSleepDataById" parameterType="Long" resultMap="SleepDataResult">
+        <include refid="selectSleepDataVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSleepData" parameterType="SleepData" useGeneratedKeys="true" keyProperty="id">
+        insert into sleep_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordDate != null">record_date,</if>
+            <if test="totalSleepTime != null">total_sleep_time,</if>
+            <if test="deepSleepTime != null">deep_sleep_time,</if>
+            <if test="lightSleepTime != null">light_sleep_time,</if>
+            <if test="remSleepTime != null">rem_sleep_time,</if>
+            <if test="averageHeartRate != null">average_heart_rate,</if>
+            <if test="averageOxygenSaturation != null">average_oxygen_saturation,</if>
+            <if test="averageBreathingRate != null">average_breathing_rate,</if>
+            <if test="sleepQualityScore != null">sleep_quality_score,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordDate != null">#{recordDate},</if>
+            <if test="totalSleepTime != null">#{totalSleepTime},</if>
+            <if test="deepSleepTime != null">#{deepSleepTime},</if>
+            <if test="lightSleepTime != null">#{lightSleepTime},</if>
+            <if test="remSleepTime != null">#{remSleepTime},</if>
+            <if test="averageHeartRate != null">#{averageHeartRate},</if>
+            <if test="averageOxygenSaturation != null">#{averageOxygenSaturation},</if>
+            <if test="averageBreathingRate != null">#{averageBreathingRate},</if>
+            <if test="sleepQualityScore != null">#{sleepQualityScore},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSleepData" parameterType="SleepData">
+        update sleep_data
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+            <if test="totalSleepTime != null">total_sleep_time = #{totalSleepTime},</if>
+            <if test="deepSleepTime != null">deep_sleep_time = #{deepSleepTime},</if>
+            <if test="lightSleepTime != null">light_sleep_time = #{lightSleepTime},</if>
+            <if test="remSleepTime != null">rem_sleep_time = #{remSleepTime},</if>
+            <if test="averageHeartRate != null">average_heart_rate = #{averageHeartRate},</if>
+            <if test="averageOxygenSaturation != null">average_oxygen_saturation = #{averageOxygenSaturation},</if>
+            <if test="averageBreathingRate != null">average_breathing_rate = #{averageBreathingRate},</if>
+            <if test="sleepQualityScore != null">sleep_quality_score = #{sleepQualityScore},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSleepDataById" parameterType="Long">
+        delete from sleep_data where id = #{id}
+    </delete>
+
+    <delete id="deleteSleepDataByIds" parameterType="String">
+        delete from sleep_data where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

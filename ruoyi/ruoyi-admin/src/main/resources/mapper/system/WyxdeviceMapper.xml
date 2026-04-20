@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WyxdeviceMapper">
+    
+    <resultMap type="Wyxdevice" id="WyxdeviceResult">
+        <result property="id"    column="id"    />
+        <result property="userid"    column="userid"    />
+        <result property="deviceName"    column="deviceName"    />
+        <result property="deviceType"    column="deviceType"    />
+        <result property="roomId"    column="roomId"    />
+        <result property="roomName"    column="roomName"    />
+        <result property="status"    column="status"    />
+        <result property="online"    column="online"    />
+        <result property="value"    column="value"    />
+    </resultMap>
+
+    <sql id="selectWyxdeviceVo">
+        select id, userid, deviceName, deviceType, roomId, roomName, status, online, value from wyxdevice
+    </sql>
+
+    <select id="selectWyxdeviceList" parameterType="Wyxdevice" resultMap="WyxdeviceResult">
+        <include refid="selectWyxdeviceVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+            <if test="deviceName != null  and deviceName != ''"> and deviceName like concat('%', #{deviceName}, '%')</if>
+            <if test="deviceType != null  and deviceType != ''"> and deviceType = #{deviceType}</if>
+            <if test="roomId != null "> and roomId = #{roomId}</if>
+            <if test="roomName != null  and roomName != ''"> and roomName like concat('%', #{roomName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="online != null  and online != ''"> and online = #{online}</if>
+            <if test="value != null  and value != ''"> and value = #{value}</if>
+        </where>
+    </select>
+    
+    <select id="selectWyxdeviceById" parameterType="Long" resultMap="WyxdeviceResult">
+        <include refid="selectWyxdeviceVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWyxdevice" parameterType="Wyxdevice" useGeneratedKeys="true" keyProperty="id">
+        insert into wyxdevice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userid != null">userid,</if>
+            <if test="deviceName != null">deviceName,</if>
+            <if test="deviceType != null">deviceType,</if>
+            <if test="roomId != null">roomId,</if>
+            <if test="roomName != null">roomName,</if>
+            <if test="status != null">status,</if>
+            <if test="online != null">online,</if>
+            <if test="value != null">value,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userid != null">#{userid},</if>
+            <if test="deviceName != null">#{deviceName},</if>
+            <if test="deviceType != null">#{deviceType},</if>
+            <if test="roomId != null">#{roomId},</if>
+            <if test="roomName != null">#{roomName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="online != null">#{online},</if>
+            <if test="value != null">#{value},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWyxdevice" parameterType="Wyxdevice">
+        update wyxdevice
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userid != null">userid = #{userid},</if>
+            <if test="deviceName != null">deviceName = #{deviceName},</if>
+            <if test="deviceType != null">deviceType = #{deviceType},</if>
+            <if test="roomId != null">roomId = #{roomId},</if>
+            <if test="roomName != null">roomName = #{roomName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="online != null">online = #{online},</if>
+            <if test="value != null">value = #{value},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWyxdeviceById" parameterType="Long">
+        delete from wyxdevice where id = #{id}
+    </delete>
+
+    <delete id="deleteWyxdeviceByIds" parameterType="String">
+        delete from wyxdevice where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

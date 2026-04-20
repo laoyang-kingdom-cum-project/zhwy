@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PerformanceLeaderboardMapper">
+    
+    <resultMap type="PerformanceLeaderboard" id="PerformanceLeaderboardResult">
+        <result property="id"    column="id"    />
+        <result property="Avatar"    column="Avatar"    />
+        <result property="Nickname"    column="Nickname"    />
+        <result property="Device"    column="Device"    />
+        <result property="Timestamp"    column="Timestamp"    />
+    </resultMap>
+
+    <sql id="selectPerformanceLeaderboardVo">
+        select id, Avatar, Nickname, Device, Timestamp from performance_leaderboard
+    </sql>
+
+    <select id="selectPerformanceLeaderboardList" parameterType="PerformanceLeaderboard" resultMap="PerformanceLeaderboardResult">
+        <include refid="selectPerformanceLeaderboardVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="Avatar != null  and Avatar != ''"> and Avatar = #{Avatar}</if>
+            <if test="Nickname != null  and Nickname != ''"> and Nickname like concat('%', #{Nickname}, '%')</if>
+            <if test="Device != null  and Device != ''"> and Device = #{Device}</if>
+            <if test="Timestamp != null "> and Timestamp = #{Timestamp}</if>
+        </where>
+    </select>
+    
+    <select id="selectPerformanceLeaderboardById" parameterType="Long" resultMap="PerformanceLeaderboardResult">
+        <include refid="selectPerformanceLeaderboardVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPerformanceLeaderboard" parameterType="PerformanceLeaderboard" useGeneratedKeys="true" keyProperty="id">
+        insert into performance_leaderboard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="Avatar != null and Avatar != ''">Avatar,</if>
+            <if test="Nickname != null and Nickname != ''">Nickname,</if>
+            <if test="Device != null and Device != ''">Device,</if>
+            <if test="Timestamp != null">Timestamp,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="Avatar != null and Avatar != ''">#{Avatar},</if>
+            <if test="Nickname != null and Nickname != ''">#{Nickname},</if>
+            <if test="Device != null and Device != ''">#{Device},</if>
+            <if test="Timestamp != null">#{Timestamp},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePerformanceLeaderboard" parameterType="PerformanceLeaderboard">
+        update performance_leaderboard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="Avatar != null and Avatar != ''">Avatar = #{Avatar},</if>
+            <if test="Nickname != null and Nickname != ''">Nickname = #{Nickname},</if>
+            <if test="Device != null and Device != ''">Device = #{Device},</if>
+            <if test="Timestamp != null">Timestamp = #{Timestamp},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePerformanceLeaderboardById" parameterType="Long">
+        delete from performance_leaderboard where id = #{id}
+    </delete>
+
+    <delete id="deletePerformanceLeaderboardByIds" parameterType="String">
+        delete from performance_leaderboard where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

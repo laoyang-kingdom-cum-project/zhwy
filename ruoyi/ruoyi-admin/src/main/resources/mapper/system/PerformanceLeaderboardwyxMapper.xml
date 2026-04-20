@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PerformanceLeaderboardwyxMapper">
+    
+    <resultMap type="PerformanceLeaderboardwyx" id="PerformanceLeaderboardwyxResult">
+        <result property="id"    column="id"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="device"    column="device"    />
+        <result property="timestamp"    column="timestamp"    />
+    </resultMap>
+
+    <sql id="selectPerformanceLeaderboardwyxVo">
+        select id, avatar, nickname, device, timestamp from performance_leaderboardwyx
+    </sql>
+
+    <select id="selectPerformanceLeaderboardwyxList" parameterType="PerformanceLeaderboardwyx" resultMap="PerformanceLeaderboardwyxResult">
+        <include refid="selectPerformanceLeaderboardwyxVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="avatar != null  and avatar != ''"> and avatar = #{avatar}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="device != null  and device != ''"> and device = #{device}</if>
+            <if test="timestamp != null "> and timestamp = #{timestamp}</if>
+        </where>
+    </select>
+    
+    <select id="selectPerformanceLeaderboardwyxById" parameterType="Long" resultMap="PerformanceLeaderboardwyxResult">
+        <include refid="selectPerformanceLeaderboardwyxVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPerformanceLeaderboardwyx" parameterType="PerformanceLeaderboardwyx" useGeneratedKeys="true" keyProperty="id">
+        insert into performance_leaderboardwyx
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="avatar != null">avatar,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="device != null">device,</if>
+            <if test="timestamp != null">timestamp,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="avatar != null">#{avatar},</if>
+            <if test="nickname != null">#{nickname},</if>
+            <if test="device != null">#{device},</if>
+            <if test="timestamp != null">#{timestamp},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePerformanceLeaderboardwyx" parameterType="PerformanceLeaderboardwyx">
+        update performance_leaderboardwyx
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="device != null">device = #{device},</if>
+            <if test="timestamp != null">timestamp = #{timestamp},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePerformanceLeaderboardwyxById" parameterType="Long">
+        delete from performance_leaderboardwyx where id = #{id}
+    </delete>
+
+    <delete id="deletePerformanceLeaderboardwyxByIds" parameterType="String">
+        delete from performance_leaderboardwyx where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

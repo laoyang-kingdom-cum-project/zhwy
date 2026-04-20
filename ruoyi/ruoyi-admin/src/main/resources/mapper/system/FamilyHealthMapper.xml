@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FamilyHealthMapper">
+    
+    <resultMap type="FamilyHealth" id="FamilyHealthResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="age"    column="age"    />
+        <result property="room"    column="room"    />
+        <result property="healthStatus"    column="healthStatus"    />
+        <result property="lastActive"    column="lastActive"    />
+        <result property="emergencyContact"    column="emergencyContact"    />
+        <result property="steps"    column="steps"    />
+        <result property="sleep"    column="sleep"    />
+        <result property="heartRate"    column="heartRate"    />
+        <result property="pressure"    column="pressure"    />
+    </resultMap>
+
+    <sql id="selectFamilyHealthVo">
+        select id, name, age, room, healthStatus, lastActive, emergencyContact, steps, sleep, heartRate, pressure from family_health
+    </sql>
+
+    <select id="selectFamilyHealthList" parameterType="FamilyHealth" resultMap="FamilyHealthResult">
+        <include refid="selectFamilyHealthVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="age != null "> and age = #{age}</if>
+            <if test="room != null  and room != ''"> and room like concat('%', #{room}, '%')</if>
+            <if test="healthStatus != null  and healthStatus != ''"> and healthStatus = #{healthStatus}</if>
+            <if test="lastActive != null  and lastActive != ''"> and lastActive = #{lastActive}</if>
+            <if test="emergencyContact != null  and emergencyContact != ''"> and emergencyContact = #{emergencyContact}</if>
+            <if test="steps != null  and steps != ''"> and steps = #{steps}</if>
+            <if test="sleep != null  and sleep != ''"> and sleep = #{sleep}</if>
+            <if test="heartRate != null  and heartRate != ''"> and heartRate = #{heartRate}</if>
+            <if test="pressure != null  and pressure != ''"> and pressure = #{pressure}</if>
+        </where>
+    </select>
+    
+    <select id="selectFamilyHealthById" parameterType="Long" resultMap="FamilyHealthResult">
+        <include refid="selectFamilyHealthVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFamilyHealth" parameterType="FamilyHealth" useGeneratedKeys="true" keyProperty="id">
+        insert into family_health
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="age != null">age,</if>
+            <if test="room != null">room,</if>
+            <if test="healthStatus != null">healthStatus,</if>
+            <if test="lastActive != null">lastActive,</if>
+            <if test="emergencyContact != null">emergencyContact,</if>
+            <if test="steps != null">steps,</if>
+            <if test="sleep != null">sleep,</if>
+            <if test="heartRate != null">heartRate,</if>
+            <if test="pressure != null">pressure,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="age != null">#{age},</if>
+            <if test="room != null">#{room},</if>
+            <if test="healthStatus != null">#{healthStatus},</if>
+            <if test="lastActive != null">#{lastActive},</if>
+            <if test="emergencyContact != null">#{emergencyContact},</if>
+            <if test="steps != null">#{steps},</if>
+            <if test="sleep != null">#{sleep},</if>
+            <if test="heartRate != null">#{heartRate},</if>
+            <if test="pressure != null">#{pressure},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFamilyHealth" parameterType="FamilyHealth">
+        update family_health
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="room != null">room = #{room},</if>
+            <if test="healthStatus != null">healthStatus = #{healthStatus},</if>
+            <if test="lastActive != null">lastActive = #{lastActive},</if>
+            <if test="emergencyContact != null">emergencyContact = #{emergencyContact},</if>
+            <if test="steps != null">steps = #{steps},</if>
+            <if test="sleep != null">sleep = #{sleep},</if>
+            <if test="heartRate != null">heartRate = #{heartRate},</if>
+            <if test="pressure != null">pressure = #{pressure},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFamilyHealthById" parameterType="Long">
+        delete from family_health where id = #{id}
+    </delete>
+
+    <delete id="deleteFamilyHealthByIds" parameterType="String">
+        delete from family_health where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

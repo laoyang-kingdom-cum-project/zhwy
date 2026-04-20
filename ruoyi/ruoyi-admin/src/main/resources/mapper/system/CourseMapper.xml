@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseMapper">
+    
+    <resultMap type="Course" id="CourseResult">
+        <result property="id"    column="id"    />
+        <result property="courseCoverUrl"    column="course_cover_url"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="courseDuration"    column="course_duration"    />
+        <result property="courseCalories"    column="course_calories"    />
+        <result property="courseLevel"    column="course_level"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="video"    column="video"    />
+    </resultMap>
+
+    <sql id="selectCourseVo">
+        select id, course_cover_url, course_name, course_duration, course_calories, course_level, created_at, updated_at, video from course
+    </sql>
+
+    <select id="selectCourseList" parameterType="Course" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        <where>  
+            <if test="courseCoverUrl != null  and courseCoverUrl != ''"> and course_cover_url = #{courseCoverUrl}</if>
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="courseDuration != null "> and course_duration = #{courseDuration}</if>
+            <if test="courseCalories != null "> and course_calories = #{courseCalories}</if>
+            <if test="courseLevel != null  and courseLevel != ''"> and course_level = #{courseLevel}</if>
+            <if test="params.beginCreatedAt != null and params.beginCreatedAt != '' and params.endCreatedAt != null and params.endCreatedAt != ''"> and created_at between #{params.beginCreatedAt} and #{params.endCreatedAt}</if>
+            <if test="params.beginUpdatedAt != null and params.beginUpdatedAt != '' and params.endUpdatedAt != null and params.endUpdatedAt != ''"> and updated_at between #{params.beginUpdatedAt} and #{params.endUpdatedAt}</if>
+            <if test="video != null  and video != ''"> and video = #{video}</if>
+        </where>
+    </select>
+    
+    <select id="selectCourseById" parameterType="Long" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCourse" parameterType="Course" useGeneratedKeys="true" keyProperty="id">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCoverUrl != null and courseCoverUrl != ''">course_cover_url,</if>
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="courseDuration != null">course_duration,</if>
+            <if test="courseCalories != null">course_calories,</if>
+            <if test="courseLevel != null and courseLevel != ''">course_level,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="video != null">video,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseCoverUrl != null and courseCoverUrl != ''">#{courseCoverUrl},</if>
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="courseDuration != null">#{courseDuration},</if>
+            <if test="courseCalories != null">#{courseCalories},</if>
+            <if test="courseLevel != null and courseLevel != ''">#{courseLevel},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="video != null">#{video},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCourse" parameterType="Course">
+        update course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseCoverUrl != null and courseCoverUrl != ''">course_cover_url = #{courseCoverUrl},</if>
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="courseDuration != null">course_duration = #{courseDuration},</if>
+            <if test="courseCalories != null">course_calories = #{courseCalories},</if>
+            <if test="courseLevel != null and courseLevel != ''">course_level = #{courseLevel},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="video != null">video = #{video},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCourseById" parameterType="Long">
+        delete from course where id = #{id}
+    </delete>
+
+    <delete id="deleteCourseByIds" parameterType="String">
+        delete from course where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

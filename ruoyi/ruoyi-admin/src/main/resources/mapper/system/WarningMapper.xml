@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WarningMapper">
+    
+    <resultMap type="Warning" id="WarningResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="location"    column="location"    />
+        <result property="time"    column="time"    />
+        <result property="level"    column="level"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectWarningVo">
+        select id, title, location, time, level, userid from warning
+    </sql>
+
+    <select id="selectWarningList" parameterType="Warning" resultMap="WarningResult">
+        <include refid="selectWarningVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="location != null  and location != ''"> and location = #{location}</if>
+            <if test="time != null "> and time = #{time}</if>
+            <if test="level != null  and level != ''"> and level = #{level}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectWarningById" parameterType="Long" resultMap="WarningResult">
+        <include refid="selectWarningVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWarning" parameterType="Warning" useGeneratedKeys="true" keyProperty="id">
+        insert into warning
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="location != null">location,</if>
+            <if test="time != null">time,</if>
+            <if test="level != null">level,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="location != null">#{location},</if>
+            <if test="time != null">#{time},</if>
+            <if test="level != null">#{level},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWarning" parameterType="Warning">
+        update warning
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWarningById" parameterType="Long">
+        delete from warning where id = #{id}
+    </delete>
+
+    <delete id="deleteWarningByIds" parameterType="String">
+        delete from warning where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

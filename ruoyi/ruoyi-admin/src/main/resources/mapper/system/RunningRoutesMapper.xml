@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RunningRoutesMapper">
+    
+    <resultMap type="RunningRoutes" id="RunningRoutesResult">
+        <result property="id"    column="id"    />
+        <result property="routeName"    column="route_name"    />
+        <result property="routeImg"    column="route_img"    />
+        <result property="distanceKm"    column="distance_km"    />
+        <result property="runners"    column="runners"    />
+        <result property="startDistKm"    column="start_dist_km"    />
+        <result property="category"    column="category"    />
+        <result property="exactStartingAddress"    column="exact_starting_address"    />
+    </resultMap>
+
+    <sql id="selectRunningRoutesVo">
+        select id, route_name, route_img, distance_km, runners, start_dist_km, category, exact_starting_address from running_routes
+    </sql>
+
+    <select id="selectRunningRoutesList" parameterType="RunningRoutes" resultMap="RunningRoutesResult">
+        <include refid="selectRunningRoutesVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="routeName != null  and routeName != ''"> and route_name like concat('%', #{routeName}, '%')</if>
+            <if test="routeImg != null  and routeImg != ''"> and route_img = #{routeImg}</if>
+            <if test="distanceKm != null "> and distance_km = #{distanceKm}</if>
+            <if test="runners != null "> and runners = #{runners}</if>
+            <if test="startDistKm != null "> and start_dist_km = #{startDistKm}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="exactStartingAddress != null  and exactStartingAddress != ''"> and exact_starting_address = #{exactStartingAddress}</if>
+        </where>
+    </select>
+    
+    <select id="selectRunningRoutesById" parameterType="Long" resultMap="RunningRoutesResult">
+        <include refid="selectRunningRoutesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRunningRoutes" parameterType="RunningRoutes" useGeneratedKeys="true" keyProperty="id">
+        insert into running_routes
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="routeName != null and routeName != ''">route_name,</if>
+            <if test="routeImg != null and routeImg != ''">route_img,</if>
+            <if test="distanceKm != null">distance_km,</if>
+            <if test="runners != null">runners,</if>
+            <if test="startDistKm != null">start_dist_km,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="exactStartingAddress != null and exactStartingAddress != ''">exact_starting_address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="routeName != null and routeName != ''">#{routeName},</if>
+            <if test="routeImg != null and routeImg != ''">#{routeImg},</if>
+            <if test="distanceKm != null">#{distanceKm},</if>
+            <if test="runners != null">#{runners},</if>
+            <if test="startDistKm != null">#{startDistKm},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="exactStartingAddress != null and exactStartingAddress != ''">#{exactStartingAddress},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRunningRoutes" parameterType="RunningRoutes">
+        update running_routes
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="routeName != null and routeName != ''">route_name = #{routeName},</if>
+            <if test="routeImg != null and routeImg != ''">route_img = #{routeImg},</if>
+            <if test="distanceKm != null">distance_km = #{distanceKm},</if>
+            <if test="runners != null">runners = #{runners},</if>
+            <if test="startDistKm != null">start_dist_km = #{startDistKm},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="exactStartingAddress != null and exactStartingAddress != ''">exact_starting_address = #{exactStartingAddress},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRunningRoutesById" parameterType="Long">
+        delete from running_routes where id = #{id}
+    </delete>
+
+    <delete id="deleteRunningRoutesByIds" parameterType="String">
+        delete from running_routes where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

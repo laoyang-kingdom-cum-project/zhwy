@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseCatalogMapper">
+    
+    <resultMap type="CourseCatalog" id="CourseCatalogResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="imgurl"    column="imgurl"    />
+        <result property="planid"    column="planid"    />
+        <result property="video"    column="video"    />
+    </resultMap>
+
+    <sql id="selectCourseCatalogVo">
+        select id, title, content, imgurl, planid, video from course_catalog
+    </sql>
+
+    <select id="selectCourseCatalogList" parameterType="CourseCatalog" resultMap="CourseCatalogResult">
+        <include refid="selectCourseCatalogVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="imgurl != null  and imgurl != ''"> and imgurl = #{imgurl}</if>
+            <if test="planid != null "> and planid = #{planid}</if>
+            <if test="video != null  and video != ''"> and video = #{video}</if>
+        </where>
+    </select>
+    
+    <select id="selectCourseCatalogById" parameterType="Long" resultMap="CourseCatalogResult">
+        <include refid="selectCourseCatalogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCourseCatalog" parameterType="CourseCatalog" useGeneratedKeys="true" keyProperty="id">
+        insert into course_catalog
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="imgurl != null">imgurl,</if>
+            <if test="planid != null">planid,</if>
+            <if test="video != null">video,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="imgurl != null">#{imgurl},</if>
+            <if test="planid != null">#{planid},</if>
+            <if test="video != null">#{video},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCourseCatalog" parameterType="CourseCatalog">
+        update course_catalog
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="imgurl != null">imgurl = #{imgurl},</if>
+            <if test="planid != null">planid = #{planid},</if>
+            <if test="video != null">video = #{video},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCourseCatalogById" parameterType="Long">
+        delete from course_catalog where id = #{id}
+    </delete>
+
+    <delete id="deleteCourseCatalogByIds" parameterType="String">
+        delete from course_catalog where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

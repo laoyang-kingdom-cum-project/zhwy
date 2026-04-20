@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WorkoutLogMapper">
+    
+    <resultMap type="WorkoutLog" id="WorkoutLogResult">
+        <result property="id"    column="id"    />
+        <result property="workoutTime"    column="workout_time"    />
+        <result property="category"    column="category"    />
+        <result property="calories"    column="calories"    />
+        <result property="duration"    column="duration"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectWorkoutLogVo">
+        select id, workout_time, category, calories, duration, userid from workout_log
+    </sql>
+
+    <select id="selectWorkoutLogList" parameterType="WorkoutLog" resultMap="WorkoutLogResult">
+        <include refid="selectWorkoutLogVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="params.beginWorkoutTime != null and params.beginWorkoutTime != '' and params.endWorkoutTime != null and params.endWorkoutTime != ''"> and workout_time between #{params.beginWorkoutTime} and #{params.endWorkoutTime}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="calories != null "> and calories = #{calories}</if>
+            <if test="params.beginDuration != null and params.beginDuration != '' and params.endDuration != null and params.endDuration != ''"> and duration between #{params.beginDuration} and #{params.endDuration}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectWorkoutLogById" parameterType="Long" resultMap="WorkoutLogResult">
+        <include refid="selectWorkoutLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWorkoutLog" parameterType="WorkoutLog" useGeneratedKeys="true" keyProperty="id">
+        insert into workout_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workoutTime != null">workout_time,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="calories != null">calories,</if>
+            <if test="duration != null">duration,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workoutTime != null">#{workoutTime},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="calories != null">#{calories},</if>
+            <if test="duration != null">#{duration},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWorkoutLog" parameterType="WorkoutLog">
+        update workout_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workoutTime != null">workout_time = #{workoutTime},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="calories != null">calories = #{calories},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWorkoutLogById" parameterType="Long">
+        delete from workout_log where id = #{id}
+    </delete>
+
+    <delete id="deleteWorkoutLogByIds" parameterType="String">
+        delete from workout_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

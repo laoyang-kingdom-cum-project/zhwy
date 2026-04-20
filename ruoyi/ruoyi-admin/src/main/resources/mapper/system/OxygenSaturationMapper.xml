@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OxygenSaturationMapper">
+    
+    <resultMap type="OxygenSaturation" id="OxygenSaturationResult">
+        <result property="id"    column="id"    />
+        <result property="datetime"    column="datetime"    />
+        <result property="value"    column="value"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectOxygenSaturationVo">
+        select id, datetime, value, userid from oxygen_saturation
+    </sql>
+
+    <select id="selectOxygenSaturationList" parameterType="OxygenSaturation" resultMap="OxygenSaturationResult">
+        <include refid="selectOxygenSaturationVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="params.beginDatetime != null and params.beginDatetime != '' and params.endDatetime != null and params.endDatetime != ''"> and datetime between #{params.beginDatetime} and #{params.endDatetime}</if>
+            <if test="value != null  and value != ''"> and value = #{value}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectOxygenSaturationById" parameterType="Long" resultMap="OxygenSaturationResult">
+        <include refid="selectOxygenSaturationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOxygenSaturation" parameterType="OxygenSaturation" useGeneratedKeys="true" keyProperty="id">
+        insert into oxygen_saturation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="datetime != null">datetime,</if>
+            <if test="value != null">value,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="datetime != null">#{datetime},</if>
+            <if test="value != null">#{value},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOxygenSaturation" parameterType="OxygenSaturation">
+        update oxygen_saturation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="datetime != null">datetime = #{datetime},</if>
+            <if test="value != null">value = #{value},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOxygenSaturationById" parameterType="Long">
+        delete from oxygen_saturation where id = #{id}
+    </delete>
+
+    <delete id="deleteOxygenSaturationByIds" parameterType="String">
+        delete from oxygen_saturation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

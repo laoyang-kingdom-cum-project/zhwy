@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CheckInLeaderboardMapper">
+    
+    <resultMap type="CheckInLeaderboard" id="CheckInLeaderboardResult">
+        <result property="id"    column="id"    />
+        <result property="img"    column="img"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="device"    column="device"    />
+        <result property="checkInCount"    column="check_in_count"    />
+    </resultMap>
+
+    <sql id="selectCheckInLeaderboardVo">
+        select id, img, nickname, device, check_in_count from check_in_leaderboard
+    </sql>
+
+    <select id="selectCheckInLeaderboardList" parameterType="CheckInLeaderboard" resultMap="CheckInLeaderboardResult">
+        <include refid="selectCheckInLeaderboardVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="img != null  and img != ''"> and img = #{img}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="device != null  and device != ''"> and device = #{device}</if>
+            <if test="checkInCount != null  and checkInCount != ''"> and check_in_count = #{checkInCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectCheckInLeaderboardById" parameterType="Long" resultMap="CheckInLeaderboardResult">
+        <include refid="selectCheckInLeaderboardVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCheckInLeaderboard" parameterType="CheckInLeaderboard">
+        insert into check_in_leaderboard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="img != null">img,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="device != null">device,</if>
+            <if test="checkInCount != null">check_in_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="img != null">#{img},</if>
+            <if test="nickname != null">#{nickname},</if>
+            <if test="device != null">#{device},</if>
+            <if test="checkInCount != null">#{checkInCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCheckInLeaderboard" parameterType="CheckInLeaderboard">
+        update check_in_leaderboard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="img != null">img = #{img},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="device != null">device = #{device},</if>
+            <if test="checkInCount != null">check_in_count = #{checkInCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCheckInLeaderboardById" parameterType="Long">
+        delete from check_in_leaderboard where id = #{id}
+    </delete>
+
+    <delete id="deleteCheckInLeaderboardByIds" parameterType="String">
+        delete from check_in_leaderboard where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

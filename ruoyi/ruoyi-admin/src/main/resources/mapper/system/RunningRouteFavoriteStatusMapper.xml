@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RunningRouteFavoriteStatusMapper">
+    
+    <resultMap type="RunningRouteFavoriteStatus" id="RunningRouteFavoriteStatusResult">
+        <result property="id"    column="id"    />
+        <result property="userid"    column="userid"    />
+        <result property="routeId"    column="route_id"    />
+    </resultMap>
+
+    <sql id="selectRunningRouteFavoriteStatusVo">
+        select id, userid, route_id from running_route_favorite_status
+    </sql>
+
+    <select id="selectRunningRouteFavoriteStatusList" parameterType="RunningRouteFavoriteStatus" resultMap="RunningRouteFavoriteStatusResult">
+        <include refid="selectRunningRouteFavoriteStatusVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+            <if test="routeId != null "> and route_id = #{routeId}</if>
+        </where>
+    </select>
+    
+    <select id="selectRunningRouteFavoriteStatusById" parameterType="Long" resultMap="RunningRouteFavoriteStatusResult">
+        <include refid="selectRunningRouteFavoriteStatusVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRunningRouteFavoriteStatus" parameterType="RunningRouteFavoriteStatus" useGeneratedKeys="true" keyProperty="id">
+        insert into running_route_favorite_status
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userid != null">userid,</if>
+            <if test="routeId != null">route_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userid != null">#{userid},</if>
+            <if test="routeId != null">#{routeId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRunningRouteFavoriteStatus" parameterType="RunningRouteFavoriteStatus">
+        update running_route_favorite_status
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userid != null">userid = #{userid},</if>
+            <if test="routeId != null">route_id = #{routeId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRunningRouteFavoriteStatusById" parameterType="Long">
+        delete from running_route_favorite_status where id = #{id}
+    </delete>
+
+    <delete id="deleteRunningRouteFavoriteStatusByIds" parameterType="String">
+        delete from running_route_favorite_status where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

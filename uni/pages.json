@@ -1,0 +1,188 @@
+{
+	"pages": [
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "智慧物业",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/agreement/index",
+			"style": {
+				"navigationBarTitleText": "协议详情"
+			}
+		},
+		{
+			"path": "pages/notice/detail",
+			"style": {
+				"navigationBarTitleText": "公告详情"
+			}
+		},
+		{
+			"path": "pages/device/index",
+			"style": {
+				"navigationBarTitleText": "智能家居"
+			}
+		},
+		{
+			"path": "pages/service/index",
+			"style": {
+				"navigationBarTitleText": "物业服务"
+			}
+		},
+		{
+			"path": "pages/user/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/warning/index",
+			"style": {
+				"navigationBarTitleText": "安全预警"
+			}
+		},
+		{
+			"path": "pages/warning/detail",
+			"style": {
+				"navigationBarTitleText": "预警详情"
+			}
+		},
+		{
+			"path": "pages/service/detail",
+			"style": {
+				"navigationBarTitleText": "服务详情"
+			}
+		},
+		{
+			"path": "pages/service/repair",
+			"style": {
+				"navigationBarTitleText": "报修服务"
+			}
+		},
+		{
+			"path": "pages/service/list",
+			"style": {
+				"navigationBarTitleText": "我的服务"
+			}
+		},
+		{
+			"path": "pages/user/profile",
+			"style": {
+				"navigationBarTitleText": "个人信息"
+			}
+		},
+		{
+			"path": "pages/user/password",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		},
+		{
+			"path": "pages/user/payment",
+			"style": {
+				"navigationBarTitleText": "缴费记录"
+			}
+		},
+		{
+			"path": "pages/user/settings",
+			"style": {
+				"navigationBarTitleText": "系统设置"
+			}
+		},
+		{
+			"path": "pages/user/help",
+			"style": {
+				"navigationBarTitleText": "帮助中心"
+			}
+		},
+		{
+			"path": "pages/user/about",
+			"style": {
+				"navigationBarTitleText": "关于我们"
+			}
+		},
+		{
+			"path": "pages/care/index",
+			"style": {
+				"navigationBarTitleText": "家人健康"
+			}
+		},
+		{
+			"path": "pages/care/detail",
+			"style": {
+				"navigationBarTitleText": "关怀详情"
+			}
+		},
+		{
+			"path": "pages/care/mode",
+			"style": {
+				"navigationBarTitleText": "关怀模式"
+			}
+		},
+		{
+			"path": "pages/device/control",
+			"style": {
+				"navigationBarTitleText": "设备控制"
+			}
+		},
+		{
+			"path": "pages/ai/index",
+			"style": {
+				"navigationBarTitleText": "AI助手"
+			}
+		},
+		{
+			"path": "pages/activity/index",
+			"style": {
+				"navigationBarTitleText": "活动报名"
+			}
+		},
+		{
+			"path": "pages/activity/detail",
+			"style": {
+				"navigationBarTitleText": "活动详情"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "智慧物业",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#007AFF",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index"
+			},
+			{
+				"pagePath": "pages/device/index"
+			},
+			{
+				"pagePath": "pages/warning/index"
+			},
+			{
+				"pagePath": "pages/care/index"
+			},
+			{
+				"pagePath": "pages/user/index"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}
