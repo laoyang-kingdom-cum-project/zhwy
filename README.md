@@ -112,6 +112,10 @@ npm run dev
 | Element UI | 2.x |
 | UniApp | - |
 
+## 开源地址
+
+本项目已在 GitHub 开源：[https://github.com/lianfanshuang/zhwy](https://github.com/lianfanshuang/zhwy)
+
 ## 关于
 
 - 基于 [若依(RuoYi)](https://gitee.com/y_project/RuoYi-Vue) 框架开发
