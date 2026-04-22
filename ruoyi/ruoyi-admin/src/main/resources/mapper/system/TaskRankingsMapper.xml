@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TaskRankingsMapper">
+    
+    <resultMap type="TaskRankings" id="TaskRankingsResult">
+        <result property="id"    column="id"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="img"    column="img"    />
+        <result property="checkInDays"    column="check_in_days"    />
+        <result property="exerciseDuration"    column="exercise_duration"    />
+    </resultMap>
+
+    <sql id="selectTaskRankingsVo">
+        select id, nickname, img, check_in_days, exercise_duration from task_rankings
+    </sql>
+
+    <select id="selectTaskRankingsList" parameterType="TaskRankings" resultMap="TaskRankingsResult">
+        <include refid="selectTaskRankingsVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="img != null  and img != ''"> and img = #{img}</if>
+            <if test="checkInDays != null  and checkInDays != ''"> and check_in_days = #{checkInDays}</if>
+            <if test="exerciseDuration != null  and exerciseDuration != ''"> and exercise_duration = #{exerciseDuration}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskRankingsById" parameterType="Long" resultMap="TaskRankingsResult">
+        <include refid="selectTaskRankingsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTaskRankings" parameterType="TaskRankings" useGeneratedKeys="true" keyProperty="id">
+        insert into task_rankings
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">nickname,</if>
+            <if test="img != null">img,</if>
+            <if test="checkInDays != null">check_in_days,</if>
+            <if test="exerciseDuration != null">exercise_duration,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">#{nickname},</if>
+            <if test="img != null">#{img},</if>
+            <if test="checkInDays != null">#{checkInDays},</if>
+            <if test="exerciseDuration != null">#{exerciseDuration},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskRankings" parameterType="TaskRankings">
+        update task_rankings
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="img != null">img = #{img},</if>
+            <if test="checkInDays != null">check_in_days = #{checkInDays},</if>
+            <if test="exerciseDuration != null">exercise_duration = #{exerciseDuration},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTaskRankingsById" parameterType="Long">
+        delete from task_rankings where id = #{id}
+    </delete>
+
+    <delete id="deleteTaskRankingsByIds" parameterType="String">
+        delete from task_rankings where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

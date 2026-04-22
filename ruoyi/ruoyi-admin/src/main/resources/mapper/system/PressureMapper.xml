@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PressureMapper">
+    
+    <resultMap type="Pressure" id="PressureResult">
+        <result property="id"    column="id"    />
+        <result property="datatime"    column="datatime"    />
+        <result property="systolicPressure"    column="systolic_pressure"    />
+        <result property="diastolicPressure"    column="diastolic_pressure"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectPressureVo">
+        select id, datatime, systolic_pressure, diastolic_pressure, userid from pressure
+    </sql>
+
+    <select id="selectPressureList" parameterType="Pressure" resultMap="PressureResult">
+        <include refid="selectPressureVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="params.beginDatatime != null and params.beginDatatime != '' and params.endDatatime != null and params.endDatatime != ''"> and datatime between #{params.beginDatatime} and #{params.endDatatime}</if>
+            <if test="systolicPressure != null  and systolicPressure != ''"> and systolic_pressure = #{systolicPressure}</if>
+            <if test="diastolicPressure != null  and diastolicPressure != ''"> and diastolic_pressure = #{diastolicPressure}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectPressureById" parameterType="Long" resultMap="PressureResult">
+        <include refid="selectPressureVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPressure" parameterType="Pressure" useGeneratedKeys="true" keyProperty="id">
+        insert into pressure
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="datatime != null">datatime,</if>
+            <if test="systolicPressure != null">systolic_pressure,</if>
+            <if test="diastolicPressure != null">diastolic_pressure,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="datatime != null">#{datatime},</if>
+            <if test="systolicPressure != null">#{systolicPressure},</if>
+            <if test="diastolicPressure != null">#{diastolicPressure},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePressure" parameterType="Pressure">
+        update pressure
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="datatime != null">datatime = #{datatime},</if>
+            <if test="systolicPressure != null">systolic_pressure = #{systolicPressure},</if>
+            <if test="diastolicPressure != null">diastolic_pressure = #{diastolicPressure},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePressureById" parameterType="Long">
+        delete from pressure where id = #{id}
+    </delete>
+
+    <delete id="deletePressureByIds" parameterType="String">
+        delete from pressure where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

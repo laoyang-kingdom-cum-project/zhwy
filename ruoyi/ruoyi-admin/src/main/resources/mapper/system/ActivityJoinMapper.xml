@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ActivityJoinMapper">
+    
+    <resultMap type="ActivityJoin" id="ActivityJoinResult">
+        <result property="id"    column="id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="joinTime"    column="join_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectActivityJoinVo">
+        select id, activity_id, user_id, join_time, status from activity_join
+    </sql>
+
+    <select id="selectActivityJoinList" parameterType="ActivityJoin" resultMap="ActivityJoinResult">
+        <include refid="selectActivityJoinVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="activityId != null "> and activity_id = #{activityId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="joinTime != null "> and join_time = #{joinTime}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectActivityJoinById" parameterType="Long" resultMap="ActivityJoinResult">
+        <include refid="selectActivityJoinVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertActivityJoin" parameterType="ActivityJoin" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_join
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">activity_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="joinTime != null">join_time,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">#{activityId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="joinTime != null">#{joinTime},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateActivityJoin" parameterType="ActivityJoin">
+        update activity_join
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="joinTime != null">join_time = #{joinTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteActivityJoinById" parameterType="Long">
+        delete from activity_join where id = #{id}
+    </delete>
+
+    <delete id="deleteActivityJoinByIds" parameterType="String">
+        delete from activity_join where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

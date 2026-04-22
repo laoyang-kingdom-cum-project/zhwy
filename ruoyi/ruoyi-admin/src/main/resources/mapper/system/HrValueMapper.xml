@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HrValueMapper">
+    
+    <resultMap type="HrValue" id="HrValueResult">
+        <result property="id"    column="id"    />
+        <result property="datatime"    column="datatime"    />
+        <result property="date"    column="date"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectHrValueVo">
+        select id, datatime, date, userid from hr_value
+    </sql>
+
+    <select id="selectHrValueList" parameterType="HrValue" resultMap="HrValueResult">
+        <include refid="selectHrValueVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="params.beginDatatime != null and params.beginDatatime != '' and params.endDatatime != null and params.endDatatime != ''"> and datatime between #{params.beginDatatime} and #{params.endDatatime}</if>
+            <if test="date != null  and date != ''"> and date = #{date}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectHrValueById" parameterType="Long" resultMap="HrValueResult">
+        <include refid="selectHrValueVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertHrValue" parameterType="HrValue" useGeneratedKeys="true" keyProperty="id">
+        insert into hr_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="datatime != null">datatime,</if>
+            <if test="date != null and date != ''">date,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="datatime != null">#{datatime},</if>
+            <if test="date != null and date != ''">#{date},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHrValue" parameterType="HrValue">
+        update hr_value
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="datatime != null">datatime = #{datatime},</if>
+            <if test="date != null and date != ''">date = #{date},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHrValueById" parameterType="Long">
+        delete from hr_value where id = #{id}
+    </delete>
+
+    <delete id="deleteHrValueByIds" parameterType="String">
+        delete from hr_value where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

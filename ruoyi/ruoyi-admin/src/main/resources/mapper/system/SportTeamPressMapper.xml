@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SportTeamPressMapper">
+    
+    <resultMap type="SportTeamPress" id="SportTeamPressResult">
+        <result property="id"    column="id"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="teamName"    column="team_name"    />
+        <result property="memberCount"    column="member_count"    />
+        <result property="category"    column="category"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="lowerCamelCase"    column="lowerCamelCase"    />
+        <result property="totalSportsTime"    column="totalSportsTime"    />
+        <result property="totalConsumption"    column="totalConsumption"    />
+        <result property="taskTime"    column="taskTime"    />
+        <result property="taskday"    column="taskday"    />
+        <result property="teamMember"    column="teamMember"    />
+    </resultMap>
+
+    <resultMap id="SportTeamPressSportTeamResult" type="SportTeamPress" extends="SportTeamPressResult">
+        <collection property="sportTeamList" ofType="SportTeam" column="id" select="selectSportTeamList" />
+    </resultMap>
+
+    <resultMap type="SportTeam" id="SportTeamResult">
+        <result property="id"    column="id"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="teamName"    column="team_name"    />
+        <result property="memberCount"    column="member_count"    />
+        <result property="category"    column="category"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectSportTeamPressVo">
+        select id, avatar, team_name, member_count, category, created_at, updated_at, lowerCamelCase, totalSportsTime, totalConsumption, taskTime, taskday, teamMember from sport_team_press
+    </sql>
+
+    <select id="selectSportTeamPressList" parameterType="SportTeamPress" resultMap="SportTeamPressResult">
+        <include refid="selectSportTeamPressVo"/>
+        <where>  
+            <if test="teamName != null  and teamName != ''"> and team_name like concat('%', #{teamName}, '%')</if>
+            <if test="memberCount != null  and memberCount != ''"> and member_count = #{memberCount}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="params.beginCreatedAt != null and params.beginCreatedAt != '' and params.endCreatedAt != null and params.endCreatedAt != ''"> and created_at between #{params.beginCreatedAt} and #{params.endCreatedAt}</if>
+            <if test="params.beginUpdatedAt != null and params.beginUpdatedAt != '' and params.endUpdatedAt != null and params.endUpdatedAt != ''"> and updated_at between #{params.beginUpdatedAt} and #{params.endUpdatedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectSportTeamPressById" parameterType="Long" resultMap="SportTeamPressSportTeamResult">
+        select id, avatar, team_name, member_count, category, created_at, updated_at, lowerCamelCase, totalSportsTime, totalConsumption, taskTime, taskday, teamMember
+        from sport_team_press
+        where id = #{id}
+    </select>
+
+    <select id="selectSportTeamList" resultMap="SportTeamResult">
+        select id, avatar, team_name, member_count, category, created_at, updated_at
+        from sport_team
+        where id = #{id}
+    </select>
+
+    <insert id="insertSportTeamPress" parameterType="SportTeamPress">
+        insert into sport_team_press
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="avatar != null and avatar != ''">avatar,</if>
+            <if test="teamName != null and teamName != ''">team_name,</if>
+            <if test="memberCount != null and memberCount != ''">member_count,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="lowerCamelCase != null">lowerCamelCase,</if>
+            <if test="totalSportsTime != null">totalSportsTime,</if>
+            <if test="totalConsumption != null">totalConsumption,</if>
+            <if test="taskTime != null">taskTime,</if>
+            <if test="taskday != null">taskday,</if>
+            <if test="teamMember != null">teamMember,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="avatar != null and avatar != ''">#{avatar},</if>
+            <if test="teamName != null and teamName != ''">#{teamName},</if>
+            <if test="memberCount != null and memberCount != ''">#{memberCount},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="lowerCamelCase != null">#{lowerCamelCase},</if>
+            <if test="totalSportsTime != null">#{totalSportsTime},</if>
+            <if test="totalConsumption != null">#{totalConsumption},</if>
+            <if test="taskTime != null">#{taskTime},</if>
+            <if test="taskday != null">#{taskday},</if>
+            <if test="teamMember != null">#{teamMember},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSportTeamPress" parameterType="SportTeamPress">
+        update sport_team_press
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+            <if test="teamName != null and teamName != ''">team_name = #{teamName},</if>
+            <if test="memberCount != null and memberCount != ''">member_count = #{memberCount},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="lowerCamelCase != null">lowerCamelCase = #{lowerCamelCase},</if>
+            <if test="totalSportsTime != null">totalSportsTime = #{totalSportsTime},</if>
+            <if test="totalConsumption != null">totalConsumption = #{totalConsumption},</if>
+            <if test="taskTime != null">taskTime = #{taskTime},</if>
+            <if test="taskday != null">taskday = #{taskday},</if>
+            <if test="teamMember != null">teamMember = #{teamMember},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSportTeamPressById" parameterType="Long">
+        delete from sport_team_press where id = #{id}
+    </delete>
+
+    <delete id="deleteSportTeamPressByIds" parameterType="String">
+        delete from sport_team_press where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteSportTeamByIds" parameterType="String">
+        delete from sport_team where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSportTeamById" parameterType="Long">
+        delete from sport_team where id = #{id}
+    </delete>
+
+    <insert id="batchSportTeam">
+        insert into sport_team( id, avatar, team_name, member_count, category, created_at, updated_at) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.avatar}, #{item.teamName}, #{item.memberCount}, #{item.category}, #{item.createdAt}, #{item.updatedAt})
+        </foreach>
+    </insert>
+</mapper>

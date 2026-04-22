@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ActivityMapper">
+    
+    <resultMap type="Activity" id="ActivityResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="time"    column="time"    />
+        <result property="location"    column="location"    />
+        <result property="status"    column="status"    />
+        <result property="joinCount"    column="join_count"    />
+        <result property="maxCount"    column="max_count"    />
+        <result property="image"    column="image"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectActivityVo">
+        select id, title, content, time, location, status, join_count, max_count, image, create_by, create_time, update_by, update_time, del_flag from activity
+    </sql>
+
+    <select id="selectActivityList" parameterType="Activity" resultMap="ActivityResult">
+        <include refid="selectActivityVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="time != null "> and time = #{time}</if>
+            <if test="location != null  and location != ''"> and location = #{location}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="joinCount != null "> and join_count = #{joinCount}</if>
+            <if test="maxCount != null "> and max_count = #{maxCount}</if>
+            <if test="image != null  and image != ''"> and image = #{image}</if>
+        </where>
+    </select>
+    
+    <select id="selectActivityById" parameterType="Long" resultMap="ActivityResult">
+        <include refid="selectActivityVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertActivity" parameterType="Activity" useGeneratedKeys="true" keyProperty="id">
+        insert into activity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+            <if test="location != null">location,</if>
+            <if test="status != null">status,</if>
+            <if test="joinCount != null">join_count,</if>
+            <if test="maxCount != null">max_count,</if>
+            <if test="image != null">image,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="time != null">#{time},</if>
+            <if test="location != null">#{location},</if>
+            <if test="status != null">#{status},</if>
+            <if test="joinCount != null">#{joinCount},</if>
+            <if test="maxCount != null">#{maxCount},</if>
+            <if test="image != null">#{image},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateActivity" parameterType="Activity">
+        update activity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="joinCount != null">join_count = #{joinCount},</if>
+            <if test="maxCount != null">max_count = #{maxCount},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteActivityById" parameterType="Long">
+        delete from activity where id = #{id}
+    </delete>
+
+    <delete id="deleteActivityByIds" parameterType="String">
+        delete from activity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

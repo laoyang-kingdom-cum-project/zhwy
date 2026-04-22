@@ -1,0 +1,23 @@
+# Local editor settings
+.vscode/
+
+# OS files
+.DS_Store
+
+# Dependency modules
+node_modules/
+**/node_modules/
+
+# Build and runtime artifacts
+**/target/
+**/dist/
+**/unpackage/
+
+# Tool caches
+.cache/
+**/.cache/
+.hbuilderx/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

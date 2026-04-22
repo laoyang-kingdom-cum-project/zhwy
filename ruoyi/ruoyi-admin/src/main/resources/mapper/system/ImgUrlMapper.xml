@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ImgUrlMapper">
+    
+    <resultMap type="ImgUrl" id="ImgUrlResult">
+        <result property="img"    column="img"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+    <sql id="selectImgUrlVo">
+        select img, id from img_url
+    </sql>
+
+    <select id="selectImgUrlList" parameterType="ImgUrl" resultMap="ImgUrlResult">
+        <include refid="selectImgUrlVo"/>
+        <where>  
+            <if test="img != null  and img != ''"> and img = #{img}</if>
+            <if test="id != null "> and id = #{id}</if>
+        </where>
+    </select>
+    
+    <select id="selectImgUrlById" parameterType="Long" resultMap="ImgUrlResult">
+        <include refid="selectImgUrlVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertImgUrl" parameterType="ImgUrl" useGeneratedKeys="true" keyProperty="id">
+        insert into img_url
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="img != null">img,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="img != null">#{img},</if>
+         </trim>
+    </insert>
+
+    <update id="updateImgUrl" parameterType="ImgUrl">
+        update img_url
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="img != null">img = #{img},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteImgUrlById" parameterType="Long">
+        delete from img_url where id = #{id}
+    </delete>
+
+    <delete id="deleteImgUrlByIds" parameterType="String">
+        delete from img_url where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
