@@ -3,7 +3,7 @@
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="/static/logo.png" mode="aspectFit"></image>
-      <text class="app-name">智慧物业</text>
+      <text class="app-name">智慧社区</text>
       <text class="app-version">版本 {{ version }}</text>
     </view>
 
@@ -11,7 +11,7 @@
     <view class="intro-section">
       <view class="section-title">应用介绍</view>
       <text class="intro-text">
-        智慧物业是一款为现代社区打造的智能物业管理平台，集成了智能家居控制、物业服务、安全预警、家人健康关怀等功能，致力于为业主提供便捷、安全、舒适的居住体验。
+        智慧社区是一款为现代社区打造的智能物业管理平台，集成了智能家居控制、物业服务、安全预警、家人健康关怀等功能，致力于为业主提供便捷、安全、舒适的居住体验。
       </text>
     </view>
 
@@ -71,7 +71,7 @@
 
     <!-- 版权信息 -->
     <view class="footer">
-      <text class="copyright">© 2024 智慧物业 版权所有</text>
+      <text class="copyright">© 2024 智慧社区 版权所有</text>
     </view>
   </view>
 </template>

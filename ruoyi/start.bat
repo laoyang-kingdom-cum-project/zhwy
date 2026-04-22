@@ -6,8 +6,8 @@ echo ==========================================
 echo.
 
 REM Set Java and Maven paths
-set JAVA_HOME=C:\Users\admin\.jdks\temurin-24
-set MAVEN_HOME=C:\Users\admin\.trae-cn\tools\maven\latest
+set JAVA_HOME=C:\Users\lianfanshuang\.jdks\temurin-17
+set MAVEN_HOME=C:\Users\lianfanshuang\.trae-cn\tools\maven\latest
 set PATH=%JAVA_HOME%\bin;%MAVEN_HOME%\bin;%PATH%
 
 echo [1/3] Checking Maven dependencies...

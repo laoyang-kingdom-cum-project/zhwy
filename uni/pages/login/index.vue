@@ -4,7 +4,7 @@
       <!-- Logo区域 -->
       <view class="logo">
         <image src="/static/logo.png" mode="aspectFit" class="logo-img"></image>
-        <text class="title">智慧物业</text>
+        <text class="title">智慧社区</text>
         <text class="subtitle">让生活更便捷</text>
       </view>
 

@@ -62,6 +62,12 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/dashboard',
+    component: () => import('@/views/dashboard'),
+    hidden: true,
+    meta: { title: '数据大屏' }
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',

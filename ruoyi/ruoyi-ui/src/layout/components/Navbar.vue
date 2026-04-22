@@ -9,7 +9,12 @@
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
-
+        <!-- 数据大屏入口 -->
+        <el-tooltip content="数据大屏" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect" @click="goToDashboard">
+            <svg-icon icon-class="chart" />
+          </div>
+        </el-tooltip>
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
@@ -89,6 +94,10 @@ export default {
     },
     setLayout(event) {
       this.$emit('setLayout')
+    },
+    // 跳转到数据大屏
+    goToDashboard() {
+      window.open('/dashboard', '_blank')
     },
     logout() {
       this.$confirm('确定注销并退出系统吗？', '提示', {

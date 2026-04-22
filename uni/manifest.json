@@ -72,7 +72,7 @@
             "icons" : {
                 "foreground" : "static/logo.png"
             },
-            "bundleName" : "智慧物业"
+            "bundleName" : "智慧社区"
         }
     }
 }
