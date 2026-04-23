@@ -13,12 +13,13 @@
 		methods: {
 			// 应用关怀模式
 			applyCareMode() {
+				// #ifdef H5
 				const careMode = uni.getStorageSync('careMode')
 				const pages = getCurrentPages()
 				const currentPage = pages[pages.length - 1]
 				if (currentPage) {
 					const pageElement = currentPage.$el || currentPage.$page
-					if (pageElement) {
+					if (pageElement && pageElement.classList) {
 						if (careMode) {
 							pageElement.classList.add('care-mode-active')
 						} else {
@@ -26,6 +27,7 @@
 						}
 					}
 				}
+				// #endif
 			}
 		}
 	}

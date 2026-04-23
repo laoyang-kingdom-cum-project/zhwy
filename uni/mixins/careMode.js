@@ -9,6 +9,7 @@ export default {
   methods: {
     // 应用关怀模式样式
     applyCareMode() {
+      // #ifdef H5
       const careMode = uni.getStorageSync('careMode')
       // 使用 nextTick 确保 DOM 已渲染
       this.$nextTick && this.$nextTick(() => {
@@ -28,7 +29,7 @@ export default {
             pageElement = document.querySelector('page') || document.body
           }
           
-          if (pageElement) {
+          if (pageElement && pageElement.classList) {
             if (careMode) {
               pageElement.classList.add('care-mode-active')
             } else {
@@ -37,6 +38,7 @@ export default {
           }
         }
       })
+      // #endif
     }
   }
 }

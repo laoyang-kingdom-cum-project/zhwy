@@ -402,15 +402,19 @@ export default {
     },
     // 应用关怀模式样式
     applyCareModeToPage() {
+      // #ifdef H5
       const pages = getCurrentPages()
       const currentPage = pages[pages.length - 1]
-      if (currentPage && currentPage.$el) {
-        if (this.careMode) {
-          currentPage.$el.classList.add('care-mode-active')
-        } else {
-          currentPage.$el.classList.remove('care-mode-active')
-        }
+      const pageElement = currentPage && (currentPage.$el || currentPage.$page)
+      if (!pageElement || !pageElement.classList) {
+        return
       }
+      if (this.careMode) {
+        pageElement.classList.add('care-mode-active')
+      } else {
+        pageElement.classList.remove('care-mode-active')
+      }
+      // #endif
     },
     logout() {
       uni.showModal({
