@@ -152,7 +152,7 @@ export default {
     this.loadUserInfo()
     this.loadCareMode()
     // 应用关怀模式样式
-    this.applyCareModeToPage()
+    this.applyCareMode()
     // 强制刷新计算属性
     this.refreshKey++
   },
@@ -193,7 +193,7 @@ export default {
     onCareModeChange(e) {
       this.careMode = e.detail.value
       uni.setStorageSync('careMode', this.careMode)
-      this.applyCareModeToPage()
+      this.applyCareMode()
       if (this.careMode) {
         uni.showToast({ title: '关怀模式已开启', icon: 'success' })
         this.speakBySystemTTS('关怀模式已开启，语音朗读已启用。')
@@ -236,7 +236,7 @@ export default {
       try {
         const main = plus.android.runtimeMainActivity()
         const TextToSpeech = plus.android.importClass('android.speech.tts.TextToSpeech')
-        const listener = plus.android.implements('android.speech.tts.TextToSpeech.OnInitListener', {
+        const listener = plus.android.implements('android.speech.tts.TextToSpeech$OnInitListener', {
           onInit: (status) => {
             this._androidTtsInitializing = false
             if (status !== TextToSpeech.SUCCESS) {
@@ -397,22 +397,6 @@ export default {
         } catch (deleteErr) {
           console.error('清理系统TTS对象失败', deleteErr)
         }
-      }
-      // #endif
-    },
-    // 应用关怀模式样式
-    applyCareModeToPage() {
-      // #ifdef H5
-      const pages = getCurrentPages()
-      const currentPage = pages[pages.length - 1]
-      const pageElement = currentPage && (currentPage.$el || currentPage.$page)
-      if (!pageElement || !pageElement.classList) {
-        return
-      }
-      if (this.careMode) {
-        pageElement.classList.add('care-mode-active')
-      } else {
-        pageElement.classList.remove('care-mode-active')
       }
       // #endif
     },

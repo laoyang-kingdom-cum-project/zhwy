@@ -9,8 +9,23 @@ export default {
   methods: {
     // 应用关怀模式样式
     applyCareMode() {
-      // #ifdef H5
       const careMode = uni.getStorageSync('careMode')
+
+      // #ifdef APP-PLUS
+      const pages = getCurrentPages()
+      if (pages.length > 0) {
+        const currentPage = pages[pages.length - 1]
+        const currentWebview = currentPage.$getAppWebview()
+        if (currentWebview) {
+          // 在APP上修改当前Webview的字体缩放比例 (130表示放大30%)
+          currentWebview.setStyle({
+            textZoom: careMode ? 130 : 100
+          })
+        }
+      }
+      // #endif
+
+      // #ifdef H5
       // 使用 nextTick 确保 DOM 已渲染
       this.$nextTick && this.$nextTick(() => {
         const pages = getCurrentPages()
