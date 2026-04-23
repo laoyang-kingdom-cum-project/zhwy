@@ -160,6 +160,24 @@
 				"navigationBarTitleText": "数据大屏",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/visitor/index",
+			"style": {
+				"navigationBarTitleText": "访客预约"
+			}
+		},
+		{
+			"path": "pages/visitor/appointment",
+			"style": {
+				"navigationBarTitleText": "新建预约"
+			}
+		},
+		{
+			"path": "pages/visitor/detail",
+			"style": {
+				"navigationBarTitleText": "预约详情"
+			}
 		}
 	],
 	"globalStyle": {

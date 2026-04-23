@@ -103,6 +103,7 @@ export default {
       banners: [],
       quickActions: [
         { name: '物业报修', icon: '🔧', bgColor: '#FF6B6B', path: '/pages/service/repair' },
+        { name: '访客预约', icon: '👥', bgColor: '#9B59B6', path: '/pages/visitor/index' },
         { name: 'AI对话', icon: '🤖', bgColor: '#2ED573', path: '/pages/ai/index' },
         { name: '物业服务', icon: '🏠', bgColor: '#FF6348', path: '/pages/service/index' },
         { name: '活动报名', icon: '🎉', bgColor: '#4ECDC4', path: '/pages/activity/index' },

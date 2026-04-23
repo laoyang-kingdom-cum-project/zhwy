@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VisitorAppointmentMapper">
+    
+    <resultMap type="VisitorAppointment" id="VisitorAppointmentResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="visitorName"    column="visitor_name"    />
+        <result property="visitorPhone"    column="visitor_phone"    />
+        <result property="visitorCount"    column="visitor_count"    />
+        <result property="visitDate"    column="visit_date"    />
+        <result property="visitTimeStart"    column="visit_time_start"    />
+        <result property="visitTimeEnd"    column="visit_time_end"    />
+        <result property="visitReason"    column="visit_reason"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectVisitorAppointmentVo">
+        select id, user_id, visitor_name, visitor_phone, visitor_count, visit_date, visit_time_start, visit_time_end, visit_reason, status, remark, create_time, update_time from visitor_appointment
+    </sql>
+
+    <select id="selectVisitorAppointmentList" parameterType="VisitorAppointment" resultMap="VisitorAppointmentResult">
+        <include refid="selectVisitorAppointmentVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="visitorName != null  and visitorName != ''"> and visitor_name like concat('%', #{visitorName}, '%')</if>
+            <if test="visitorPhone != null  and visitorPhone != ''"> and visitor_phone = #{visitorPhone}</if>
+            <if test="visitorCount != null "> and visitor_count = #{visitorCount}</if>
+            <if test="visitDate != null "> and visit_date = #{visitDate}</if>
+            <if test="visitTimeStart != null "> and visit_time_start = #{visitTimeStart}</if>
+            <if test="visitTimeEnd != null "> and visit_time_end = #{visitTimeEnd}</if>
+            <if test="visitReason != null  and visitReason != ''"> and visit_reason = #{visitReason}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectVisitorAppointmentById" parameterType="Long" resultMap="VisitorAppointmentResult">
+        <include refid="selectVisitorAppointmentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVisitorAppointment" parameterType="VisitorAppointment" useGeneratedKeys="true" keyProperty="id">
+        insert into visitor_appointment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="visitorName != null and visitorName != ''">visitor_name,</if>
+            <if test="visitorPhone != null and visitorPhone != ''">visitor_phone,</if>
+            <if test="visitorCount != null">visitor_count,</if>
+            <if test="visitDate != null">visit_date,</if>
+            <if test="visitTimeStart != null">visit_time_start,</if>
+            <if test="visitTimeEnd != null">visit_time_end,</if>
+            <if test="visitReason != null">visit_reason,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="visitorName != null and visitorName != ''">#{visitorName},</if>
+            <if test="visitorPhone != null and visitorPhone != ''">#{visitorPhone},</if>
+            <if test="visitorCount != null">#{visitorCount},</if>
+            <if test="visitDate != null">#{visitDate},</if>
+            <if test="visitTimeStart != null">#{visitTimeStart},</if>
+            <if test="visitTimeEnd != null">#{visitTimeEnd},</if>
+            <if test="visitReason != null">#{visitReason},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVisitorAppointment" parameterType="VisitorAppointment">
+        update visitor_appointment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="visitorName != null and visitorName != ''">visitor_name = #{visitorName},</if>
+            <if test="visitorPhone != null and visitorPhone != ''">visitor_phone = #{visitorPhone},</if>
+            <if test="visitorCount != null">visitor_count = #{visitorCount},</if>
+            <if test="visitDate != null">visit_date = #{visitDate},</if>
+            <if test="visitTimeStart != null">visit_time_start = #{visitTimeStart},</if>
+            <if test="visitTimeEnd != null">visit_time_end = #{visitTimeEnd},</if>
+            <if test="visitReason != null">visit_reason = #{visitReason},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVisitorAppointmentById" parameterType="Long">
+        delete from visitor_appointment where id = #{id}
+    </delete>
+
+    <delete id="deleteVisitorAppointmentByIds" parameterType="String">
+        delete from visitor_appointment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
