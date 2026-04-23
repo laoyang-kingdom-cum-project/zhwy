@@ -152,6 +152,9 @@ export default {
     // 强制刷新计算属性
     this.refreshKey++
   },
+  onUnload() {
+    this.releaseSystemTTS()
+  },
   methods: {
     // 加载用户信息
     async loadUserInfo() {
@@ -186,13 +189,118 @@ export default {
     onCareModeChange(e) {
       this.careMode = e.detail.value
       uni.setStorageSync('careMode', this.careMode)
-      // 应用关怀模式样式到当前页面
       this.applyCareModeToPage()
       if (this.careMode) {
         uni.showToast({ title: '关怀模式已开启', icon: 'success' })
+        this.speakBySystemTTS('关怀模式已开启，语音朗读已启用。')
       } else {
+        this.stopSystemTTS()
         uni.showToast({ title: '关怀模式已关闭', icon: 'none' })
       }
+    },
+    // 调用系统TTS播报文本
+    speakBySystemTTS(text) {
+      if (!text) {
+        return
+      }
+      // #ifdef APP-PLUS
+      if (plus.os.name === 'Android') {
+        this.speakByAndroidSystemTTS(text)
+        return
+      }
+      // #endif
+      this.speakByWebSpeech(text)
+    },
+    // Android: 使用系统自带TextToSpeech播报
+    speakByAndroidSystemTTS(text) {
+      // #ifdef APP-PLUS
+      try {
+        const main = plus.android.runtimeMainActivity()
+        const TextToSpeech = plus.android.importClass('android.speech.tts.TextToSpeech')
+        const Locale = plus.android.importClass('java.util.Locale')
+
+        this.releaseSystemTTS()
+
+        let tts = null
+        const listener = plus.android.implements('android.speech.tts.TextToSpeech.OnInitListener', {
+          onInit: (status) => {
+            if (status !== TextToSpeech.SUCCESS || !tts) {
+              uni.showToast({ title: '系统TTS初始化失败', icon: 'none' })
+              return
+            }
+            try {
+              plus.android.invoke(tts, 'setLanguage', Locale.SIMPLIFIED_CHINESE)
+              plus.android.invoke(tts, 'setPitch', 1.0)
+              plus.android.invoke(tts, 'setSpeechRate', 1.0)
+              plus.android.invoke(tts, 'speak', text, TextToSpeech.QUEUE_FLUSH, null, 'care_mode_tts')
+            } catch (speakErr) {
+              console.error('系统TTS朗读失败', speakErr)
+              this.speakByWebSpeech(text)
+            }
+          }
+        })
+
+        tts = new TextToSpeech(main, listener)
+        this._androidTts = tts
+      } catch (err) {
+        console.error('系统TTS调用失败', err)
+        this.speakByWebSpeech(text)
+      }
+      // #endif
+    },
+    // H5或降级：使用浏览器语音播报
+    speakByWebSpeech(text) {
+      // #ifdef H5
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        try {
+          window.speechSynthesis.cancel()
+          const utterance = new SpeechSynthesisUtterance(text)
+          utterance.lang = 'zh-CN'
+          utterance.rate = 1
+          utterance.pitch = 1
+          window.speechSynthesis.speak(utterance)
+          return
+        } catch (err) {
+          console.error('浏览器TTS调用失败', err)
+        }
+      }
+      // #endif
+      uni.showToast({ title: '当前设备不支持语音朗读', icon: 'none' })
+    },
+    stopSystemTTS() {
+      // #ifdef APP-PLUS
+      if (this._androidTts) {
+        try {
+          plus.android.invoke(this._androidTts, 'stop')
+        } catch (err) {
+          console.error('停止系统TTS失败', err)
+        }
+      }
+      // #endif
+      // #ifdef H5
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+      // #endif
+    },
+    releaseSystemTTS() {
+      this.stopSystemTTS()
+      // #ifdef APP-PLUS
+      if (this._androidTts) {
+        const tts = this._androidTts
+        this._androidTts = null
+        try {
+          plus.android.invoke(tts, 'shutdown')
+        } catch (err) {
+          console.error('释放系统TTS失败', err)
+        }
+        try {
+          plus.android.deleteObject(tts)
+        } catch (deleteErr) {
+          console.error('清理系统TTS对象失败', deleteErr)
+        }
+      }
+      // #endif
     },
     // 应用关怀模式样式
     applyCareModeToPage() {
