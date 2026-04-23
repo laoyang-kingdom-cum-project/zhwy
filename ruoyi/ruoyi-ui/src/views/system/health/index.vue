@@ -33,23 +33,13 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="healthStatus">
-        <el-select v-model="queryParams.healthStatus" placeholder="请选择状态" clearable>
-          <el-option
-            v-for="dict in dict.type.family_health_zt"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="最后活动" prop="lastActive">
-        <el-date-picker clearable
+        <el-input
           v-model="queryParams.lastActive"
-          type="date"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择最后活动">
-        </el-date-picker>
+          placeholder="请输入最后活动"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="紧急联系人+手机号" prop="emergencyContact">
         <el-input
@@ -87,6 +77,14 @@
         <el-input
           v-model="queryParams.pressure"
           placeholder="请输入血压"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用户id" prop="userid">
+        <el-input
+          v-model="queryParams.userid"
+          placeholder="请输入用户id"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -149,21 +147,14 @@
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="年龄" align="center" prop="age" />
       <el-table-column label="住址" align="center" prop="room" />
-      <el-table-column label="状态" align="center" prop="healthStatus">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.family_health_zt" :value="scope.row.healthStatus"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="最后活动" align="center" prop="lastActive" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.lastActive, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="状态" align="center" prop="healthStatus" />
+      <el-table-column label="最后活动" align="center" prop="lastActive" />
       <el-table-column label="紧急联系人+手机号" align="center" prop="emergencyContact" />
       <el-table-column label="步数" align="center" prop="steps" />
       <el-table-column label="睡眠时间" align="center" prop="sleep" />
       <el-table-column label="心率" align="center" prop="heartRate" />
       <el-table-column label="血压" align="center" prop="pressure" />
+      <el-table-column label="用户id" align="center" prop="userid" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -204,22 +195,8 @@
         <el-form-item label="住址" prop="room">
           <el-input v-model="form.room" placeholder="请输入住址" />
         </el-form-item>
-        <el-form-item label="状态" prop="healthStatus">
-          <el-radio-group v-model="form.healthStatus">
-            <el-radio
-              v-for="dict in dict.type.family_health_zt"
-              :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
         <el-form-item label="最后活动" prop="lastActive">
-          <el-date-picker clearable
-            v-model="form.lastActive"
-            type="date"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="请选择最后活动">
-          </el-date-picker>
+          <el-input v-model="form.lastActive" placeholder="请输入最后活动" />
         </el-form-item>
         <el-form-item label="紧急联系人+手机号" prop="emergencyContact">
           <el-input v-model="form.emergencyContact" placeholder="请输入紧急联系人+手机号" />
@@ -236,6 +213,9 @@
         <el-form-item label="血压" prop="pressure">
           <el-input v-model="form.pressure" placeholder="请输入血压" />
         </el-form-item>
+        <el-form-item label="用户id" prop="userid">
+          <el-input v-model="form.userid" placeholder="请输入用户id" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -250,7 +230,6 @@ import { listHealth, getHealth, delHealth, addHealth, updateHealth } from "@/api
 
 export default {
   name: "Health",
-  dicts: ['family_health_zt'],
   data() {
     return {
       // 遮罩层
@@ -285,12 +264,16 @@ export default {
         steps: null,
         sleep: null,
         heartRate: null,
-        pressure: null
+        pressure: null,
+        userid: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        steps: [
+          { required: true, message: "步数不能为空", trigger: "blur" }
+        ],
       }
     }
   },
@@ -325,7 +308,8 @@ export default {
         steps: null,
         sleep: null,
         heartRate: null,
-        pressure: null
+        pressure: null,
+        userid: null
       }
       this.resetForm("form")
     },

@@ -92,8 +92,10 @@
 
 <script>
 import { getDeviceList, controlDevice } from '@/api/device.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       currentRoom: '',
@@ -118,8 +120,15 @@ export default {
     this.generateSensorData()
   },
   onShow() {
+    // 页面显示时刷新数据
     this.loadDeviceList()
     this.generateSensorData()
+  },
+  onPullDownRefresh() {
+    // 下拉刷新
+    this.loadDeviceList().then(() => {
+      uni.stopPullDownRefresh()
+    })
   },
   methods: {
     // 加载设备列表

@@ -85,8 +85,10 @@
 
 <script>
 import { getOrderDetail } from '@/api/service.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       orderId: null,

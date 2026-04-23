@@ -48,8 +48,10 @@
 
 <script>
 import { getWarningList } from '@/api/warning.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       warnings: [],

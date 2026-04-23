@@ -95,17 +95,22 @@
 </template>
 
 <script>
+import { getDeviceDetail, controlDevice } from '@/api/device.js'
+import careModeMixin from '@/mixins/careMode.js'
+
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
+      deviceId: '',
       device: {
-        deviceId: 'D001',
-        deviceName: '客厅主灯',
+        deviceId: '',
+        deviceName: '',
         deviceType: 'light',
-        roomName: '客厅',
-        status: 1,
-        online: 1,
-        value: 80
+        roomName: '',
+        status: 0,
+        online: 0,
+        value: 0
       },
       currentMode: 'cool',
       modes: [
@@ -117,9 +122,31 @@ export default {
     }
   },
   onLoad(options) {
-    console.log('设备ID:', options.id)
+    this.deviceId = options.id
+    this.loadDeviceDetail()
   },
   methods: {
+    // 加载设备详情
+    loadDeviceDetail() {
+      if (!this.deviceId) return
+      getDeviceDetail(this.deviceId).then(res => {
+        if (res.code === 200 && res.data) {
+          const data = res.data
+          this.device = {
+            deviceId: data.id,
+            deviceName: data.deviceName,
+            deviceType: data.deviceType,
+            roomName: data.roomName,
+            status: data.status === '1' || data.status === 1 ? 1 : 0,
+            online: data.online === '1' || data.online === 1 ? 1 : 0,
+            value: parseInt(data.value) || 0
+          }
+        }
+      }).catch(() => {
+        uni.showToast({ title: '获取设备详情失败', icon: 'none' })
+      })
+    },
+
     getDeviceIcon(type) {
       const icons = {
         light: '💡',
@@ -142,12 +169,22 @@ export default {
       }
       return names[type] || '未知设备'
     },
-    toggleDevice(e) {
-      this.device.status = e.detail.value ? 1 : 0
-      uni.showToast({
-        title: this.device.status ? '设备已开启' : '设备已关闭',
-        icon: 'none'
-      })
+    async toggleDevice(e) {
+      const newStatus = e.detail.value ? 1 : 0
+      try {
+        const res = await controlDevice(this.deviceId, { status: newStatus })
+        if (res.code === 200) {
+          this.device.status = newStatus
+          uni.showToast({
+            title: this.device.status ? '设备已开启' : '设备已关闭',
+            icon: 'none'
+          })
+        } else {
+          uni.showToast({ title: res.msg || '控制失败', icon: 'none' })
+        }
+      } catch (err) {
+        uni.showToast({ title: '控制失败', icon: 'none' })
+      }
     },
     changeBrightness(e) {
       this.device.value = e.detail.value

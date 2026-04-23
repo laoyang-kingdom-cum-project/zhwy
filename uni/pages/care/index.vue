@@ -50,8 +50,10 @@
 
 <script>
 import { getCareList } from '@/api/care.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       careList: []

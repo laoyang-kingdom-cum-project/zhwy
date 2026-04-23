@@ -59,7 +59,10 @@
 </template>
 
 <script>
+import careModeMixin from '@/mixins/careMode.js'
+
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       warning: {

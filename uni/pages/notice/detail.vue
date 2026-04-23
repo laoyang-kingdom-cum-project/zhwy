@@ -26,8 +26,10 @@
 
 <script>
 import { getNoticeDetail } from '@/api/home.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       noticeId: '',

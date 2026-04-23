@@ -16,10 +16,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="sleep"    column="sleep"    />
         <result property="heartRate"    column="heartRate"    />
         <result property="pressure"    column="pressure"    />
+        <result property="userid"    column="userid"    />
     </resultMap>
 
     <sql id="selectFamilyHealthVo">
-        select id, name, age, room, healthStatus, lastActive, emergencyContact, steps, sleep, heartRate, pressure from family_health
+        select id, name, age, room, healthStatus, lastActive, emergencyContact, steps, sleep, heartRate, pressure, userid from family_health
     </sql>
 
     <select id="selectFamilyHealthList" parameterType="FamilyHealth" resultMap="FamilyHealthResult">
@@ -28,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null "> and id = #{id}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="age != null "> and age = #{age}</if>
-            <if test="room != null  and room != ''"> and room like concat('%', #{room}, '%')</if>
+            <if test="room != null  and room != ''"> and room = #{room}</if>
             <if test="healthStatus != null  and healthStatus != ''"> and healthStatus = #{healthStatus}</if>
             <if test="lastActive != null  and lastActive != ''"> and lastActive = #{lastActive}</if>
             <if test="emergencyContact != null  and emergencyContact != ''"> and emergencyContact = #{emergencyContact}</if>
@@ -36,6 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="sleep != null  and sleep != ''"> and sleep = #{sleep}</if>
             <if test="heartRate != null  and heartRate != ''"> and heartRate = #{heartRate}</if>
             <if test="pressure != null  and pressure != ''"> and pressure = #{pressure}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
         </where>
     </select>
     
@@ -53,10 +55,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="healthStatus != null">healthStatus,</if>
             <if test="lastActive != null">lastActive,</if>
             <if test="emergencyContact != null">emergencyContact,</if>
-            <if test="steps != null">steps,</if>
+            <if test="steps != null and steps != ''">steps,</if>
             <if test="sleep != null">sleep,</if>
             <if test="heartRate != null">heartRate,</if>
             <if test="pressure != null">pressure,</if>
+            <if test="userid != null">userid,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">#{name},</if>
@@ -65,10 +68,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="healthStatus != null">#{healthStatus},</if>
             <if test="lastActive != null">#{lastActive},</if>
             <if test="emergencyContact != null">#{emergencyContact},</if>
-            <if test="steps != null">#{steps},</if>
+            <if test="steps != null and steps != ''">#{steps},</if>
             <if test="sleep != null">#{sleep},</if>
             <if test="heartRate != null">#{heartRate},</if>
             <if test="pressure != null">#{pressure},</if>
+            <if test="userid != null">#{userid},</if>
          </trim>
     </insert>
 
@@ -81,10 +85,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="healthStatus != null">healthStatus = #{healthStatus},</if>
             <if test="lastActive != null">lastActive = #{lastActive},</if>
             <if test="emergencyContact != null">emergencyContact = #{emergencyContact},</if>
-            <if test="steps != null">steps = #{steps},</if>
+            <if test="steps != null and steps != ''">steps = #{steps},</if>
             <if test="sleep != null">sleep = #{sleep},</if>
             <if test="heartRate != null">heartRate = #{heartRate},</if>
             <if test="pressure != null">pressure = #{pressure},</if>
+            <if test="userid != null">userid = #{userid},</if>
         </trim>
         where id = #{id}
     </update>

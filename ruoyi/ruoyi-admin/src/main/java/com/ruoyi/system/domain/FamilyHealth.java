@@ -9,7 +9,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 家人健康对象 family_health
  * 
  * @author ruoyi
- * @date 2026-04-17 10:42:51
+ * @date 2026-04-23 10:25:07
  */
 public class FamilyHealth extends BaseEntity
 {
@@ -58,6 +58,10 @@ public class FamilyHealth extends BaseEntity
     /** 血压 */
     @Excel(name = "血压")
     private String pressure;
+
+    /** 用户id */
+    @Excel(name = "用户id")
+    private Long userid;
 
     public void setId(Long id) 
     {
@@ -169,6 +173,16 @@ public class FamilyHealth extends BaseEntity
         return pressure;
     }
 
+    public void setUserid(Long userid) 
+    {
+        this.userid = userid;
+    }
+
+    public Long getUserid() 
+    {
+        return userid;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -183,6 +197,7 @@ public class FamilyHealth extends BaseEntity
             .append("sleep", getSleep())
             .append("heartRate", getHeartRate())
             .append("pressure", getPressure())
+            .append("userid", getUserid())
             .toString();
     }
 }

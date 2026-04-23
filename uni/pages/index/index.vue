@@ -94,8 +94,10 @@ import { getCarouselList, getNoticeList } from '@/api/home.js'
 import { getDeviceList } from '@/api/device.js'
 import { getWarningList } from '@/api/warning.js'
 import config from '@/config/index.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       banners: [],

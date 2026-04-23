@@ -47,8 +47,10 @@
 
 <script>
 import { updatePassword } from '@/api/login.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       form: {

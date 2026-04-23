@@ -58,8 +58,10 @@
 <script>
 import { getUserInfo, updateUserProfile } from '@/api/login.js'
 import config from '@/config/index.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       userInfo: {},

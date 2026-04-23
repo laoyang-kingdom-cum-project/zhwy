@@ -79,8 +79,10 @@
 
 <script>
 import { createOrder } from '@/api/service.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       repairTypes: ['水电维修', '家电维修', '门窗维修', '墙面维修', '地板维修', '其他'],

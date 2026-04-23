@@ -53,7 +53,10 @@
 </template>
 
 <script>
+import careModeMixin from '@/mixins/careMode.js'
+
 export default {
+  mixins: [careModeMixin],
   methods: {
     navigateTo(path) {
       uni.navigateTo({ url: path })

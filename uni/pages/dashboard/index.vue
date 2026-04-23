@@ -200,8 +200,10 @@
 
 <script>
 import { getDashboardStats, getDeviceTypeStats, getWarningTrend, getRecentWarnings, getRoomDeviceStats } from '@/api/dashboard.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       currentTime: '',

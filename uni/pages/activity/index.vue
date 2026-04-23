@@ -27,8 +27,10 @@
 <script>
 import { getActivityList } from '@/api/activity.js'
 import config from '@/config/index.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       activities: []

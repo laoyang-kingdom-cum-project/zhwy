@@ -105,8 +105,10 @@
 <script>
 import { getUserInfo } from '@/api/login.js'
 import config from '@/config/index.js'
+import careModeMixin from '@/mixins/careMode.js'
 
 export default {
+  mixins: [careModeMixin],
   data() {
     return {
       userInfo: {
@@ -145,6 +147,8 @@ export default {
   onShow() {
     this.loadUserInfo()
     this.loadCareMode()
+    // 应用关怀模式样式
+    this.applyCareModeToPage()
     // 强制刷新计算属性
     this.refreshKey++
   },
@@ -182,10 +186,24 @@ export default {
     onCareModeChange(e) {
       this.careMode = e.detail.value
       uni.setStorageSync('careMode', this.careMode)
+      // 应用关怀模式样式到当前页面
+      this.applyCareModeToPage()
       if (this.careMode) {
         uni.showToast({ title: '关怀模式已开启', icon: 'success' })
       } else {
         uni.showToast({ title: '关怀模式已关闭', icon: 'none' })
+      }
+    },
+    // 应用关怀模式样式
+    applyCareModeToPage() {
+      const pages = getCurrentPages()
+      const currentPage = pages[pages.length - 1]
+      if (currentPage && currentPage.$el) {
+        if (this.careMode) {
+          currentPage.$el.classList.add('care-mode-active')
+        } else {
+          currentPage.$el.classList.remove('care-mode-active')
+        }
       }
     },
     logout() {
