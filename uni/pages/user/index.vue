@@ -1,5 +1,5 @@
 <template>
-  <view class="user-container">
+  <view class="user-container" :class="{ 'care-mode': careMode }">
     <!-- 用户信息卡片 -->
     <view class="user-card">
       <view class="user-info">

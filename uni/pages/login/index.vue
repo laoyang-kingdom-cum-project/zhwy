@@ -49,6 +49,22 @@
           ></image>
         </view>
 
+        <!-- 记住密码和自动登录 -->
+        <view class="login-options">
+          <view class="option-item" @click="toggleRememberPassword">
+            <view class="checkbox" :class="{ 'checked': rememberPassword }">
+              <text v-if="rememberPassword" class="check-icon">✓</text>
+            </view>
+            <text class="option-text">记住密码</text>
+          </view>
+          <view class="option-item" @click="toggleAutoLogin">
+            <view class="checkbox" :class="{ 'checked': autoLogin }">
+              <text v-if="autoLogin" class="check-icon">✓</text>
+            </view>
+            <text class="option-text">自动登录</text>
+          </view>
+        </view>
+
         <!-- 登录按钮 -->
         <button
           class="login-btn"
@@ -92,13 +108,56 @@ export default {
       },
       captchaUrl: '',
       loading: false,
-      agreed: false
+      agreed: false,
+      rememberPassword: false,
+      autoLogin: false
     }
   },
   onLoad() {
     this.refreshCaptcha()
+    this.loadSavedLoginInfo()
+    this.checkAutoLogin()
   },
   methods: {
+    // 加载保存的登录信息
+    loadSavedLoginInfo() {
+      const savedUsername = uni.getStorageSync('savedUsername')
+      const savedPassword = uni.getStorageSync('savedPassword')
+      const rememberPassword = uni.getStorageSync('rememberPassword')
+      const autoLogin = uni.getStorageSync('autoLogin')
+
+      if (savedUsername) {
+        this.loginForm.username = savedUsername
+      }
+      if (rememberPassword && savedPassword) {
+        this.loginForm.password = savedPassword
+        this.rememberPassword = true
+      }
+      this.autoLogin = autoLogin || false
+    },
+
+    // 检查自动登录
+    async checkAutoLogin() {
+      if (this.autoLogin && this.loginForm.username && this.loginForm.password) {
+        // 自动登录需要验证码，这里只自动填充账号密码
+        uni.showToast({ title: '请完成验证码登录', icon: 'none' })
+      }
+    },
+
+    // 保存登录信息
+    saveLoginInfo() {
+      if (this.rememberPassword) {
+        uni.setStorageSync('savedUsername', this.loginForm.username)
+        uni.setStorageSync('savedPassword', this.loginForm.password)
+        uni.setStorageSync('rememberPassword', true)
+      } else {
+        uni.removeStorageSync('savedPassword')
+        uni.setStorageSync('rememberPassword', false)
+        uni.setStorageSync('savedUsername', this.loginForm.username)
+      }
+      uni.setStorageSync('autoLogin', this.autoLogin)
+    },
+
     // 刷新验证码
     async refreshCaptcha() {
       try {
@@ -109,6 +168,22 @@ export default {
         }
       } catch (e) {
         console.error('获取验证码失败', e)
+      }
+    },
+
+    // 切换记住密码
+    toggleRememberPassword() {
+      this.rememberPassword = !this.rememberPassword
+      if (!this.rememberPassword) {
+        this.autoLogin = false
+      }
+    },
+
+    // 切换自动登录
+    toggleAutoLogin() {
+      this.autoLogin = !this.autoLogin
+      if (this.autoLogin) {
+        this.rememberPassword = true
       }
     },
 
@@ -148,7 +223,10 @@ export default {
         const res = await login(this.loginForm)
         if (res.code === 200) {
           uni.setStorageSync('token', res.token)
-          
+
+          // 保存登录信息（记住密码、自动登录）
+          this.saveLoginInfo()
+
           // 获取并存储用户信息
           try {
             const userRes = await getUserInfo()
@@ -158,7 +236,7 @@ export default {
           } catch (e) {
             console.error('获取用户信息失败', e)
           }
-          
+
           uni.showToast({
             title: '登录成功',
             icon: 'success'
@@ -263,6 +341,49 @@ export default {
     }
   }
 
+  // 登录选项（记住密码、自动登录）
+  .login-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30rpx;
+    padding: 0 20rpx;
+
+    .option-item {
+      display: flex;
+      align-items: center;
+
+      .checkbox {
+        width: 32rpx;
+        height: 32rpx;
+        border: 2rpx solid #ccc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12rpx;
+        flex-shrink: 0;
+        transition: all 0.2s;
+
+        &.checked {
+          background: #007AFF;
+          border-color: #007AFF;
+        }
+
+        .check-icon {
+          font-size: 20rpx;
+          color: #fff;
+          font-weight: bold;
+          line-height: 1;
+        }
+      }
+
+      .option-text {
+        font-size: 26rpx;
+        color: #666;
+      }
+    }
+  }
+
   // 登录按钮
   .login-btn {
     width: 100%;
@@ -272,7 +393,7 @@ export default {
     color: #fff;
     font-size: 32rpx;
     border-radius: 50rpx;
-    margin-top: 60rpx;
+    margin-top: 40rpx;
     border: none;
     font-weight: 500;
 

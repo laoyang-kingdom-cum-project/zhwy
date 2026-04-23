@@ -33,28 +33,7 @@
         <text class="value">{{ warning.createTime }}</text>
       </view>
     </view>
-
-    <!-- 处理信息 -->
-    <view class="detail-section" v-if="warning.status !== 0">
-      <view class="section-title">处理信息</view>
-      <view class="detail-item">
-        <text class="label">处理时间</text>
-        <text class="value">{{ warning.handleTime }}</text>
-      </view>
-      <view class="detail-item">
-        <text class="label">处理人</text>
-        <text class="value">{{ warning.handler }}</text>
-      </view>
-      <view class="detail-item">
-        <text class="label">处理结果</text>
-        <text class="value">{{ warning.handleResult }}</text>
-      </view>
-    </view>
-
-    <!-- 操作按钮 -->
-    <view class="action-section" v-if="warning.status === 0">
-      <button class="confirm-btn" @click="confirmWarning">确认预警</button>
-    </view>
+    
   </view>
 </template>
 
