@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WyxDeviceFaultMapper">
+    
+    <resultMap type="WyxDeviceFault" id="WyxDeviceFaultResult">
+        <result property="id"    column="id"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="faultType"    column="fault_type"    />
+        <result property="faultDesc"    column="fault_desc"    />
+        <result property="reportTime"    column="report_time"    />
+        <result property="reportBy"    column="report_by"    />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="handleBy"    column="handle_by"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWyxDeviceFaultVo">
+        select id, device_id, fault_type, fault_desc, report_time, report_by, handle_status, handle_by, handle_time, handle_result, create_by, create_time, update_by, update_time from wyx_device_fault
+    </sql>
+
+    <select id="selectWyxDeviceFaultList" parameterType="WyxDeviceFault" resultMap="WyxDeviceFaultResult">
+        <include refid="selectWyxDeviceFaultVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="deviceId != null "> and device_id = #{deviceId}</if>
+            <if test="faultType != null  and faultType != ''"> and fault_type = #{faultType}</if>
+            <if test="faultDesc != null  and faultDesc != ''"> and fault_desc = #{faultDesc}</if>
+            <if test="reportTime != null "> and report_time = #{reportTime}</if>
+            <if test="reportBy != null "> and report_by = #{reportBy}</if>
+            <if test="handleStatus != null  and handleStatus != ''"> and handle_status = #{handleStatus}</if>
+            <if test="handleBy != null "> and handle_by = #{handleBy}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleResult != null  and handleResult != ''"> and handle_result = #{handleResult}</if>
+        </where>
+    </select>
+    
+    <select id="selectWyxDeviceFaultById" parameterType="Long" resultMap="WyxDeviceFaultResult">
+        <include refid="selectWyxDeviceFaultVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWyxDeviceFault" parameterType="WyxDeviceFault" useGeneratedKeys="true" keyProperty="id">
+        insert into wyx_device_fault
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="faultType != null">fault_type,</if>
+            <if test="faultDesc != null">fault_desc,</if>
+            <if test="reportTime != null">report_time,</if>
+            <if test="reportBy != null">report_by,</if>
+            <if test="handleStatus != null">handle_status,</if>
+            <if test="handleBy != null">handle_by,</if>
+            <if test="handleTime != null">handle_time,</if>
+            <if test="handleResult != null">handle_result,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="faultType != null">#{faultType},</if>
+            <if test="faultDesc != null">#{faultDesc},</if>
+            <if test="reportTime != null">#{reportTime},</if>
+            <if test="reportBy != null">#{reportBy},</if>
+            <if test="handleStatus != null">#{handleStatus},</if>
+            <if test="handleBy != null">#{handleBy},</if>
+            <if test="handleTime != null">#{handleTime},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWyxDeviceFault" parameterType="WyxDeviceFault">
+        update wyx_device_fault
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+            <if test="faultType != null">fault_type = #{faultType},</if>
+            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
+            <if test="reportTime != null">report_time = #{reportTime},</if>
+            <if test="reportBy != null">report_by = #{reportBy},</if>
+            <if test="handleStatus != null">handle_status = #{handleStatus},</if>
+            <if test="handleBy != null">handle_by = #{handleBy},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWyxDeviceFaultById" parameterType="Long">
+        delete from wyx_device_fault where id = #{id}
+    </delete>
+
+    <delete id="deleteWyxDeviceFaultByIds" parameterType="String">
+        delete from wyx_device_fault where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
