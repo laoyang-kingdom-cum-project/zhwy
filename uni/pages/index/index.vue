@@ -278,10 +278,13 @@ export default {
 
 // 顶部状态栏
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx 30rpx;
+  padding: 60rpx 30rpx 20rpx;
   background: #fff;
 
   .location, .weather {
@@ -300,9 +303,9 @@ export default {
   }
 }
 
-// 轮播图
+// 轮播图 (4:3比例，调短)
 .banner {
-  height: 300rpx;
+  height: 400rpx;
   margin: 20rpx 30rpx;
   border-radius: 16rpx;
   overflow: hidden;
