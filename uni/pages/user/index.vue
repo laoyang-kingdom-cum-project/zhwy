@@ -120,7 +120,11 @@ export default {
         userId: ''
       },
       refreshKey: 0,
-      careMode: false
+      careMode: false,
+      _androidTts: null,
+      _androidTtsReady: false,
+      _androidTtsInitializing: false,
+      _pendingTtsText: ''
     }
   },
   computed: {
@@ -214,37 +218,128 @@ export default {
     // Android: 使用系统自带TextToSpeech播报
     speakByAndroidSystemTTS(text) {
       // #ifdef APP-PLUS
+      if (!text) {
+        return
+      }
+      this._pendingTtsText = text
+
+      if (this._androidTts && this._androidTtsReady) {
+        this.speakByAndroidTtsInstance(this._androidTts, text)
+        return
+      }
+
+      if (this._androidTtsInitializing) {
+        return
+      }
+
+      this._androidTtsInitializing = true
       try {
         const main = plus.android.runtimeMainActivity()
         const TextToSpeech = plus.android.importClass('android.speech.tts.TextToSpeech')
-        const Locale = plus.android.importClass('java.util.Locale')
-
-        this.releaseSystemTTS()
-
-        let tts = null
         const listener = plus.android.implements('android.speech.tts.TextToSpeech.OnInitListener', {
           onInit: (status) => {
-            if (status !== TextToSpeech.SUCCESS || !tts) {
+            this._androidTtsInitializing = false
+            if (status !== TextToSpeech.SUCCESS) {
+              this._androidTtsReady = false
               uni.showToast({ title: '系统TTS初始化失败', icon: 'none' })
               return
             }
-            try {
-              plus.android.invoke(tts, 'setLanguage', Locale.SIMPLIFIED_CHINESE)
-              plus.android.invoke(tts, 'setPitch', 1.0)
-              plus.android.invoke(tts, 'setSpeechRate', 1.0)
-              plus.android.invoke(tts, 'speak', text, TextToSpeech.QUEUE_FLUSH, null, 'care_mode_tts')
-            } catch (speakErr) {
-              console.error('系统TTS朗读失败', speakErr)
-              this.speakByWebSpeech(text)
-            }
+
+            this._androidTtsReady = true
+            this.flushPendingAndroidTTS()
           }
         })
 
-        tts = new TextToSpeech(main, listener)
-        this._androidTts = tts
+        this._androidTts = new TextToSpeech(main, listener)
       } catch (err) {
+        this._androidTtsInitializing = false
+        this._androidTtsReady = false
         console.error('系统TTS调用失败', err)
         this.speakByWebSpeech(text)
+      }
+      // #endif
+    },
+    flushPendingAndroidTTS(retryCount = 0) {
+      // #ifdef APP-PLUS
+      if (!this._pendingTtsText) {
+        return
+      }
+      if (!this._androidTts || !this._androidTtsReady) {
+        if (retryCount < 10) {
+          setTimeout(() => {
+            this.flushPendingAndroidTTS(retryCount + 1)
+          }, 60)
+        }
+        return
+      }
+
+      const text = this._pendingTtsText
+      this._pendingTtsText = ''
+      this.speakByAndroidTtsInstance(this._androidTts, text)
+      // #endif
+    },
+    speakByAndroidTtsInstance(tts, text) {
+      // #ifdef APP-PLUS
+      if (!tts || !text) {
+        return
+      }
+      try {
+        const TextToSpeech = plus.android.importClass('android.speech.tts.TextToSpeech')
+        const Locale = plus.android.importClass('java.util.Locale')
+
+        let langResult = plus.android.invoke(tts, 'setLanguage', Locale.SIMPLIFIED_CHINESE)
+        if (langResult === TextToSpeech.LANG_MISSING_DATA || langResult === TextToSpeech.LANG_NOT_SUPPORTED) {
+          langResult = plus.android.invoke(tts, 'setLanguage', Locale.CHINESE)
+        }
+        if (langResult === TextToSpeech.LANG_MISSING_DATA || langResult === TextToSpeech.LANG_NOT_SUPPORTED) {
+          uni.showModal({
+            title: '语音播报不可用',
+            content: '系统缺少中文语音包，是否前往安装？',
+            confirmText: '去安装',
+            cancelText: '取消',
+            success: (res) => {
+              if (res.confirm) {
+                this.openAndroidTTSSettings()
+              }
+            }
+          })
+          return
+        }
+
+        plus.android.invoke(tts, 'setPitch', 1.0)
+        plus.android.invoke(tts, 'setSpeechRate', 1.0)
+
+        let speakResult = TextToSpeech.ERROR
+        try {
+          speakResult = plus.android.invoke(tts, 'speak', text, TextToSpeech.QUEUE_FLUSH, null, 'care_mode_tts')
+        } catch (newApiErr) {
+          speakResult = plus.android.invoke(tts, 'speak', text, TextToSpeech.QUEUE_FLUSH, null)
+        }
+
+        if (speakResult === TextToSpeech.ERROR) {
+          uni.showToast({ title: '系统TTS播报失败', icon: 'none' })
+        }
+      } catch (err) {
+        console.error('系统TTS朗读失败', err)
+        this.speakByWebSpeech(text)
+      }
+      // #endif
+    },
+    openAndroidTTSSettings() {
+      // #ifdef APP-PLUS
+      if (plus.os.name !== 'Android') {
+        return
+      }
+      try {
+        const main = plus.android.runtimeMainActivity()
+        const Intent = plus.android.importClass('android.content.Intent')
+        const TextToSpeech = plus.android.importClass('android.speech.tts.TextToSpeech')
+        const intent = new Intent(TextToSpeech.Engine.ACTION_TTS_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        main.startActivity(intent)
+      } catch (err) {
+        console.error('打开TTS设置失败', err)
+        uni.showToast({ title: '无法打开TTS设置', icon: 'none' })
       }
       // #endif
     },
@@ -269,6 +364,7 @@ export default {
     },
     stopSystemTTS() {
       // #ifdef APP-PLUS
+      this._pendingTtsText = ''
       if (this._androidTts) {
         try {
           plus.android.invoke(this._androidTts, 'stop')
@@ -286,6 +382,8 @@ export default {
     releaseSystemTTS() {
       this.stopSystemTTS()
       // #ifdef APP-PLUS
+      this._androidTtsReady = false
+      this._androidTtsInitializing = false
       if (this._androidTts) {
         const tts = this._androidTts
         this._androidTts = null
