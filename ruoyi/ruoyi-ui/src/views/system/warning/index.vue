@@ -33,15 +33,21 @@
           placeholder="请选择时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="状态" prop="state">
+        <el-input
+          v-model="queryParams.state"
+          placeholder="请输入状态"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="危险等级" prop="level">
-        <el-select v-model="queryParams.level" placeholder="请选择危险等级" clearable>
-          <el-option
-            v-for="dict in dict.type.warning_level"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+        <el-input
+          v-model="queryParams.level"
+          placeholder="请输入危险等级"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="用户id" prop="userid">
         <el-input
@@ -113,11 +119,8 @@
           <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="危险等级" align="center" prop="level">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.warning_level" :value="scope.row.level"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="状态" align="center" prop="state" />
+      <el-table-column label="危险等级" align="center" prop="level" />
       <el-table-column label="用户id" align="center" prop="userid" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -147,7 +150,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改安全预警对话框 -->
+    <!-- 添加或修改预警处理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="title">
@@ -164,15 +167,11 @@
             placeholder="请选择时间">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="状态" prop="state">
+          <el-input v-model="form.state" placeholder="请输入状态" />
+        </el-form-item>
         <el-form-item label="危险等级" prop="level">
-          <el-select v-model="form.level" placeholder="请选择危险等级">
-            <el-option
-              v-for="dict in dict.type.warning_level"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="form.level" placeholder="请输入危险等级" />
         </el-form-item>
         <el-form-item label="用户id" prop="userid">
           <el-input v-model="form.userid" placeholder="请输入用户id" />
@@ -191,7 +190,6 @@ import { listWarning, getWarning, delWarning, addWarning, updateWarning } from "
 
 export default {
   name: "Warning",
-  dicts: ['warning_level'],
   data() {
     return {
       // 遮罩层
@@ -206,7 +204,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 安全预警表格数据
+      // 预警处理表格数据
       warningList: [],
       // 弹出层标题
       title: "",
@@ -220,6 +218,7 @@ export default {
         title: null,
         location: null,
         time: null,
+        state: null,
         level: null,
         userid: null
       },
@@ -234,7 +233,7 @@ export default {
     this.getList()
   },
   methods: {
-    /** 查询安全预警列表 */
+    /** 查询预警处理列表 */
     getList() {
       this.loading = true
       listWarning(this.queryParams).then(response => {
@@ -255,6 +254,7 @@ export default {
         title: null,
         location: null,
         time: null,
+        state: null,
         level: null,
         userid: null
       }
@@ -280,7 +280,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "添加安全预警"
+      this.title = "添加预警处理"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -289,7 +289,7 @@ export default {
       getWarning(id).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "修改安全预警"
+        this.title = "修改预警处理"
       })
     },
     /** 提交按钮 */
@@ -315,7 +315,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除安全预警编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除预警处理编号为"' + ids + '"的数据项？').then(function() {
         return delWarning(ids)
       }).then(() => {
         this.getList()

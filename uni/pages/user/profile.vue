@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { getUserInfo, updateUserProfile } from '@/api/login.js'
+import { getUserInfo, updateUserProfile, updateAvatar, uploadImage } from '@/api/login.js'
 import config from '@/config/index.js'
 import careModeMixin from '@/mixins/careMode.js'
 
@@ -71,7 +71,8 @@ export default {
         email: '',
         sex: '0',
         address: ''
-      }
+      },
+      avatarUrl: ''
     }
   },
   onLoad() {
@@ -86,8 +87,10 @@ export default {
         if (res.code === 200 && res.user) {
           this.userInfo = {
             ...res.user,
-            avatar: res.user.avatar ? config.baseUrl + '/por-api' + res.user.avatar : '/static/logo.png'
+            avatar: res.user.avatar ? config.baseUrl + config.apiPrefix + res.user.avatar : '/static/logo.png'
           }
+          // 保存原始头像路径（不带前缀）
+          this.avatarUrl = res.user.avatar || ''
           // 填充表单
           this.form.nickName = res.user.nickName || ''
           this.form.phonenumber = res.user.phonenumber || ''
@@ -105,11 +108,33 @@ export default {
         this.form.address = address
       }
     },
+    // 选择并上传头像
     chooseAvatar() {
       uni.chooseImage({
         count: 1,
-        success: (res) => {
-          uni.showToast({ title: '头像已更新', icon: 'success' })
+        success: async (res) => {
+          const tempFilePath = res.tempFilePaths[0]
+          uni.showLoading({ title: '上传中...' })
+
+          try {
+            // 直接调用头像更新接口上传文件并修改头像
+            const avatarRes = await updateAvatar(tempFilePath)
+            if (avatarRes.code === 200) {
+              // 使用返回的头像路径更新本地显示
+              const avatarPath = avatarRes.imgUrl || avatarRes.fileName || ''
+              this.avatarUrl = avatarPath
+              this.userInfo.avatar = config.baseUrl + config.apiPrefix + avatarPath
+              uni.hideLoading()
+              uni.showToast({ title: '头像修改成功', icon: 'success' })
+            } else {
+              uni.hideLoading()
+              uni.showToast({ title: avatarRes.msg || '头像修改失败', icon: 'none' })
+            }
+          } catch (e) {
+            uni.hideLoading()
+            uni.showToast({ title: '上传失败', icon: 'none' })
+            console.error('头像上传失败', e)
+          }
         }
       })
     },
@@ -128,7 +153,7 @@ export default {
       uni.showLoading({ title: '保存中...' })
 
       try {
-        // 调用接口更新用户信息
+        // 调用接口更新用户信息（头像已单独更新）
         const res = await updateUserProfile({
           nickName: this.form.nickName,
           phonenumber: this.form.phonenumber,
@@ -148,6 +173,7 @@ export default {
           userInfo.nickName = this.form.nickName
           userInfo.email = this.form.email
           userInfo.sex = this.form.sex
+          userInfo.avatar = this.avatarUrl
           uni.setStorageSync('userInfo', userInfo)
 
           // 返回上一页

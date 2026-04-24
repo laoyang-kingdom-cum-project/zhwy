@@ -72,7 +72,18 @@
             "icons" : {
                 "foreground" : "static/logo.png"
             },
-            "bundleName" : "智慧社区"
+            "bundleName" : "com.wyx.lianfanshuang.zhsq",
+            "signingConfigs" : {
+                "default" : {
+                    "certpath" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.cer",
+                    "keyAlias" : "debugKey",
+                    "keyPassword" : "0000001B5F3D07433239603CC70E5DA068AD2E4DB614240AC05DD951C4503166891EC161E4CFF65E4FC0BE",
+                    "profile" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.p7b",
+                    "signAlg" : "SHA256withECDSA",
+                    "storeFile" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.p12",
+                    "storePassword" : "0000001B5F3D07433239603CC70E5DA068AD2E4DB614240AC05DD951C4503166891EC161E4CFF65E4FC0BE"
+                }
+            }
         }
     },
     "locale" : "auto"

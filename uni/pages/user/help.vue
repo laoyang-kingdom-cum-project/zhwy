@@ -58,8 +58,26 @@
       </view>
     </view>
 
+    <!-- 意见反馈表单 -->
+    <view class="feedback-section" v-if="showFeedback">
+      <view class="section-title">意见反馈</view>
+      <view class="feedback-form">
+        <textarea 
+          class="feedback-input" 
+          v-model="feedbackContent"
+          placeholder="请输入您的意见或建议..."
+          maxlength="500"
+        />
+        <view class="feedback-count">{{feedbackContent.length}}/500</view>
+        <view class="feedback-btns">
+          <view class="btn btn-cancel" @click="cancelFeedback">取消</view>
+          <view class="btn btn-submit" @click="submitFeedback">提交</view>
+        </view>
+      </view>
+    </view>
+
     <!-- 反馈入口 -->
-    <view class="feedback-btn" @click="goToFeedback">
+    <view class="feedback-btn" @click="showFeedbackForm" v-if="!showFeedback">
       <text>意见反馈</text>
     </view>
   </view>
@@ -73,6 +91,8 @@ export default {
   data() {
     return {
       currentCategory: 0,
+      showFeedback: false,
+      feedbackContent: '',
       categories: [
         { name: '常见问题', icon: '❓' },
         { name: '账号相关', icon: '👤' },
@@ -122,21 +142,25 @@ export default {
       })
     },
     openChat() {
-      uni.showToast({ title: '功能开发中', icon: 'none' })
+      
     },
-    goToFeedback() {
-      uni.showModal({
-        title: '意见反馈',
-        editable: true,
-        placeholderText: '请输入您的意见或建议...',
-        success: (res) => {
-          if (res.confirm && res.content) {
-            uni.showToast({ title: '提交成功', icon: 'success' })
-          } else if (res.confirm && !res.content) {
-            uni.showToast({ title: '请输入反馈内容', icon: 'none' })
-          }
-        }
-      })
+    showFeedbackForm() {
+      this.showFeedback = true
+      this.feedbackContent = ''
+    },
+    cancelFeedback() {
+      this.showFeedback = false
+      this.feedbackContent = ''
+    },
+    submitFeedback() {
+      if (!this.feedbackContent.trim()) {
+        uni.showToast({ title: '请输入反馈内容', icon: 'none' })
+        return
+      }
+      // 这里可以调用接口提交反馈
+      uni.showToast({ title: '提交成功', icon: 'success' })
+      this.showFeedback = false
+      this.feedbackContent = ''
     }
   }
 }
@@ -314,6 +338,68 @@ export default {
 
   &:active {
     opacity: 0.9;
+  }
+}
+
+// 意见反馈表单
+.feedback-section {
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+
+  .section-title {
+    font-size: 30rpx;
+    font-weight: bold;
+    color: #333;
+    padding: 24rpx 30rpx;
+    border-bottom: 1rpx solid #f0f0f0;
+  }
+
+  .feedback-form {
+    padding: 30rpx;
+
+    .feedback-input {
+      width: 100%;
+      height: 200rpx;
+      background: #f5f5f5;
+      border-radius: 12rpx;
+      padding: 20rpx;
+      font-size: 28rpx;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    .feedback-count {
+      text-align: right;
+      font-size: 24rpx;
+      color: #999;
+      margin-top: 12rpx;
+    }
+
+    .feedback-btns {
+      display: flex;
+      gap: 20rpx;
+      margin-top: 30rpx;
+
+      .btn {
+        flex: 1;
+        padding: 24rpx 0;
+        border-radius: 12rpx;
+        text-align: center;
+        font-size: 30rpx;
+
+        &.btn-cancel {
+          background: #f5f5f5;
+          color: #666;
+        }
+
+        &.btn-submit {
+          background: #007AFF;
+          color: #fff;
+        }
+      }
+    }
   }
 }
 </style>

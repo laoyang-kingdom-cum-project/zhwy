@@ -25,7 +25,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 设备故障记录Controller
  * 
  * @author ruoyi
- * @date 2026-04-23 17:10:30
+ * @date 2026-04-24 16:00:03
  */
 @RestController
 @RequestMapping("/system/fault")

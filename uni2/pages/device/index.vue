@@ -12,10 +12,38 @@
         </view>
         <view 
           class="room-item"
-          :class="{ active: currentType === 'sensor' }"
-          @click="setType('sensor')"
+          :class="{ active: currentType === 'light' }"
+          @click="setType('light')"
         >
-          <text>传感器</text>
+          <text>灯</text>
+        </view>
+        <view 
+          class="room-item"
+          :class="{ active: currentType === 'air_conditioner' }"
+          @click="setType('air_conditioner')"
+        >
+          <text>空调</text>
+        </view>
+        <view 
+          class="room-item"
+          :class="{ active: currentType === 'curtain' }"
+          @click="setType('curtain')"
+        >
+          <text>窗帘</text>
+        </view>
+        <view 
+          class="room-item"
+          :class="{ active: currentType === 'switch' }"
+          @click="setType('switch')"
+        >
+          <text>开关</text>
+        </view>
+        <view 
+          class="room-item"
+          :class="{ active: currentType === 'lock' }"
+          @click="setType('lock')"
+        >
+          <text>门锁</text>
         </view>
         <view 
           class="room-item"
@@ -23,20 +51,6 @@
           @click="setType('camera')"
         >
           <text>摄像头</text>
-        </view>
-        <view 
-          class="room-item"
-          :class="{ active: currentType === 'elevator' }"
-          @click="setType('elevator')"
-        >
-          <text>电梯</text>
-        </view>
-        <view 
-          class="room-item"
-          :class="{ active: currentType === 'door' }"
-          @click="setType('door')"
-        >
-          <text>门禁</text>
         </view>
         <view style="width: 5px;height: 30px;background-color: black;transition: all 0.3s;flex-shrink: 0;opacity: 0;"></view>
       </view>
@@ -51,8 +65,8 @@
         @click="goToDetail(device)"
       >
         <view class="device-header">
-          <view class="device-icon" :class="device.deviceType">
-            <text>{{ getDeviceIcon(device.deviceType) }}</text>
+          <view class="device-icon" :class="device.online">
+            <text>{{ getDeviceIcon(device.online) }}</text>
           </view>
           <view class="device-status">
             <text class="status-dot" :class="getStatusClass(device.status)"></text>
@@ -172,21 +186,23 @@ export default {
 
     getDeviceIcon(type) {
       const icons = {
-        sensor: '📡',
-        camera: '📷',
-        elevator: '🛗',
-        door: '🚪'
+        light: '💡',
+        air_conditioner: '❄️',
+        curtain: '🪟',
+        switch: '�',
+        lock: '�',
+        camera: '�'
       }
-      return icons[type] || '📟'
+      return icons[type] || '📟'  
     },
 
     getStatusClass(status) {
-      const map = { '0': 'online', '1': 'fault', '2': 'offline' }
+      const map = { '0': 'online', '1': 'offline' }
       return map[status] || 'offline'
     },
 
     getStatusText(status) {
-      const map = { '0': '正常', '1': '故障', '2': '离线' }
+      const map = { '0': '正常', '1': '离线' }
       return map[status] || '未知'
     },
 

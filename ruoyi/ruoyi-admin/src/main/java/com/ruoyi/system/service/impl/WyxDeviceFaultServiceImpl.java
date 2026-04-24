@@ -12,7 +12,7 @@ import com.ruoyi.system.service.IWyxDeviceFaultService;
  * 设备故障记录Service业务层处理
  * 
  * @author ruoyi
- * @date 2026-04-23 17:10:30
+ * @date 2026-04-24 16:00:03
  */
 @Service
 public class WyxDeviceFaultServiceImpl implements IWyxDeviceFaultService 

@@ -11,7 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 设备故障记录对象 wyx_device_fault
  * 
  * @author ruoyi
- * @date 2026-04-23 17:10:30
+ * @date 2026-04-24 16:00:03
  */
 public class WyxDeviceFault extends BaseEntity
 {

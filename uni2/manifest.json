@@ -1,5 +1,5 @@
 {
-    "name" : "uni2",
+    "name" : "智慧社区物业端",
     "appid" : "__UNI__08A303E",
     "description" : "",
     "versionName" : "1.0.0",
@@ -68,5 +68,21 @@
     "uniStatistics" : {
         "enable" : false
     },
-    "vueVersion" : "3"
+    "vueVersion" : "3",
+    "app-harmony" : {
+        "distribute" : {
+            "bundleName" : "com.wyx.lianfanshuang.zhsq",
+            "signingConfigs" : {
+                "default" : {
+                    "certpath" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.cer",
+                    "keyAlias" : "debugKey",
+                    "keyPassword" : "0000001B5F3D07433239603CC70E5DA068AD2E4DB614240AC05DD951C4503166891EC161E4CFF65E4FC0BE",
+                    "profile" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.p7b",
+                    "signAlg" : "SHA256withECDSA",
+                    "storeFile" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.p12",
+                    "storePassword" : "0000001B5F3D07433239603CC70E5DA068AD2E4DB614240AC05DD951C4503166891EC161E4CFF65E4FC0BE"
+                }
+            }
+        }
+    }
 }

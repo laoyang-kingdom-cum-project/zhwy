@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询安全预警列表
+// 查询预警处理列表
 export function listWarning(query) {
   return request({
     url: '/system/warning/list',
@@ -9,7 +9,7 @@ export function listWarning(query) {
   })
 }
 
-// 查询安全预警详细
+// 查询预警处理详细
 export function getWarning(id) {
   return request({
     url: '/system/warning/' + id,
@@ -17,7 +17,7 @@ export function getWarning(id) {
   })
 }
 
-// 新增安全预警
+// 新增预警处理
 export function addWarning(data) {
   return request({
     url: '/system/warning',
@@ -26,7 +26,7 @@ export function addWarning(data) {
   })
 }
 
-// 修改安全预警
+// 修改预警处理
 export function updateWarning(data) {
   return request({
     url: '/system/warning',
@@ -35,7 +35,7 @@ export function updateWarning(data) {
   })
 }
 
-// 删除安全预警
+// 删除预警处理
 export function delWarning(id) {
   return request({
     url: '/system/warning/' + id,

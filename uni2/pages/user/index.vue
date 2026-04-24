@@ -4,7 +4,8 @@
     <view class="user-card">
       <view class="user-info">
         <view class="avatar">
-          <text>👤</text>
+          <image v-if="userInfo.avatar" class="avatar-img" :src="baseUrl + '/por-api' + userInfo.avatar" mode="aspectFill"></image>
+          <text v-else>👤</text>
         </view>
         <view class="info">
           <text class="name">{{userInfo.userName || '物业管理员'}}</text>
@@ -81,10 +82,12 @@ import { getWarningList } from '@/api/warning.js'
 import { getFaultList } from '@/api/fault.js'
 import { getOrderList } from '@/api/service.js'
 import { getVisitorList } from '@/api/visitor.js'
+import config from '@/config/index.js'
 
 export default {
   data() {
     return {
+      baseUrl: config.baseUrl,
       userInfo: {},
       stats: {
         warning: 0,
@@ -99,14 +102,18 @@ export default {
     this.loadStats()
   },
   onShow() {
+    this.loadUserInfo()
     this.loadStats()
   },
   methods: {
     async loadUserInfo() {
       try {
         const res = await getUserInfo()
-        if (res.code === 200 && res.data) {
-          this.userInfo = res.data
+        if (res.code === 200 && res.user) {
+          this.userInfo = {
+            ...res.user,
+            role: res.roles && res.roles.length > 0 ? res.roles[0] : '物业管理员'
+          }
         }
       } catch (e) {
         console.error('获取用户信息失败', e)
@@ -236,6 +243,12 @@ export default {
   align-items: center;
   justify-content: center;
   margin-right: 30rpx;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
 }
 
 .avatar text {

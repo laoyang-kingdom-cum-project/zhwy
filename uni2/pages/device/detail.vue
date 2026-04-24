@@ -14,11 +14,11 @@
     <!-- 设备信息 -->
     <view class="info-section">
       <view class="info-title">设备信息</view>
-      <view class="info-item">
+      <view class="info-item" v-if="device.deviceCode">
         <text class="label">设备编号</text>
         <text class="value">{{ device.deviceCode }}</text>
       </view>
-      <view class="info-item">
+      <view class="info-item" v-if="device.location">
         <text class="label">安装位置</text>
         <text class="value">{{ device.location }}</text>
       </view>
@@ -46,7 +46,7 @@
     </view>
 
     <!-- 操作按钮 -->
-    <view class="action-section" v-if="device.status !== '0'">
+    <view class="action-section" v-if="device.status === '1'">
       <button class="action-btn btn-primary" @click="reportFault">报修设备</button>
     </view>
   </view>
@@ -95,30 +95,34 @@ export default {
 
     getDeviceIcon(type) {
       const icons = {
-        sensor: '📡',
-        camera: '📷',
-        elevator: '🛗',
-        door: '🚪'
+        light: '💡',
+        air_conditioner: '❄️',
+        curtain: '🪟',
+        switch: '🔘',
+        lock: '🔒',
+        camera: '📷'
       }
       return icons[type] || '📟'
     },
 
     getStatusClass(status) {
-      const map = { '0': 'online', '1': 'fault', '2': 'offline' }
+      const map = { '0': 'online', '1': 'offline' }
       return map[status] || 'offline'
     },
 
     getStatusText(status) {
-      const map = { '0': '正常', '1': '故障', '2': '离线' }
+      const map = { '0': '正常', '1': '离线' }
       return map[status] || '未知'
     },
 
     getTypeText(type) {
       const map = {
-        sensor: '传感器',
-        camera: '摄像头',
-        elevator: '电梯',
-        door: '门禁'
+        light: '灯',
+        air_conditioner: '空调',
+        curtain: '窗帘',
+        switch: '开关',
+        lock: '门锁',
+        camera: '摄像头'
       }
       return map[type] || '未知设备'
     },
@@ -159,10 +163,12 @@ export default {
   margin-bottom: 30rpx;
 }
 
-.device-icon.sensor { background: #E8F5E9; }
+.device-icon.light { background: #FFF9C4; }
+.device-icon.air_conditioner { background: #E3F2FD; }
+.device-icon.curtain { background: #E8F5E9; }
+.device-icon.switch { background: #F5F5F5; }
+.device-icon.lock { background: #F3E5F5; }
 .device-icon.camera { background: #E3F2FD; }
-.device-icon.elevator { background: #FFF3E0; }
-.device-icon.door { background: #F3E5F5; }
 
 .device-name {
   font-size: 40rpx;

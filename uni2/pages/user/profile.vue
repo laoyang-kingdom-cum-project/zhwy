@@ -67,20 +67,36 @@ export default {
     }
   },
   onLoad() {
+    // 先从本地缓存加载用户信息作为默认值
+    this.loadLocalUserInfo()
+    // 再从接口获取最新信息
     this.loadUserInfo()
   },
   methods: {
-    // 加载用户信息
+    // 从本地缓存加载用户信息
+    loadLocalUserInfo() {
+      const userInfo = uni.getStorageSync('userInfo') || {}
+      this.userInfo = userInfo
+      // 填充表单
+      this.form.nickName = userInfo.nickName || userInfo.userName || ''
+      this.form.phonenumber = userInfo.phonenumber || ''
+      this.form.email = userInfo.email || ''
+      this.form.sex = userInfo.sex || '0'
+    },
+
+    // 从接口加载用户信息
     async loadUserInfo() {
       try {
         const res = await getUserInfo()
-        if (res.code === 200 && res.data) {
-          this.userInfo = res.data
+        if (res.code === 200 && res.user) {
+          this.userInfo = res.user
           // 填充表单
-          this.form.nickName = res.data.nickName || ''
-          this.form.phonenumber = res.data.phonenumber || ''
-          this.form.email = res.data.email || ''
-          this.form.sex = res.data.sex || '0'
+          this.form.nickName = res.user.nickName || res.user.userName || ''
+          this.form.phonenumber = res.user.phonenumber || ''
+          this.form.email = res.user.email || ''
+          this.form.sex = res.user.sex || '0'
+          // 更新本地缓存
+          uni.setStorageSync('userInfo', res.user)
         }
       } catch (e) {
         console.error('获取用户信息失败', e)

@@ -17,6 +17,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="故障类型" prop="faultType">
+        <el-input
+          v-model="queryParams.faultType"
+          placeholder="请输入故障类型"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="上报时间" prop="reportTime">
         <el-date-picker clearable
           v-model="queryParams.reportTime"
@@ -29,6 +37,14 @@
         <el-input
           v-model="queryParams.reportBy"
           placeholder="请输入上报人ID"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="处理状态：0-待处理、1-处理中、2-已处理" prop="handleStatus">
+        <el-input
+          v-model="queryParams.handleStatus"
+          placeholder="请输入处理状态：0-待处理、1-处理中、2-已处理"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -155,6 +171,9 @@
         <el-form-item label="设备ID" prop="deviceId">
           <el-input v-model="form.deviceId" placeholder="请输入设备ID" />
         </el-form-item>
+        <el-form-item label="故障类型" prop="faultType">
+          <el-input v-model="form.faultType" placeholder="请输入故障类型" />
+        </el-form-item>
         <el-form-item label="故障描述" prop="faultDesc">
           <el-input v-model="form.faultDesc" type="textarea" placeholder="请输入内容" />
         </el-form-item>
@@ -168,6 +187,9 @@
         </el-form-item>
         <el-form-item label="上报人ID" prop="reportBy">
           <el-input v-model="form.reportBy" placeholder="请输入上报人ID" />
+        </el-form-item>
+        <el-form-item label="处理状态：0-待处理、1-处理中、2-已处理" prop="handleStatus">
+          <el-input v-model="form.handleStatus" placeholder="请输入处理状态：0-待处理、1-处理中、2-已处理" />
         </el-form-item>
         <el-form-item label="处理人ID" prop="handleBy">
           <el-input v-model="form.handleBy" placeholder="请输入处理人ID" />

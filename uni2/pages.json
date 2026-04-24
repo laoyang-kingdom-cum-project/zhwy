@@ -92,6 +92,24 @@
       "style": {
         "navigationBarTitleText": "个人信息"
       }
+    },
+    {
+      "path": "pages/user/password",
+      "style": {
+        "navigationBarTitleText": "修改密码"
+      }
+    },
+    {
+      "path": "pages/user/help",
+      "style": {
+        "navigationBarTitleText": "帮助中心"
+      }
+    },
+    {
+      "path": "pages/user/about",
+      "style": {
+        "navigationBarTitleText": "关于我们"
+      }
     }
   ],
 

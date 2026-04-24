@@ -172,8 +172,12 @@ export default {
           // 获取并存储用户信息
           try {
             const userRes = await getUserInfo()
-            if (userRes.code === 200 && userRes.data) {
-              uni.setStorageSync('userInfo', userRes.data)
+            if (userRes.code === 200 && userRes.user) {
+              const userInfo = {
+                ...userRes.user,
+                role: userRes.roles && userRes.roles.length > 0 ? userRes.roles[0] : '物业管理员'
+              }
+              uni.setStorageSync('userInfo', userInfo)
             }
           } catch (e) {
             console.error('获取用户信息失败', e)

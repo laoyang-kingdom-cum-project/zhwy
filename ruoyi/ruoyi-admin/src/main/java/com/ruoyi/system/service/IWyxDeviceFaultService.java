@@ -7,7 +7,7 @@ import com.ruoyi.system.domain.WyxDeviceFault;
  * 设备故障记录Service接口
  * 
  * @author ruoyi
- * @date 2026-04-23 17:10:30
+ * @date 2026-04-24 16:00:03
  */
 public interface IWyxDeviceFaultService 
 {

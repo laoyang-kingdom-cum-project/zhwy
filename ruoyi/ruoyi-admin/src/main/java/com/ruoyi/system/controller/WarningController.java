@@ -22,10 +22,10 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
- * 安全预警Controller
+ * 预警处理Controller
  * 
  * @author ruoyi
- * @date 2026-04-16 20:50:36
+ * @date 2026-04-24 14:48:46
  */
 @RestController
 @RequestMapping("/system/warning")
@@ -35,7 +35,7 @@ public class WarningController extends BaseController
     private IWarningService warningService;
 
     /**
-     * 查询安全预警列表
+     * 查询预警处理列表
      */
     @PreAuthorize("@ss.hasPermi('system:warning:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class WarningController extends BaseController
     }
 
     /**
-     * 导出安全预警列表
+     * 导出预警处理列表
      */
     @PreAuthorize("@ss.hasPermi('system:warning:export')")
-    @Log(title = "安全预警", businessType = BusinessType.EXPORT)
+    @Log(title = "预警处理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Warning warning)
     {
         List<Warning> list = warningService.selectWarningList(warning);
         ExcelUtil<Warning> util = new ExcelUtil<Warning>(Warning.class);
-        util.exportExcel(response, list, "安全预警数据");
+        util.exportExcel(response, list, "预警处理数据");
     }
 
     /**
-     * 获取安全预警详细信息
+     * 获取预警处理详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:warning:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class WarningController extends BaseController
     }
 
     /**
-     * 新增安全预警
+     * 新增预警处理
      */
     @PreAuthorize("@ss.hasPermi('system:warning:add')")
-    @Log(title = "安全预警", businessType = BusinessType.INSERT)
+    @Log(title = "预警处理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Warning warning)
     {
@@ -81,10 +81,10 @@ public class WarningController extends BaseController
     }
 
     /**
-     * 修改安全预警
+     * 修改预警处理
      */
     @PreAuthorize("@ss.hasPermi('system:warning:edit')")
-    @Log(title = "安全预警", businessType = BusinessType.UPDATE)
+    @Log(title = "预警处理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Warning warning)
     {
@@ -92,10 +92,10 @@ public class WarningController extends BaseController
     }
 
     /**
-     * 删除安全预警
+     * 删除预警处理
      */
     @PreAuthorize("@ss.hasPermi('system:warning:remove')")
-    @Log(title = "安全预警", businessType = BusinessType.DELETE)
+    @Log(title = "预警处理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

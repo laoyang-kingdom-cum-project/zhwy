@@ -112,7 +112,7 @@ export default {
     async loadStats() {
       try {
         // 获取待处理预警数量
-        const warningRes = await getWarningList({ pageNum: 1, pageSize: 1, status: '0' })
+        const warningRes = await getWarningList({ pageNum: 1, pageSize: 1, state: '0' })
         if (warningRes.code === 200) {
           this.stats.pendingWarnings = warningRes.total || 0
         }
@@ -138,8 +138,8 @@ export default {
             time: item.time,
             level: item.level,
             levelText: this.getLevelText(item.level),
-            status: item.status || '0',
-            statusText: this.getStatusText(item.status || '0')
+            status: item.state || '0',
+            statusText: this.getStatusText(item.state || '0')
           }))
         }
       } catch (e) {
@@ -158,7 +158,7 @@ export default {
     },
     
     goToWarning() {
-      uni.switchTab({
+      uni.reLaunch({
         url: '/pages/warning/index'
       })
     },
@@ -170,7 +170,7 @@ export default {
     },
     
     goToDevice() {
-      uni.switchTab({
+      uni.reLaunch({
         url: '/pages/device/index'
       })
     },

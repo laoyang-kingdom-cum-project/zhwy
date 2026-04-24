@@ -8,10 +8,10 @@ import com.ruoyi.system.domain.Warning;
 import com.ruoyi.system.service.IWarningService;
 
 /**
- * 安全预警Service业务层处理
+ * 预警处理Service业务层处理
  * 
  * @author ruoyi
- * @date 2026-04-16 20:50:36
+ * @date 2026-04-24 14:48:46
  */
 @Service
 public class WarningServiceImpl implements IWarningService 
@@ -20,10 +20,10 @@ public class WarningServiceImpl implements IWarningService
     private WarningMapper warningMapper;
 
     /**
-     * 查询安全预警
+     * 查询预警处理
      * 
-     * @param id 安全预警主键
-     * @return 安全预警
+     * @param id 预警处理主键
+     * @return 预警处理
      */
     @Override
     public Warning selectWarningById(Long id)
@@ -32,10 +32,10 @@ public class WarningServiceImpl implements IWarningService
     }
 
     /**
-     * 查询安全预警列表
+     * 查询预警处理列表
      * 
-     * @param warning 安全预警
-     * @return 安全预警
+     * @param warning 预警处理
+     * @return 预警处理
      */
     @Override
     public List<Warning> selectWarningList(Warning warning)
@@ -44,9 +44,9 @@ public class WarningServiceImpl implements IWarningService
     }
 
     /**
-     * 新增安全预警
+     * 新增预警处理
      * 
-     * @param warning 安全预警
+     * @param warning 预警处理
      * @return 结果
      */
     @Override
@@ -56,9 +56,9 @@ public class WarningServiceImpl implements IWarningService
     }
 
     /**
-     * 修改安全预警
+     * 修改预警处理
      * 
-     * @param warning 安全预警
+     * @param warning 预警处理
      * @return 结果
      */
     @Override
@@ -68,9 +68,9 @@ public class WarningServiceImpl implements IWarningService
     }
 
     /**
-     * 批量删除安全预警
+     * 批量删除预警处理
      * 
-     * @param ids 需要删除的安全预警主键
+     * @param ids 需要删除的预警处理主键
      * @return 结果
      */
     @Override
@@ -80,9 +80,9 @@ public class WarningServiceImpl implements IWarningService
     }
 
     /**
-     * 删除安全预警信息
+     * 删除预警处理信息
      * 
-     * @param id 安全预警主键
+     * @param id 预警处理主键
      * @return 结果
      */
     @Override

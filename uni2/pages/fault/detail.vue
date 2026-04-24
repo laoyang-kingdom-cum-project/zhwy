@@ -86,31 +86,43 @@ export default {
       return map[status] || '待处理'
     },
 
+    formatDateTime(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    },
+
     handleFault(status) {
       uni.showModal({
         title: '确认',
         content: '确定要开始处理该故障吗？',
         success: async (res) => {
           if (res.confirm) {
+            uni.showLoading({ title: '处理中...' })
             try {
               const updateData = {
-                ...this.fault,
+                id: this.fault.id,
                 handleStatus: status,
-                handleTime: new Date().toISOString()
+                handleTime: this.formatDateTime(new Date())
               }
+              console.log('更新故障数据:', updateData)
               const result = await handleFault(updateData)
+              console.log('更新故障结果:', result)
+              uni.hideLoading()
               if (result.code === 200) {
-                uni.showToast({
-                  title: '操作成功',
-                  icon: 'success'
-                })
+                uni.showToast({ title: '操作成功', icon: 'success' })
                 this.loadDetail()
+              } else {
+                uni.showToast({ title: result.msg || '操作失败', icon: 'none' })
               }
             } catch (e) {
-              uni.showToast({
-                title: '操作失败',
-                icon: 'none'
-              })
+              uni.hideLoading()
+              console.error('处理故障失败:', e)
+              uni.showToast({ title: e.message || '操作失败', icon: 'none' })
             }
           }
         }
@@ -124,25 +136,27 @@ export default {
         placeholderText: '请输入处理结果...',
         success: async (res) => {
           if (res.confirm && res.content) {
+            uni.showLoading({ title: '提交中...' })
             try {
               const updateData = {
-                ...this.fault,
+                id: this.fault.id,
                 handleStatus: '2',
                 handleResult: res.content
               }
+              console.log('完成故障数据:', updateData)
               const result = await handleFault(updateData)
+              console.log('完成故障结果:', result)
+              uni.hideLoading()
               if (result.code === 200) {
-                uni.showToast({
-                  title: '处理完成',
-                  icon: 'success'
-                })
+                uni.showToast({ title: '处理完成', icon: 'success' })
                 this.loadDetail()
+              } else {
+                uni.showToast({ title: result.msg || '操作失败', icon: 'none' })
               }
             } catch (e) {
-              uni.showToast({
-                title: '操作失败',
-                icon: 'none'
-              })
+              uni.hideLoading()
+              console.error('完成故障失败:', e)
+              uni.showToast({ title: e.message || '操作失败', icon: 'none' })
             }
           }
         }

@@ -57,7 +57,7 @@
             </view>
             <text class="option-text">记住密码</text>
           </view>
-          <view class="option-item" @click="toggleAutoLogin">
+          <view class="option-item" @click="toggleAutoLogin" style="display: none;">
             <view class="checkbox" :class="{ 'checked': autoLogin }">
               <text v-if="autoLogin" class="check-icon">✓</text>
             </view>
@@ -261,9 +261,8 @@ export default {
 <style lang="scss">
 .login-container {
   min-height: 100vh;
-  height: 100vh;
   background: #ffffff;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .login-box {

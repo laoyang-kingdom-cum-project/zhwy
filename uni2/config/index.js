@@ -2,7 +2,7 @@
 // 修改这里的IP地址即可切换后端服务
 const config = {
   // 后端API基础地址 - 修改这里即可
-  baseUrl: 'http://10.58.242.75',
+  baseUrl: 'http://192.168.0.228',
   // 接口前缀
   apiPrefix: '/por-api',
   

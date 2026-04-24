@@ -8,10 +8,10 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 安全预警对象 warning
+ * 预警处理对象 warning
  * 
  * @author ruoyi
- * @date 2026-04-16 20:50:36
+ * @date 2026-04-24 14:48:46
  */
 public class Warning extends BaseEntity
 {
@@ -33,6 +33,10 @@ public class Warning extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date time;
+
+    /** 状态 */
+    @Excel(name = "状态")
+    private String state;
 
     /** 危险等级 */
     @Excel(name = "危险等级")
@@ -82,6 +86,16 @@ public class Warning extends BaseEntity
         return time;
     }
 
+    public void setState(String state) 
+    {
+        this.state = state;
+    }
+
+    public String getState() 
+    {
+        return state;
+    }
+
     public void setLevel(String level) 
     {
         this.level = level;
@@ -109,6 +123,7 @@ public class Warning extends BaseEntity
             .append("title", getTitle())
             .append("location", getLocation())
             .append("time", getTime())
+            .append("state", getState())
             .append("level", getLevel())
             .append("userid", getUserid())
             .toString();

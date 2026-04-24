@@ -120,13 +120,14 @@ export default {
         userId: ''
       },
       refreshKey: 0,
-      careMode: false
+      careMode: false,
+      userAddress: ''
     }
   },
   computed: {
     // 获取本地保存的住址，显示前4个字+...
     formattedAddress() {
-      const address = uni.getStorageSync('userAddress')
+      const address = this.userAddress || uni.getStorageSync('userAddress')
       if (!address) return '未设置'
       if (address.length <= 4) return address
       return address.substring(0, 4) + '...'
@@ -143,10 +144,13 @@ export default {
   onLoad() {
     this.loadUserInfo()
     this.loadCareMode()
+    this.userAddress = uni.getStorageSync('userAddress') || ''
   },
   onShow() {
     this.loadUserInfo()
     this.loadCareMode()
+    // 加载住址
+    this.userAddress = uni.getStorageSync('userAddress') || ''
     // 应用关怀模式样式
     this.applyCareMode()
     // 强制刷新计算属性
