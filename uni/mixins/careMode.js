@@ -23,7 +23,7 @@ export default {
         if (currentWebview) {
           // 在APP上尝试修改当前Webview的字体缩放比例 (130表示放大30%)
           currentWebview.setStyle({
-            textZoom: careMode ? 130 : 100
+            textZoom: careMode ? 120 : 100
           })
           
           // 通过 evalJS 注入全局类名，解决部分机型 textZoom 不生效问题
