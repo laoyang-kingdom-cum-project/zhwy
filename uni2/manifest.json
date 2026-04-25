@@ -81,8 +81,18 @@
                     "signAlg" : "SHA256withECDSA",
                     "storeFile" : "c:\\Users\\lianfanshuang\\AppData\\Roaming\\HBuilder X\\extensions\\launcher\\agc-certs\\1776992285357.p12",
                     "storePassword" : "0000001B5F3D07433239603CC70E5DA068AD2E4DB614240AC05DD951C4503166891EC161E4CFF65E4FC0BE"
+                },
+                "release" : {
+                    "certpath" : "D:/zm/鸿蒙的神秘小文件/unif.cer",
+                    "keyAlias" : "releaseKey",
+                    "keyPassword" : "00000025D893E409ED65BFD4A2BE99A71A8423AD1B88F7E67619311E0F965F958B7EE87B9541FD8C5913EA4D3A46FB4D521F7D1DFD",
+                    "profile" : "D:/zm/鸿蒙的神秘小文件/agc_com.wyx.lianfanshuang.zhsq_1776992285357Debug.p7b",
+                    "signAlg" : "SHA256withECDSA",
+                    "storeFile" : "D:/zm/鸿蒙的神秘小文件/hmzs.p12",
+                    "storePassword" : "0000002511D9A1537696AA7A0932D19D3C5731BA3020E06920098DA4386A4E82E3AEC59AFD256B4ABE2CC2EE26F764F14D240BA8F9"
                 }
-            }
+            },
+            "deviceTypes" : [ "phone", "tablet" ]
         }
     }
 }

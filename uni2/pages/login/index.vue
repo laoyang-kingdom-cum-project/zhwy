@@ -1,5 +1,5 @@
 <template>
-  <view class="login-container">
+  <scroll-view class="login-container" scroll-y>
     <view class="login-box">
       <!-- Logo区域 -->
       <view class="logo">
@@ -74,7 +74,7 @@
         <text class="tips-text">提示：请联系管理员获取账号密码</text>
       </view>
     </view>
-  </view>
+  </scroll-view>
 </template>
 
 <script>

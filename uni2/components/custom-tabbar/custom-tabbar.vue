@@ -34,9 +34,63 @@ export default {
   methods: {
     switchTab(index) {
       if (this.currentIndex === index) return
+
+      // 点击设备tab时，跳转华为智慧生活App
+      if (index === 2) {
+        this.openSmartLifeApp()
+        return
+      }
+
       uni.reLaunch({
         url: this.tabs[index].path
       })
+    },
+
+    // 打开华为智慧生活App
+    openSmartLifeApp() {
+      // 华为智慧生活包名和URL Scheme
+      const packageName = 'com.huawei.smarthome'
+      const urlScheme = 'huaweismarthome://'
+      // 华为应用市场下载链接
+      const downloadUrl = 'https://appgallery.huawei.com/app/C100046879'
+
+      // 打开URL的通用方法
+      const openURL = (url) => {
+        if (typeof window !== 'undefined' && window.location) {
+          window.location.href = url
+          return true
+        }
+        return false
+      }
+
+      // 显示下载提示
+      const showDownloadTip = () => {
+        uni.showModal({
+          title: '提示',
+          content: '未检测到华为智慧生活App，是否前往下载？',
+          success: (res) => {
+            if (res.confirm) {
+              openURL(downloadUrl)
+            }
+          }
+        })
+      }
+
+      // #ifdef APP-PLUS
+      // Android/iOS App - 通过包名启动
+      plus.runtime.launchApplication({
+        pname: packageName
+      }, () => {
+        // 包名失败，尝试URL Scheme
+        plus.runtime.openURL(urlScheme, showDownloadTip)
+      })
+      // #endif
+
+      // #ifndef APP-PLUS
+      // 非App环境使用URL Scheme
+      openURL(urlScheme)
+      setTimeout(showDownloadTip, 2500)
+      // #endif
     }
   }
 }

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.utils.sql.SqlUtil;
+import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 分页工具类
@@ -22,6 +23,13 @@ public class PageUtils extends PageHelper
         Integer pageSize = pageDomain.getPageSize();
         String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
         Boolean reasonable = pageDomain.getReasonable();
+        
+        // 如果没有指定排序，默认按创建时间倒序（新数据在前）
+        if (StringUtils.isEmpty(orderBy))
+        {
+            orderBy = "create_time DESC";
+        }
+        
         PageHelper.startPage(pageNum, pageSize, orderBy).setReasonable(reasonable);
     }
 
