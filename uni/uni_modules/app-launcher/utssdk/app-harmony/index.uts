@@ -1,0 +1,74 @@
+import { common, Want } from '@kit.AbilityKit'
+import { BusinessError } from '@kit.BasicServicesKit'
+
+/**
+ * 通过URL Scheme启动应用
+ * @param options 参数对象，包含urlScheme字段
+ * @returns 是否成功启动
+ */
+export function openLink(options: UTSJSONObject): boolean {
+  try {
+    const urlScheme = options['urlScheme'] as string
+
+    if (!urlScheme) {
+      console.error('urlScheme为空')
+      return false
+    }
+
+    const context = getContext() as common.UIAbilityContext
+    console.log('鸿蒙openLink，url:', urlScheme)
+
+    const want: Want = {
+      uri: urlScheme
+    }
+
+    context.startAbility(want, (err: BusinessError) => {
+      if (err) {
+        console.error('startAbility失败:', err.code, err.message)
+      } else {
+        console.log('startAbility成功')
+      }
+    })
+    return true
+  } catch (e) {
+    console.error('openLink异常:', JSON.stringify(e))
+    return false
+  }
+}
+
+/**
+ * 通过包名启动应用
+ * @param options 参数对象，包含bundleName和abilityName字段
+ * @returns 是否成功启动
+ */
+export function launchApp(options: UTSJSONObject): boolean {
+  try {
+    const bundleName = options['bundleName'] as string
+    const abilityName = (options['abilityName'] as string) || 'EntryAbility'
+
+    if (!bundleName) {
+      console.error('bundleName为空')
+      return false
+    }
+
+    const context = getContext() as common.UIAbilityContext
+    console.log('鸿蒙launchApp，包名:', bundleName)
+
+    const want: Want = {
+      bundleName: bundleName,
+      abilityName: abilityName
+    }
+
+    context.startAbility(want, (err: BusinessError) => {
+      if (err) {
+        console.error('startAbility失败:', err.code, err.message)
+      } else {
+        console.log('startAbility成功')
+      }
+    })
+    return true
+  } catch (e) {
+    console.error('startAbility异常:', JSON.stringify(e))
+    return false
+  }
+}

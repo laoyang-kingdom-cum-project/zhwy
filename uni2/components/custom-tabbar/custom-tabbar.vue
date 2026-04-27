@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { openLink } from '@/uni_modules/app-launcher'
+
 export default {
   props: {
     currentIndex: {
@@ -48,49 +50,54 @@ export default {
 
     // 打开华为智慧生活App
     openSmartLifeApp() {
-      // 华为智慧生活包名和URL Scheme
-      const packageName = 'com.huawei.smarthome'
-      const urlScheme = 'huaweismarthome://'
-      // 华为应用市场下载链接
+      // 根据平台使用不同的包名
+      // #ifdef APP-HARMONY
+      const bundleName = 'com.huawei.hmos.ailife'  // 鸿蒙版包名
+      // #endif
+      // #ifndef APP-HARMONY
+      const bundleName = 'com.huawei.smarthome'    // Android版包名
+      // #endif
+
       const downloadUrl = 'https://appgallery.huawei.com/app/C100046879'
 
-      // 打开URL的通用方法
-      const openURL = (url) => {
-        if (typeof window !== 'undefined' && window.location) {
-          window.location.href = url
-          return true
-        }
-        return false
-      }
+      console.log('尝试打开应用，包名:', bundleName)
 
-      // 显示下载提示
-      const showDownloadTip = () => {
-        uni.showModal({
-          title: '提示',
-          content: '未检测到华为智慧生活App，是否前往下载？',
-          success: (res) => {
-            if (res.confirm) {
-              openURL(downloadUrl)
-            }
-          }
+      // 使用插件通过包名跳转
+      const appLauncher = uni.requireUTSPlugin('uni_modules/app-launcher')
+      if (appLauncher && appLauncher.launchApp) {
+        const result = appLauncher.launchApp({
+          bundleName: bundleName,
+          abilityName: 'EntryAbility'
         })
+        if (!result) {
+          this.showDownloadTip(downloadUrl)
+        }
+      } else {
+        console.error('原生插件未找到')
+        this.showDownloadTip(downloadUrl)
       }
+    },
 
-      // #ifdef APP-PLUS
-      // Android/iOS App - 通过包名启动
-      plus.runtime.launchApplication({
-        pname: packageName
-      }, () => {
-        // 包名失败，尝试URL Scheme
-        plus.runtime.openURL(urlScheme, showDownloadTip)
+    // 显示下载提示
+    showDownloadTip(downloadUrl) {
+      uni.showModal({
+        title: '提示',
+        content: '未检测到华为智慧生活App，是否前往下载？',
+        success: (res) => {
+          if (res.confirm) {
+            // #ifdef APP-PLUS
+            plus.runtime.openURL(downloadUrl)
+            // #endif
+            // #ifdef APP-HARMONY
+            // 鸿蒙使用原生插件打开链接
+            const appLauncher = uni.requireUTSPlugin('uni_modules/app-launcher')
+            if (appLauncher && appLauncher.openLink) {
+              appLauncher.openLink({ urlScheme: downloadUrl })
+            }
+            // #endif
+          }
+        }
       })
-      // #endif
-
-      // #ifndef APP-PLUS
-      // 非App环境使用URL Scheme
-      openURL(urlScheme)
-      setTimeout(showDownloadTip, 2500)
-      // #endif
     }
   }
 }

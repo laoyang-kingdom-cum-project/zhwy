@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { openLink } from '@/uni_modules/app-launcher'
+
 export default {
   props: {
     currentIndex: {
@@ -64,8 +66,66 @@ export default {
   methods: {
     switchTab(item, index) {
       if (this.currentIndex === index) return
+
+      // 点击设备tab时，跳转华为智慧生活App
+      if (index === 1) {
+        this.openSmartLifeApp()
+        return
+      }
+
       uni.switchTab({
         url: item.pagePath
+      })
+    },
+
+    // 打开华为智慧生活App
+    openSmartLifeApp() {
+      // 根据平台使用不同的包名
+      // #ifdef APP-HARMONY
+      const bundleName = 'com.huawei.hmos.ailife'  // 鸿蒙版包名
+      // #endif
+      // #ifndef APP-HARMONY
+      const bundleName = 'com.huawei.smarthome'    // Android版包名
+      // #endif
+
+      const downloadUrl = 'https://appgallery.huawei.com/app/C100046879'
+
+      console.log('尝试打开应用，包名:', bundleName)
+
+      // 使用插件通过包名跳转
+      const appLauncher = uni.requireUTSPlugin('uni_modules/app-launcher')
+      if (appLauncher && appLauncher.launchApp) {
+        const result = appLauncher.launchApp({
+          bundleName: bundleName,
+          abilityName: 'EntryAbility'
+        })
+        if (!result) {
+          this.showDownloadTip(downloadUrl)
+        }
+      } else {
+        console.error('原生插件未找到')
+        this.showDownloadTip(downloadUrl)
+      }
+    },
+
+    // 显示下载提示
+    showDownloadTip(downloadUrl) {
+      uni.showModal({
+        title: '提示',
+        content: '未检测到华为智慧生活App，是否前往下载？',
+        success: (res) => {
+          if (res.confirm) {
+            // #ifdef APP-PLUS
+            plus.runtime.openURL(downloadUrl)
+            // #endif
+            // #ifdef APP-HARMONY
+            const appLauncher = uni.requireUTSPlugin('uni_modules/app-launcher')
+            if (appLauncher && appLauncher.openLink) {
+              appLauncher.openLink({ urlScheme: downloadUrl })
+            }
+            // #endif
+          }
+        }
       })
     }
   }

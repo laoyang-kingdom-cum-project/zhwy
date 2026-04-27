@@ -41,7 +41,9 @@
                 ]
             },
             /* ios打包配置 */
-            "ios" : {},
+            "ios" : {
+                "dSYMs" : false
+            },
             /* SDK配置 */
             "sdkConfigs" : {}
         }
@@ -92,7 +94,10 @@
                     "storePassword" : "0000002511D9A1537696AA7A0932D19D3C5731BA3020E06920098DA4386A4E82E3AEC59AFD256B4ABE2CC2EE26F764F14D240BA8F9"
                 }
             },
-            "deviceTypes" : [ "phone", "tablet" ]
+            "deviceTypes" : [ "phone", "tablet" ],
+            "icons" : {
+                "foreground" : "static/logo.png"
+            }
         }
     }
 }
