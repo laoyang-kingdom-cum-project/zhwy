@@ -1,6 +1,6 @@
 # 银龄助手
 
-> ⚠️ **免责声明**：这是我在学校随便写的项目，代码质量非常屎，仅供学习参考！
+> ⚠️ **免责声明**：此项目仅供学习参考!
 
 ## 项目简介
 
@@ -112,9 +112,9 @@ npm run dev
 | Element UI | 2.x |
 | UniApp | - |
 
-## 开源地址
+## 仓库地址
 
-本项目已在 GitHub 开源：[https://github.com/laoyang-kingdom-cum-project/zhwy](https://github.com/laoyang-kingdom-cum-project/zhwy)
+[https://jihulab.com/laoyang-kingdom-cum-project/zhwy](https://jihulab.com/laoyang-kingdom-cum-project/zhwy)
 
 ## 关于
 
@@ -122,5 +122,3 @@ npm run dev
 - 原框架文档：http://doc.ruoyi.vip
 
 ---
-
-**再次提醒：代码很屎，轻喷！**
