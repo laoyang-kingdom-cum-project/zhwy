@@ -1,6 +1,12 @@
 <template>
   <view class="care-container">
-    <!-- 关怀对象列表 -->
+    <view class="care-toolbar">
+      <view class="toolbar-btn" @click="navigateToFamily">
+        <text class="toolbar-icon">👨‍👩‍👧‍👦</text>
+        <text class="toolbar-text">家人管理</text>
+        <text class="toolbar-arrow">›</text>
+      </view>
+    </view>
     <view class="care-list">
       <view 
         class="care-card" 
@@ -49,7 +55,8 @@
 </template>
 
 <script>
-import { getCareList } from '@/api/care.js'
+import { getCareList, updateFamily } from '@/api/care.js'
+import { addWarning } from '@/api/warning.js'
 import careModeMixin from '@/mixins/careMode.js'
 
 export default {
@@ -79,13 +86,93 @@ export default {
         })
         if (res.code === 200 && res.rows) {
           this.careList = res.rows
+          await this.checkFamilyHealthStatus()
         }
       } catch (e) {
         console.error('获取关怀列表失败', e)
         uni.showToast({ title: '获取数据失败', icon: 'none' })
       }
     },
-    // 格式化时间
+    async checkFamilyHealthStatus() {
+      const now = new Date()
+      const needAttention = []
+      const needWarning = []
+
+      for (const member of this.careList) {
+        if (!member.lastActive) continue
+
+        const lastActiveDate = new Date(member.lastActive)
+        const hoursSince = (now - lastActiveDate) / (1000 * 60 * 60)
+
+        if (hoursSince > 4 && member.healthStatus === '0') {
+          try {
+            await updateFamily({
+              id: member.id,
+              name: member.name,
+              age: member.age,
+              room: member.room,
+              emergencyContact: member.emergencyContact,
+              healthStatus: '1',
+              steps: member.steps || '0',
+              sleep: member.sleep || '0',
+              heartRate: member.heartRate || '0',
+              pressure: member.pressure || '',
+              lastActive: member.lastActive,
+              userid: member.userid
+            })
+            member.healthStatus = '1'
+          } catch (e) {
+            console.error('更新健康状态失败', e)
+          }
+        }
+
+        if (hoursSince > 8) {
+          needAttention.push(member)
+        }
+
+        if (hoursSince > 24) {
+          needWarning.push(member)
+        }
+      }
+
+      if (needAttention.length > 0) {
+        const names = needAttention.map(m => m.name).join('、')
+        uni.showModal({
+          title: '健康提醒',
+          content: `家人「${names}」已超过8小时无活动记录，请关注他们的健康状况。`,
+          showCancel: false,
+          confirmText: '我知道了'
+        })
+      }
+
+      for (const member of needWarning) {
+        try {
+          const sentWarnings = uni.getStorageSync('sentWarnings') || {}
+          const lastSentTime = sentWarnings[member.id]
+          const now = Date.now()
+          
+          if (lastSentTime && (now - lastSentTime) < 24 * 60 * 60 * 1000) {
+            continue
+          }
+          
+          const userInfo = uni.getStorageSync('userInfo')
+          await addWarning({
+            title: `家人「${member.name}」超过24小时无活动`,
+            location: member.room || '未知住址',
+            time: this.formatDateTime(new Date()),
+            state: '0',
+            level: '1',
+            userid: userInfo ? userInfo.userId : 1
+          })
+          
+          sentWarnings[member.id] = now
+          uni.setStorageSync('sentWarnings', sentWarnings)
+        } catch (e) {
+          console.error('发送安全预警失败', e)
+        }
+      }
+    },
+    // 格式化时间（相对时间）
     formatTime(timeStr) {
       if (!timeStr) return ''
       const date = new Date(timeStr)
@@ -101,9 +188,24 @@ export default {
       if (days < 30) return `${days}天前`
       return timeStr.substring(0, 10)
     },
+    // 格式化日期时间（yyyy-MM-dd HH:mm:ss）
+    formatDateTime(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    },
     navigateToDetail(item) {
       uni.navigateTo({
         url: `/pages/care/detail?id=${item.id}`
+      })
+    },
+    navigateToFamily() {
+      uni.navigateTo({
+        url: '/pages/care/family'
       })
     }
   }
@@ -116,6 +218,40 @@ export default {
   background: #f5f5f5;
   padding: 20rpx;
   padding-bottom: 130rpx;
+}
+
+.care-toolbar {
+  margin-bottom: 24rpx;
+
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16rpx;
+    padding: 24rpx 32rpx;
+
+    &:active {
+      opacity: 0.85;
+    }
+
+    .toolbar-icon {
+      font-size: 40rpx;
+      margin-right: 16rpx;
+    }
+
+    .toolbar-text {
+      flex: 1;
+      font-size: 30rpx;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .toolbar-arrow {
+      font-size: 36rpx;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+    }
+  }
 }
 
 .care-list {

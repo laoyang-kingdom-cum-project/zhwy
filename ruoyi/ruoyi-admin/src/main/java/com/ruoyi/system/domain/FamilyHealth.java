@@ -9,7 +9,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 家人健康对象 family_health
  * 
  * @author ruoyi
- * @date 2026-04-23 10:25:07
+ * @date 2026-04-29 17:08:24
  */
 public class FamilyHealth extends BaseEntity
 {

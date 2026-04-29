@@ -33,6 +33,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="状态" prop="healthStatus">
+        <el-input
+          v-model="queryParams.healthStatus"
+          placeholder="请输入状态"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="最后活动" prop="lastActive">
         <el-input
           v-model="queryParams.lastActive"
@@ -194,6 +202,9 @@
         </el-form-item>
         <el-form-item label="住址" prop="room">
           <el-input v-model="form.room" placeholder="请输入住址" />
+        </el-form-item>
+        <el-form-item label="状态" prop="healthStatus">
+          <el-input v-model="form.healthStatus" placeholder="请输入状态" />
         </el-form-item>
         <el-form-item label="最后活动" prop="lastActive">
           <el-input v-model="form.lastActive" placeholder="请输入最后活动" />

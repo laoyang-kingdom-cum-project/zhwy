@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { openLink } from '@/uni_modules/app-launcher'
-
 export default {
   props: {
     currentIndex: {

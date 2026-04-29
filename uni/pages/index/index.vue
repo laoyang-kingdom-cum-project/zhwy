@@ -107,6 +107,7 @@ export default {
         { name: 'AI对话', icon: '🤖', bgColor: '#2ED573', path: '/pages/ai/index' },
         { name: '物业服务', icon: '🏠', bgColor: '#FF6348', path: '/pages/service/index' },
         { name: '活动报名', icon: '🎉', bgColor: '#4ECDC4', path: '/pages/activity/index' },
+        { name: '我的房屋', icon: '🏡', bgColor: '#45A7F5', path: '/pages/house/index' },
         { name: '缴费服务', icon: '💰', bgColor: '#FFEAA7', path: '/pages/user/payment' },
         { name: '我的订单', icon: '📋', bgColor: '#45B7D1', path: '/pages/service/list' }
       ],

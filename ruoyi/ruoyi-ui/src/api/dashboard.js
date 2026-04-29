@@ -39,3 +39,52 @@ export function getRoomDeviceStats() {
     method: 'get'
   })
 }
+
+// 获取基本信息饼图数据（接入户数、在线户数）
+export function getFamilyStats() {
+  return request({
+    url: '/system/dashboard/familyStats',
+    method: 'get'
+  })
+}
+
+// 获取实时日志流
+export function getRealTimeLogs() {
+  return request({
+    url: '/system/dashboard/realTimeLogs',
+    method: 'get'
+  })
+}
+
+// 获取告警趋势数据
+export function getAlarmTrend() {
+  return request({
+    url: '/system/dashboard/alarmTrend',
+    method: 'get'
+  })
+}
+
+// 获取传感器状态数据
+export function getSensorTrend() {
+  return request({
+    url: '/system/dashboard/sensorTrend',
+    method: 'get'
+  })
+}
+
+// 获取需关注事件列表
+export function getAttentionEvents() {
+  return request({
+    url: '/system/dashboard/attentionEvents',
+    method: 'get'
+  })
+}
+
+// 获取事件详细信息
+export function getEventDetail(id) {
+  return request({
+    url: '/system/dashboard/eventDetail',
+    method: 'get',
+    params: { id }
+  })
+}

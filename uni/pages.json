@@ -131,6 +131,12 @@
 			}
 		},
 		{
+			"path": "pages/care/family",
+			"style": {
+				"navigationBarTitleText": "家人管理"
+			}
+		},
+		{
 			"path": "pages/device/control",
 			"style": {
 				"navigationBarTitleText": "设备控制"
@@ -177,6 +183,13 @@
 			"path": "pages/visitor/detail",
 			"style": {
 				"navigationBarTitleText": "预约详情"
+			}
+		},
+		{
+			"path": "pages/house/index",
+			"style": {
+				"navigationBarTitleText": "我的房屋",
+				"navigationStyle": "custom"
 			}
 		}
 	],

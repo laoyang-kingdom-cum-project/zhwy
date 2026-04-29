@@ -25,7 +25,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 家人健康Controller
  * 
  * @author ruoyi
- * @date 2026-04-23 10:25:07
+ * @date 2026-04-29 17:08:24
  */
 @RestController
 @RequestMapping("/system/health")
