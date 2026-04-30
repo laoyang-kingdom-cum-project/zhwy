@@ -30,7 +30,8 @@
 		{
 			"path": "pages/device/index",
 			"style": {
-				"navigationBarTitleText": "智能家居"
+				"navigationBarTitleText": "智能家居",
+				"navigationStyle": "custom"
 			}
 		},
 		{
