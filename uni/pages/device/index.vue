@@ -3,7 +3,7 @@
     <view class="nav-bar">
       <text class="nav-title">智能家居</text>
     </view>
-    <web-view class="webview" src="http://192.168.0.71:8124"></web-view>
+    <web-view class="webview" src="http://192.168.0.71:8123"></web-view>
     <custom-tabbar :current-index="1"></custom-tabbar>
   </view>
 </template>
