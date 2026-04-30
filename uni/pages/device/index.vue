@@ -1,14 +1,46 @@
 <template>
   <view class="device-page">
-    <web-view class="webview" src="http://192.168.0.71:8123"></web-view>
-    <cover-view class="nav-bar">
-      <cover-view class="nav-title">智能家居</cover-view>
-    </cover-view>
+    <web-view
+      src="http://192.168.0.71:8123"
+      :update-title="false"
+      :webview-styles="webviewStyles"
+    ></web-view>
   </view>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      webviewStyles: {
+        progress: { color: '#007AFF' }
+      }
+    }
+  },
+  onReady() {
+    // #ifdef APP-PLUS
+    const info = uni.getSystemInfoSync()
+    const top = info.statusBarHeight + 44 // 状态栏 + 导航栏
+    const bottom = 50 // tabBar 高度
+    const currentWebview = this.$scope.$getAppWebview()
+    setTimeout(() => {
+      const wv = currentWebview.children()[0]
+      if (wv) {
+        wv.setStyle({ top, bottom })
+      }
+    }, 300)
+    // #endif
+
+    // #ifdef H5
+    setTimeout(() => {
+      const iframe = document.querySelector('.device-page iframe')
+      if (iframe) {
+        iframe.style.top = '44px'
+        iframe.style.height = 'calc(100vh - 44px - 50px)'
+      }
+    }, 300)
+    // #endif
+  },
   onShow() {
     uni.showTabBar()
   }
@@ -20,29 +52,6 @@ export default {
   width: 100%;
   height: 100vh;
   position: relative;
-}
-
-.webview {
-  width: 100%;
-  height: 100%;
-}
-
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 44px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.nav-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #333333;
+  background: #fff;
 }
 </style>
