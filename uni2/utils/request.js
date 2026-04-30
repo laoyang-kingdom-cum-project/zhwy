@@ -5,15 +5,19 @@ const request = (options) => {
   return new Promise((resolve, reject) => {
     const token = uni.getStorageSync('token')
     
+    const header = {
+      'Content-Type': 'application/json',
+      ...options.header
+    }
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token
+    }
+
     uni.request({
       url: config.baseUrl + config.apiPrefix + options.url,
       method: options.method || 'GET',
       data: options.data || {},
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': token ? 'Bearer ' + token : '',
-        ...options.header
-      },
+      header,
       timeout: config.timeout,
       success: (res) => {
         // 请求成功

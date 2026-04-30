@@ -99,6 +99,9 @@ public class SecurityConfig
         return httpSecurity
             // CSRF禁用，因为不使用session
             .csrf(csrf -> csrf.disable())
+            // 禁用表单登录和HTTP Basic认证，使用自定义JWT认证
+            .formLogin(formLogin -> formLogin.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
             // 禁用HTTP响应标头
             .headers((headersCustomizer) -> {
                 headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
