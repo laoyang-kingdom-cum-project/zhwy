@@ -2,7 +2,8 @@
 // 修改这里的IP地址即可切换后端服务
 const config = {
   // 后端API基础地址 - 修改这里即可
-  baseUrl: 'https://laoyang-kingdom-cum-project-backend.axiaobo.works',
+  // baseUrl: 'https://laoyang-kingdom-cum-project-backend.axiaobo.works',
+  baseUrl: 'http://localhost:8080',
   // 接口前缀
   apiPrefix: '/por-api',
   

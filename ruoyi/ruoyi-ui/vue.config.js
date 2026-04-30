@@ -37,10 +37,7 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         target: baseUrl,
-        changeOrigin: true,
-        pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
-        }
+        changeOrigin: true
       },
       // springdoc proxy
       '^/v3/api-docs/(.*)': {
