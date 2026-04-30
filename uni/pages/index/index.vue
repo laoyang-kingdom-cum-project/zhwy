@@ -131,6 +131,7 @@ export default {
     this.generateTemperature()
   },
   onShow() {
+    uni.hideTabBar()
     this.loadAddress()
     this.generateTemperature()
   },

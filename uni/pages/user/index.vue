@@ -147,6 +147,7 @@ export default {
     this.userAddress = uni.getStorageSync('userAddress') || ''
   },
   onShow() {
+    uni.hideTabBar()
     this.loadUserInfo()
     this.loadCareMode()
     // 加载住址

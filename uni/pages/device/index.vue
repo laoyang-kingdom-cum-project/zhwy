@@ -8,13 +8,12 @@
 <script>
 export default {
   onShow() {
-    // #ifdef APP-PLUS
+    // 恢复系统 TabBar（其他页面的 custom-tabbar 会隐藏它）
     uni.showTabBar()
-    // #endif
   }
 }
 </script>
 
 <style>
-/* web-view 自动占满，系统导航栏和tabBar为原生层覆盖在上 */
+/* web-view 自动占满，系统导航栏和tabBar为原生层，层级高于web-view */
 </style>

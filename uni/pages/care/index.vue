@@ -70,6 +70,7 @@ export default {
     this.loadCareList()
   },
   onShow() {
+    uni.hideTabBar()
     this.loadCareList()
   },
   methods: {

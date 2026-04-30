@@ -66,6 +66,7 @@ export default {
     this.loadWarningList()
   },
   onShow() {
+    uni.hideTabBar()
     this.loadWarningList()
   },
   methods: {
