@@ -205,31 +205,11 @@
 		"backgroundColor": "#ffffff",
 		"borderStyle": "black",
 		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"iconPath": "static/tabbar/home.png",
-				"selectedIconPath": "static/tabbar/home-active.png"
-			},
-			{
-				"pagePath": "pages/device/index",
-				"iconPath": "static/tabbar/device.png",
-				"selectedIconPath": "static/tabbar/device-active.png"
-			},
-			{
-				"pagePath": "pages/warning/index",
-				"iconPath": "static/tabbar/warning.png",
-				"selectedIconPath": "static/tabbar/warning-active.png"
-			},
-			{
-				"pagePath": "pages/care/index",
-				"iconPath": "static/tabbar/care.png",
-				"selectedIconPath": "static/tabbar/care-active.png"
-			},
-			{
-				"pagePath": "pages/user/index",
-				"iconPath": "static/tabbar/user.png",
-				"selectedIconPath": "static/tabbar/user-active.png"
-			}
+			{ "pagePath": "pages/index/index" },
+			{ "pagePath": "pages/device/index" },
+			{ "pagePath": "pages/warning/index" },
+			{ "pagePath": "pages/care/index" },
+			{ "pagePath": "pages/user/index" }
 		]
 	},
 	"uniIdRouter": {}
