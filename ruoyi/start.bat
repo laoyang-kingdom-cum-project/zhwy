@@ -80,25 +80,15 @@ if %DEPS_MISSING%==1 (
 echo.
 echo [3/4] Compiling project...
 
-REM Check if target directories exist
-set NEED_COMPILE=0
-if not exist "ruoyi-admin\target" set NEED_COMPILE=1
-if not exist "ruoyi-common\target" set NEED_COMPILE=1
-if not exist "ruoyi-framework\target" set NEED_COMPILE=1
-if not exist "ruoyi-system\target" set NEED_COMPILE=1
-
-if %NEED_COMPILE%==1 (
-    echo [INFO] Project not compiled, running mvn clean install...
-    call mvn clean install -DskipTests
-    if errorlevel 1 (
-        echo [ERROR] Build failed!
-        pause
-        exit /b 1
-    )
-    echo [INFO] Project compiled successfully!
-) else (
-    echo [INFO] Project already compiled, skipping compilation
+REM Always recompile to ensure latest code
+echo [INFO] Compiling project with mvn clean install...
+call mvn clean install -DskipTests
+if errorlevel 1 (
+    echo [ERROR] Build failed!
+    pause
+    exit /b 1
 )
+echo [INFO] Project compiled successfully!
 
 echo.
 echo [4/4] Starting RuoYi Application...

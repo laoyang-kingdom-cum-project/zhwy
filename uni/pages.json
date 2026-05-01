@@ -205,11 +205,11 @@
 		"backgroundColor": "#ffffff",
 		"borderStyle": "black",
 		"list": [
-			{ "pagePath": "pages/index/index", "iconPath": "static/tabbar/home.png", "selectedIconPath": "static/tabbar/home2.png" },
-			{ "pagePath": "pages/device/index", "iconPath": "static/tabbar/device.png", "selectedIconPath": "static/tabbar/device2.png" },
-			{ "pagePath": "pages/warning/index", "iconPath": "static/tabbar/warning.png", "selectedIconPath": "static/tabbar/warning2.png" },
-			{ "pagePath": "pages/care/index", "iconPath": "static/tabbar/care.png", "selectedIconPath": "static/tabbar/care2.png" },
-			{ "pagePath": "pages/user/index", "iconPath": "static/tabbar/user.png", "selectedIconPath": "static/tabbar/user2.png" }
+			{ "pagePath": "pages/index/index", "iconPath": "static/tabbar/home2.png", "selectedIconPath": "static/tabbar/home2.png","navigationBarTitleText":"首页" },
+			{ "pagePath": "pages/device/index", "iconPath": "static/tabbar/device2.png", "selectedIconPath": "static/tabbar/device2.png","navigationBarTitleText":"设备" },
+			{ "pagePath": "pages/warning/index", "iconPath": "static/tabbar/warning2.png", "selectedIconPath": "static/tabbar/warning2.png","navigationBarTitleText":"预警" },
+			{ "pagePath": "pages/care/index", "iconPath": "static/tabbar/care2.png", "selectedIconPath": "static/tabbar/care2.png","navigationBarTitleText":"健康" },
+			{ "pagePath": "pages/user/index", "iconPath": "static/tabbar/user2.png", "selectedIconPath": "static/tabbar/user2.png","navigationBarTitleText":"我的" }
 		]
 	},
 	"uniIdRouter": {}
