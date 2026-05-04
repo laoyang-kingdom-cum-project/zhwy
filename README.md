@@ -28,10 +28,12 @@ zhwy/
 
 ## 环境要求
 
-- JDK 1.8+
+- JDK 1.8+（建议 17）
+- Maven 3.6+
+- Node.js 16+
 - MySQL 5.7+
 - Redis 5.0+
-- Node.js 14+
+- HomeAssistant OS 17.0+
 
 ## 如何运行
 
