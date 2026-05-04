@@ -6,7 +6,14 @@ $Cyan = "Cyan"; $Green = "Green"; $Yellow = "Yellow"; $Red = "Red"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ([string]::IsNullOrEmpty($ScriptDir)) { $ScriptDir = Get-Location }
 
-if (-not $IsWindows) {
+$IsWindowsHost = $false
+if (Get-Variable -Name IsWindows -ErrorAction SilentlyContinue) {
+    $IsWindowsHost = [bool]$IsWindows
+} else {
+    $IsWindowsHost = [bool]($env:OS -eq "Windows_NT")
+}
+
+if (-not $IsWindowsHost) {
     Write-Host "[ERROR] This script starts .bat files and requires Windows." -ForegroundColor $Red
     Write-Host "        Please run on Windows PowerShell or use the .sh scripts on Linux." -ForegroundColor $Yellow
     exit 1
