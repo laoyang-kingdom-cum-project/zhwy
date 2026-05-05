@@ -1,88 +1,97 @@
-// HA WebSocket 连接管理器
-// 支持订阅实体状态变化，触发回调
+// HA WebSocket 连接管理器（使用 uni.connectSocket）
+// 订阅实体状态变化，触发回调
 
-let ws = null
+let socketTask = null
 let msgId = 0
-let authResolve = null
 let callbacks = {}     // id → callback
 let subscriptions = [] // [{ entityId, callback }]
+let _connected = false
+let _authenticated = false
 
-function nextId() {
-  return ++msgId
-}
+function nextId() { return ++msgId }
 
 function send(data) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(data))
+  if (socketTask) {
+    socketTask.send({ data: JSON.stringify(data) })
   }
 }
 
 export function connect(accessToken, url = 'ws://192.168.0.71:8123/api/websocket') {
   return new Promise((resolve, reject) => {
-    ws = new WebSocket(url)
+    // 注册全局事件（uni socket API 是全局监听）
+    uni.onSocketOpen(() => {
+      console.log('[HA-WS] 已连接')
+      _connected = true
+    })
 
-    ws.onopen = () => {
-      console.log('[HA-WS] 已连接，等待认证...')
-    }
+    uni.onSocketMessage((res) => {
+      let msg
+      try { msg = JSON.parse(res.data) } catch (e) { return }
 
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data)
-
-      // 1. 收到 auth_required → 发送认证
+      // 1. 要求认证
       if (msg.type === 'auth_required') {
         send({ type: 'auth', access_token: accessToken })
+        return
       }
 
       // 2. 认证成功
       if (msg.type === 'auth_ok') {
         console.log('[HA-WS] 认证成功')
-        resolve()
-        // 重新订阅之前注册的实体
+        _authenticated = true
+        resolve(true)
         subscriptions.forEach(s => _doSubscribe(s.entityId, s.callback))
+        return
       }
 
       // 3. 认证失败
       if (msg.type === 'auth_invalid') {
-        console.error('[HA-WS] 认证失败')
+        console.error('[HA-WS] 认证失败:', msg.message)
         reject(new Error(msg.message))
+        return
       }
 
-      // 4. subscribe_events 的结果
-      if (msg.type === 'result' && callbacks[msg.id]) {
+      // 4. 订阅结果回调
+      if (msg.type === 'result' && msg.id && callbacks[msg.id]) {
         callbacks[msg.id](msg)
         delete callbacks[msg.id]
+        return
       }
 
       // 5. 状态变化事件
-      if (msg.type === 'event' && msg.event) {
-        const eventData = msg.event
-        if (eventData.event_type === 'state_changed') {
-          const entity = eventData.data.entity_id
-          const newState = eventData.data.new_state
-          if (newState) {
-            subscriptions.forEach(s => {
-              if (s.entityId === entity) {
-                s.callback({
-                  entityId: entity,
-                  state: newState.state,
-                  attributes: newState.attributes,
-                  lastChanged: newState.last_changed
-                })
-              }
-            })
-          }
+      if (msg.type === 'event' && msg.event && msg.event.event_type === 'state_changed') {
+        const data = msg.event.data
+        if (data && data.new_state) {
+          subscriptions.forEach(s => {
+            if (s.entityId === data.entity_id) {
+              s.callback({
+                entityId: data.entity_id,
+                state: data.new_state.state,
+                attributes: data.new_state.attributes,
+                lastChanged: data.new_state.last_changed
+              })
+            }
+          })
         }
       }
-    }
+    })
 
-    ws.onerror = (e) => {
-      console.error('[HA-WS] 连接错误')
-      reject(e)
-    }
+    uni.onSocketError((err) => {
+      console.error('[HA-WS] 连接错误:', JSON.stringify(err))
+      reject(err)
+    })
 
-    ws.onclose = () => {
+    uni.onSocketClose(() => {
       console.log('[HA-WS] 连接关闭')
-    }
+      _connected = false
+      _authenticated = false
+    })
+
+    // 创建连接
+    socketTask = uni.connectSocket({
+      url,
+      success: () => console.log('[HA-WS] socketTask 创建成功'),
+      fail: (err) => reject(err)
+    })
   })
 }
 
@@ -93,28 +102,28 @@ function _doSubscribe(entityId, callback) {
       console.log(`[HA-WS] 已订阅: ${entityId}`)
     }
   }
-  send({
-    id,
-    type: 'subscribe_events',
-    event_type: 'state_changed'
-  })
+  send({ id, type: 'subscribe_events', event_type: 'state_changed' })
 }
 
 export function subscribe(entityId, callback) {
-  // 避免重复订阅
   if (!subscriptions.find(s => s.entityId === entityId)) {
     subscriptions.push({ entityId, callback })
   }
-  // 如果已连接，立即订阅
-  if (ws && ws.readyState === WebSocket.OPEN) {
+  if (_authenticated) {
     _doSubscribe(entityId, callback)
   }
 }
 
 export function close() {
-  if (ws) {
-    ws.close()
-    ws = null
+  if (socketTask) {
+    socketTask.close()
+    socketTask = null
   }
+  _connected = false
+  _authenticated = false
   subscriptions = []
+}
+
+export function isConnected() {
+  return _connected && _authenticated
 }
