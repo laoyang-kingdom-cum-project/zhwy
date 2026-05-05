@@ -3,6 +3,7 @@
 const config = {
   // 后端API基础地址 - 修改这里即可
   baseUrl: 'https://laoyang-kingdom-cum-project-backend.axiaobo.works',
+  // baseUrl: 'http://127.0.0.1',
   // 接口前缀
   apiPrefix: '/por-api',
   

@@ -136,6 +136,7 @@ export default {
         }
       }
 
+      // 超过8小时的提醒（只弹一个窗口）
       if (needAttention.length > 0) {
         const names = needAttention.map(m => m.name).join('、')
         uni.showModal({
@@ -146,31 +147,48 @@ export default {
         })
       }
 
+      // 超过24小时的安全预警（合并到一个窗口，避免多个弹窗）
+      const warningList = []
       for (const member of needWarning) {
-        try {
-          const sentWarnings = uni.getStorageSync('sentWarnings') || {}
-          const lastSentTime = sentWarnings[member.id]
-          const now = Date.now()
-          
-          if (lastSentTime && (now - lastSentTime) < 24 * 60 * 60 * 1000) {
-            continue
-          }
-          
-          const userInfo = uni.getStorageSync('userInfo')
-          await addWarning({
-            title: `家人「${member.name}」超过24小时无活动`,
-            location: member.room || '未知住址',
-            time: this.formatDateTime(new Date()),
-            state: '0',
-            level: '1',
-            userid: userInfo ? userInfo.userId : 1
-          })
-          
-          sentWarnings[member.id] = now
-          uni.setStorageSync('sentWarnings', sentWarnings)
-        } catch (e) {
-          console.error('发送安全预警失败', e)
+        const sentWarnings = uni.getStorageSync('sentWarnings') || {}
+        const lastSentTime = sentWarnings[member.id]
+        const now = Date.now()
+        
+        if (!lastSentTime || (now - lastSentTime) >= 24 * 60 * 60 * 1000) {
+          warningList.push({ member, lastSentTime, now })
         }
+      }
+
+      if (warningList.length > 0) {
+        const names = warningList.map(w => w.member.name).join('、')
+        uni.showModal({
+          title: '安全预警',
+          content: `家人「${names}」已超过24小时无活动记录，已通知物业并发送安全预警。`,
+          showCancel: false,
+          confirmText: '我知道了',
+          success: async () => {
+            // 用户确认后再发送预警
+            for (const item of warningList) {
+              try {
+                const userInfo = uni.getStorageSync('userInfo')
+                await addWarning({
+                  title: `家人「${item.member.name}」超过24小时无活动`,
+                  location: item.member.room || '未知住址',
+                  time: this.formatDateTime(new Date()),
+                  state: '0',
+                  level: '1',
+                  userid: userInfo ? userInfo.userId : 1
+                })
+                
+                const sentWarnings = uni.getStorageSync('sentWarnings') || {}
+                sentWarnings[item.member.id] = item.now
+                uni.setStorageSync('sentWarnings', sentWarnings)
+              } catch (e) {
+                console.error('发送安全预警失败', e)
+              }
+            }
+          }
+        })
       }
     },
     // 格式化时间（相对时间）
