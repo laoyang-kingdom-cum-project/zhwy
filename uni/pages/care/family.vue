@@ -151,8 +151,6 @@ export default {
     },
     async checkFamilyHealthStatus() {
       const now = new Date()
-      const needAttention = []
-      const needWarning = []
 
       for (const member of this.familyList) {
         if (!member.lastActive) continue
@@ -160,6 +158,7 @@ export default {
         const lastActiveDate = new Date(member.lastActive)
         const hoursSince = (now - lastActiveDate) / (1000 * 60 * 60)
 
+        // 超过4小时自动改为待关注状态
         if (hoursSince > 4 && member.healthStatus === '0') {
           try {
             await updateFamily({
@@ -182,49 +181,32 @@ export default {
           }
         }
 
-        if (hoursSince > 8) {
-          needAttention.push(member)
-        }
-
+        // 超过24小时自动发送安全预警（静默发送，不弹窗）
         if (hoursSince > 24) {
-          needWarning.push(member)
-        }
-      }
-
-      if (needAttention.length > 0) {
-        const names = needAttention.map(m => m.name).join('、')
-        uni.showModal({
-          title: '健康提醒',
-          content: `家人「${names}」已超过8小时无活动记录，请关注他们的健康状况。`,
-          showCancel: false,
-          confirmText: '我知道了'
-        })
-      }
-
-      for (const member of needWarning) {
-        try {
-          const sentWarnings = uni.getStorageSync('sentWarnings') || {}
-          const lastSentTime = sentWarnings[member.id]
-          const now = Date.now()
-          
-          if (lastSentTime && (now - lastSentTime) < 24 * 60 * 60 * 1000) {
-            continue
+          try {
+            const sentWarnings = uni.getStorageSync('sentWarnings') || {}
+            const lastSentTime = sentWarnings[member.id]
+            const nowTime = Date.now()
+            
+            if (lastSentTime && (nowTime - lastSentTime) < 24 * 60 * 60 * 1000) {
+              continue
+            }
+            
+            const userInfo = uni.getStorageSync('userInfo')
+            await addWarning({
+              title: `家人「${member.name}」超过24小时无活动`,
+              location: member.room || '未知住址',
+              time: this.formatDateTime(new Date()),
+              state: '0',
+              level: '1',
+              userid: userInfo ? userInfo.userId : 1
+            })
+            
+            sentWarnings[member.id] = nowTime
+            uni.setStorageSync('sentWarnings', sentWarnings)
+          } catch (e) {
+            console.error('发送安全预警失败', e)
           }
-          
-          const userInfo = uni.getStorageSync('userInfo')
-          await addWarning({
-            title: `家人「${member.name}」超过24小时无活动`,
-            location: member.room || '未知住址',
-            time: this.formatDateTime(new Date()),
-            state: '0',
-            level: '1',
-            userid: userInfo ? userInfo.userId : 1
-          })
-          
-          sentWarnings[member.id] = now
-          uni.setStorageSync('sentWarnings', sentWarnings)
-        } catch (e) {
-          console.error('发送安全预警失败', e)
         }
       }
     },

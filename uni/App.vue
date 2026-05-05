@@ -2,6 +2,7 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			this.checkLoginAndRedirect()
 		},
 		onShow: function() {
 			console.log('App Show')
@@ -11,7 +12,27 @@
 			console.log('App Hide')
 		},
 		methods: {
-			// 应用关怀模式
+			checkLoginAndRedirect() {
+				const token = uni.getStorageSync('token')
+				const pages = getCurrentPages()
+				const currentPage = pages[0] ? pages[0].route : ''
+				
+				if (token) {
+					// 有token，如果在登录页则跳转到首页
+					if (currentPage === 'pages/login/index') {
+						uni.reLaunch({
+							url: '/pages/index/index'
+						})
+					}
+				} else {
+					// 没有token，如果不在登录页则跳转到登录页
+					if (currentPage !== 'pages/login/index') {
+						uni.reLaunch({
+							url: '/pages/login/index'
+						})
+					}
+				}
+			},
 			applyCareMode() {
 				// #ifdef H5
 				const careMode = uni.getStorageSync('careMode')

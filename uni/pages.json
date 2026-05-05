@@ -1,18 +1,18 @@
 {
 	"pages": [
 		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "智慧社区",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录",
 				"navigationStyle": "custom",
 				"disableScroll": true
-			}
-		},
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "智慧社区",
-				"navigationStyle": "custom"
 			}
 		},
 		{
