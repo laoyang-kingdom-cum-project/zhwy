@@ -38,17 +38,15 @@ export async function initFallAlert(token) {
 
 function sendLocalNotification(data) {
   // #ifdef APP-PLUS
-  const friendlyName = data.attributes?.friendly_name || '天然气卫士'
-
   plus.push.createMessage(
-    `检测到${friendlyName}进入自检模式，请立即检查燃气设备状态！`,
+    '⚠️老人跌倒告警，请尽快查看！',
     {
       entityId: data.entityId,
       state: data.state,
       time: data.lastChanged
     },
     {
-      title: '⚠️ 天然气告警',
+      title: '银龄助手',
       sound: 'system',
       cover: false
     }
@@ -60,8 +58,8 @@ function sendLocalNotification(data) {
   // H5 环境降级：弹窗提示
   // #ifdef H5
   uni.showModal({
-    title: '⚠️ 天然气告警',
-    content: `检测到${friendlyName}进入自检模式，请立即检查燃气设备状态！`,
+    title: '银龄助手',
+    content: '⚠️老人跌倒告警，请尽快查看！',
     showCancel: false
   })
   // #endif
