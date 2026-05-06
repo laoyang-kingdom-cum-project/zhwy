@@ -13,9 +13,21 @@ const env = {
   // HA 长期访问令牌（外部认证用）
   haAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxZWVjM2Q4YzY3ZmU0OGIzYWNmZGQ5M2UyZGIxNDk1MyIsImlhdCI6MTc3Nzk2NjM1MywiZXhwIjoyMDkzMzI2MzUzfQ.Xi0xhMufcx_rlB0mFK7XNueIyR1eAPLaEmqPg2yrGtI',
 
-  // 跌倒检测
-  haFallSensorEntity: 'sensor.lumi_cn_918860765_mcn02_status_p_2_1',
-  haFallAlertState: '自检'
+  // 告警规则（可扩展多条）
+  alertRules: [
+    {
+      entityId: 'sensor.lumi_cn_918860765_mcn02_status_p_2_1',
+      alertState: '自检',
+      title: '银龄助手',
+      content: '⚠️老人跌倒告警，请尽快查看！'
+    },
+    {
+      entityId: 'event.xiaomi_cn_blt_3_1otprfbc0cc03_oh83w_submersion_sensor_event_e_2_1104',
+      alertState: null,
+      title: '银龄助手',
+      content: '🌊浸水告警，请尽快查看！'
+    }
+  ]
 }
 
 export default env
