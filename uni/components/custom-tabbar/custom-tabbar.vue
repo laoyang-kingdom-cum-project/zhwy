@@ -7,7 +7,11 @@
       :class="{ active: currentIndex === index }"
       @click="switchTab(item, index)"
     >
-      <text class="tab-icon">{{ currentIndex === index ? item.selectedIcon : item.icon }}</text>
+      <image 
+        class="tab-icon" 
+        :src="currentIndex === index ? item.selectedIcon : item.icon" 
+        mode="aspectFit"
+      />
       <text class="tab-text">{{ item.text }}</text>
     </view>
   </view>
@@ -27,32 +31,32 @@ export default {
         {
           pagePath: '/pages/index/index',
           text: '首页',
-          icon: '🏠',
-          selectedIcon: '🏡'
+          icon: '/static/icon/fangwu_weixuanzhong.png',
+          selectedIcon: '/static/icon/fangwu_xuanzhong.png'
         },
         {
           pagePath: '/pages/device/index',
           text: '设备',
-          icon: '🔌',
-          selectedIcon: '💡'
+          icon: '/static/icon/a-shebieguanlibeifen4.png',
+          selectedIcon: '/static/icon/shebiejiankong.png'
         },
         {
           pagePath: '/pages/warning/index',
           text: '预警',
-          icon: '🔔',
-          selectedIcon: '🚨'
+          icon: '/static/icon/yujing.png',
+          selectedIcon: '/static/icon/yujing_1.png'
         },
         {
           pagePath: '/pages/care/index',
           text: '健康',
-          icon: '❤️',
-          selectedIcon: '💚'
+          icon: '/static/icon/jiankangxian.png',
+          selectedIcon: '/static/icon/jiankang-.png'
         },
         {
           pagePath: '/pages/user/index',
           text: '我的',
-          icon: '👤',
-          selectedIcon: '😊'
+          icon: '/static/icon/wodedangxuan.png',
+          selectedIcon: '/static/icon/icon-myself.png'
         }
       ]
     }
@@ -99,7 +103,8 @@ export default {
 }
 
 .tab-icon {
-  font-size: 44rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: 4rpx;
 }
 

@@ -24,7 +24,7 @@
     <view class="quick-actions">
       <view class="action-item" v-for="(item, index) in quickActions" :key="index" @click="navigateTo(item.path)">
         <view class="action-icon" :style="{ background: item.bgColor }">
-          <text class="icon-text">{{ item.icon }}</text>
+          <image :src="item.icon" class="icon-image" mode="aspectFit"></image>
         </view>
         <text class="action-name">{{ item.name }}</text>
       </view>
@@ -102,13 +102,13 @@ export default {
     return {
       banners: [],
       quickActions: [
-        { name: '物业报修', icon: '🔧', bgColor: '#FF6B6B', path: '/pages/service/repair' },
-        { name: '访客预约', icon: '👥', bgColor: '#9B59B6', path: '/pages/visitor/index' },
-        { name: 'AI对话', icon: '🤖', bgColor: '#2ED573', path: '/pages/ai/index' },
-        { name: '物业服务', icon: '🏠', bgColor: '#FF6348', path: '/pages/service/index' },
-        { name: '活动报名', icon: '🎉', bgColor: '#4ECDC4', path: '/pages/activity/index' },
-        { name: '缴费服务', icon: '💰', bgColor: '#FFEAA7', path: '/pages/user/payment' },
-        { name: '我的订单', icon: '📋', bgColor: '#45B7D1', path: '/pages/service/list' }
+        { name: '物业报修', icon: '/static/icon/wuyefuwu.png', bgColor: '#FF6B6B', path: '/pages/service/repair' },
+        { name: '访客预约', icon: '/static/icon/fangkeyuyue.png', bgColor: '#9B59B6', path: '/pages/visitor/index' },
+        { name: 'AI对话', icon: '/static/icon/aiduihua.png', bgColor: '#2ED573', path: '/pages/ai/index' },
+        { name: '物业服务', icon: '/static/icon/fangwu.png', bgColor: '#FF6348', path: '/pages/service/index' },
+        { name: '活动报名', icon: '/static/icon/huodongbaoming.png', bgColor: '#4ECDC4', path: '/pages/activity/index' },
+        { name: '缴费服务', icon: '/static/icon/jiaofeifuwu.png', bgColor: '#FFEAA7', path: '/pages/user/payment' },
+        { name: '我的订单', icon: '/static/icon/wodedingdan.png', bgColor: '#45B7D1', path: '/pages/service/list' }
       ],
       deviceStatus: {
         online: 0,
@@ -347,18 +347,23 @@ export default {
     padding: 20rpx 0;
 
     .action-icon {
-      width: 90rpx;
-      height: 90rpx;
-      border-radius: 20rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12rpx;
+        width: 90rpx;
+        height: 90rpx;
+        border-radius: 20rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12rpx;
 
-      .icon-text {
-        font-size: 40rpx;
+        .icon-text {
+          font-size: 40rpx;
+        }
+
+        .icon-image {
+          width: 50rpx;
+          height: 50rpx;
+        }
       }
-    }
 
     .action-name {
       font-size: 24rpx;

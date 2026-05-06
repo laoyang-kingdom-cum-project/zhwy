@@ -32,23 +32,6 @@
           />
         </view>
 
-        <!-- 验证码 -->
-        <view class="input-item captcha-item">
-          <text class="label">验证码</text>
-          <input
-            type="text"
-            v-model="loginForm.code"
-            placeholder="请输入验证码"
-            class="input captcha-input"
-          />
-          <image
-            :src="captchaUrl"
-            mode="aspectFit"
-            class="captcha-img"
-            @click="refreshCaptcha"
-          ></image>
-        </view>
-
         <!-- 记住密码和自动登录 -->
         <view class="login-options">
           <view class="option-item" @click="toggleRememberPassword">
@@ -88,6 +71,40 @@
         </text>
       </view>
     </view>
+
+    <!-- 验证码弹窗 -->
+    <view class="captcha-modal" v-if="showCaptchaModal">
+      <view class="captcha-mask" @click="closeCaptchaModal"></view>
+      <view class="captcha-popup">
+        <view class="captcha-head">
+          <text class="captcha-title">安全验证</text>
+          <view class="captcha-close" @click="closeCaptchaModal">
+            <text class="close-icon">✕</text>
+          </view>
+        </view>
+        <view class="captcha-body">
+          <view class="captcha-tip">请输入下方验证码完成登录</view>
+          <view class="captcha-input-row">
+            <input
+              type="text"
+              v-model="loginForm.code"
+              placeholder="请输入验证码"
+              class="captcha-input"
+              maxlength="4"
+            />
+            <image
+              :src="captchaUrl"
+              mode="aspectFit"
+              class="captcha-img"
+              @click="refreshCaptcha"
+            ></image>
+          </view>
+        </view>
+        <view class="captcha-foot">
+          <button class="captcha-btn" :loading="loading" @click="confirmLogin">确认登录</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -110,11 +127,11 @@ export default {
       loading: false,
       agreed: false,
       rememberPassword: false,
-      autoLogin: false
+      autoLogin: false,
+      showCaptchaModal: false
     }
   },
   onLoad() {
-    this.refreshCaptcha()
     this.loadSavedLoginInfo()
     this.checkAutoLogin()
   },
@@ -199,8 +216,22 @@ export default {
       })
     },
 
-    // 登录
-    async handleLogin() {
+    // 关闭验证码弹窗
+    closeCaptchaModal() {
+      this.showCaptchaModal = false
+      this.loginForm.code = ''
+      this.loginForm.uuid = ''
+      this.captchaUrl = ''
+    },
+
+    // 打开验证码弹窗
+    async openCaptchaModal() {
+      await this.refreshCaptcha()
+      this.showCaptchaModal = true
+    },
+
+    // 登录（第一步：验证账号密码）
+    handleLogin() {
       if (!this.loginForm.username) {
         uni.showToast({ title: '请输入用户名', icon: 'none' })
         return
@@ -209,12 +240,17 @@ export default {
         uni.showToast({ title: '请输入密码', icon: 'none' })
         return
       }
-      if (!this.loginForm.code) {
-        uni.showToast({ title: '请输入验证码', icon: 'none' })
-        return
-      }
       if (!this.agreed) {
         uni.showToast({ title: '请同意用户协议和隐私政策', icon: 'none' })
+        return
+      }
+      this.openCaptchaModal()
+    },
+
+    // 确认登录（第二步：验证验证码并登录）
+    async confirmLogin() {
+      if (!this.loginForm.code) {
+        uni.showToast({ title: '请输入验证码', icon: 'none' })
         return
       }
 
@@ -443,6 +479,122 @@ export default {
     .link {
       color: #007AFF;
       font-weight: 500;
+    }
+  }
+}
+
+// 验证码弹窗
+.captcha-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+
+  .captcha-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .captcha-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    overflow: hidden;
+  }
+
+  .captcha-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40rpx;
+    border-bottom: 1rpx solid #f0f0f0;
+
+    .captcha-title {
+      font-size: 36rpx;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .captcha-close {
+      width: 48rpx;
+      height: 48rpx;
+      border-radius: 50%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:active {
+        background: #eee;
+      }
+
+      .close-icon {
+        font-size: 24rpx;
+        color: #999;
+      }
+    }
+  }
+
+  .captcha-body {
+    padding: 40rpx;
+
+    .captcha-tip {
+      font-size: 28rpx;
+      color: #666;
+      margin-bottom: 30rpx;
+      text-align: center;
+    }
+
+    .captcha-input-row {
+      display: flex;
+      align-items: center;
+      gap: 20rpx;
+
+      .captcha-input {
+        flex: 1;
+        height: 88rpx;
+        background: #f8f8f8;
+        border-radius: 16rpx;
+        padding: 0 24rpx;
+        font-size: 30rpx;
+        color: #333;
+      }
+
+      .captcha-img {
+        width: 180rpx;
+        height: 80rpx;
+        border-radius: 8rpx;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .captcha-foot {
+    padding: 0 40rpx 40rpx;
+
+    .captcha-btn {
+      width: 100%;
+      height: 88rpx;
+      line-height: 88rpx;
+      background: #333;
+      color: #fff;
+      font-size: 30rpx;
+      border-radius: 44rpx;
+      border: none;
+
+      &:active {
+        opacity: 0.8;
+      }
     }
   }
 }

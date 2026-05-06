@@ -63,7 +63,8 @@ export default {
   mixins: [careModeMixin],
   data() {
     return {
-      careList: []
+      careList: [],
+      isCheckingHealth: false
     }
   },
   onLoad() {
@@ -95,6 +96,9 @@ export default {
       }
     },
     async checkFamilyHealthStatus() {
+      if (this.isCheckingHealth) return
+      this.isCheckingHealth = true
+      
       const now = new Date()
       const needAttention = []
       const needWarning = []
@@ -136,39 +140,68 @@ export default {
         }
       }
 
-      // 超过8小时的提醒（只弹一个窗口）
-      if (needAttention.length > 0) {
-        const names = needAttention.map(m => m.name).join('、')
-        uni.showModal({
-          title: '健康提醒',
-          content: `家人「${names}」已超过8小时无活动记录，请关注他们的健康状况。`,
-          showCancel: false,
-          confirmText: '我知道了'
-        })
-      }
-
-      // 超过24小时的安全预警（合并到一个窗口，避免多个弹窗）
-      const warningList = []
-      for (const member of needWarning) {
-        const sentWarnings = uni.getStorageSync('sentWarnings') || {}
-        const lastSentTime = sentWarnings[member.id]
-        const now = Date.now()
+      // 处理弹窗逻辑：合并24小时安全预警和8小时健康提醒到一个弹窗
+      const popupRecords = uni.getStorageSync('popupRecords') || {}
+      const currentTime = Date.now()
+      
+      // 需要发送预警的家人（超过24小时）
+      const pendingWarnings = []
+      // 需要提醒的家人（超过8小时但未超过24小时）
+      const pendingAttention = []
+      
+      for (const member of this.careList) {
+        if (!member.lastActive) continue
         
-        if (!lastSentTime || (now - lastSentTime) >= 24 * 60 * 60 * 1000) {
-          warningList.push({ member, lastSentTime, now })
+        const lastActiveDate = new Date(member.lastActive)
+        const hoursSince = (new Date() - lastActiveDate) / (1000 * 60 * 60)
+        
+        if (hoursSince > 24) {
+          const sentWarnings = uni.getStorageSync('sentWarnings') || {}
+          const lastSentTime = sentWarnings[member.id]
+          if (!lastSentTime || (currentTime - lastSentTime) >= 24 * 60 * 60 * 1000) {
+            pendingWarnings.push({ member, lastSentTime, currentTime })
+          }
+        } else if (hoursSince > 8) {
+          pendingAttention.push(member)
         }
       }
-
-      if (warningList.length > 0) {
-        const names = warningList.map(w => w.member.name).join('、')
+      
+      // 检查是否需要显示弹窗（24小时冷却期）
+      const lastPopupTime = popupRecords.lastPopup
+      if ((pendingWarnings.length > 0 || pendingAttention.length > 0) && 
+          (!lastPopupTime || (currentTime - lastPopupTime) >= 24 * 60 * 60 * 1000)) {
+        
+        // 构建弹窗内容
+        let title = '健康提醒'
+        let content = ''
+        
+        if (pendingWarnings.length > 0) {
+          title = '安全预警'
+          const warningNames = pendingWarnings.map(w => w.member.name).join('、')
+          content = `家人「${warningNames}」已超过24小时无活动记录，已通知物业并发送安全预警。`
+          
+          if (pendingAttention.length > 0) {
+            const attentionNames = pendingAttention.map(m => m.name).join('、')
+            content += `\n家人「${attentionNames}」已超过8小时无活动记录，请关注他们的健康状况。`
+          }
+        } else {
+          const attentionNames = pendingAttention.map(m => m.name).join('、')
+          content = `家人「${attentionNames}」已超过8小时无活动记录，请关注他们的健康状况。`
+        }
+        
         uni.showModal({
-          title: '安全预警',
-          content: `家人「${names}」已超过24小时无活动记录，已通知物业并发送安全预警。`,
+          title: title,
+          content: content,
           showCancel: false,
           confirmText: '我知道了',
           success: async () => {
-            // 用户确认后再发送预警
-            for (const item of warningList) {
+            // 记录弹窗时间
+            const records = uni.getStorageSync('popupRecords') || {}
+            records.lastPopup = currentTime
+            uni.setStorageSync('popupRecords', records)
+            
+            // 发送安全预警
+            for (const item of pendingWarnings) {
               try {
                 const userInfo = uni.getStorageSync('userInfo')
                 await addWarning({
@@ -181,14 +214,19 @@ export default {
                 })
                 
                 const sentWarnings = uni.getStorageSync('sentWarnings') || {}
-                sentWarnings[item.member.id] = item.now
+                sentWarnings[item.member.id] = item.currentTime
                 uni.setStorageSync('sentWarnings', sentWarnings)
               } catch (e) {
                 console.error('发送安全预警失败', e)
               }
             }
+          },
+          complete: () => {
+            this.isCheckingHealth = false
           }
         })
+      } else {
+        this.isCheckingHealth = false
       }
     },
     // 格式化时间（相对时间）

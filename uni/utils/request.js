@@ -1,5 +1,8 @@
 import config from '@/config/index.js'
 
+// 防止重复跳转登录页
+let isNavigatingToLogin = false
+
 // 请求拦截
 const request = (options) => {
   return new Promise((resolve, reject) => {
@@ -23,17 +26,26 @@ const request = (options) => {
           if (data.code === 200) {
             resolve(data)
           } else if (data.code === 401) {
-            // 未登录或token过期
-            uni.removeStorageSync('token')
-            uni.showToast({
-              title: '登录已过期，请重新登录',
-              icon: 'none'
-            })
-            setTimeout(() => {
-              uni.navigateTo({
-                url: '/pages/login/index'
+            // 未登录或token过期，防止重复跳转
+            if (!isNavigatingToLogin) {
+              isNavigatingToLogin = true
+              uni.removeStorageSync('token')
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none'
               })
-            }, 1500)
+              setTimeout(() => {
+                uni.navigateTo({
+                  url: '/pages/login/index',
+                  success: () => {
+                    isNavigatingToLogin = false
+                  },
+                  fail: () => {
+                    isNavigatingToLogin = false
+                  }
+                })
+              }, 1500)
+            }
             reject(data)
           } else {
             uni.showToast({
