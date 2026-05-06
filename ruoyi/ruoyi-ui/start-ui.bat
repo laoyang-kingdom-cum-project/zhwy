@@ -1,5 +1,23 @@
 @echo off
+setlocal enabledelayedexpansion
 chcp 65001 >nul
+
+REM 加载根目录统一环境变量
+set "ROOT_DIR=%~dp0..\.."
+if exist "%ROOT_DIR%\.env" (
+    for /f "usebackq tokens=1,2 delims==" %%a in ("%ROOT_DIR%\.env") do (
+        set "LINE=%%a"
+        if not "!LINE:~0,1!"=="#" (
+            if not "%%a"=="" (
+                if not "%%b"=="" set "%%a=%%b"
+            )
+        )
+    )
+    echo [INFO] 已加载根目录 .env 环境变量
+) else (
+    echo [WARN] 根目录 .env 文件未找到
+)
+
 echo ==========================================
 echo    RuoYi UI Startup Script
 echo ==========================================
@@ -90,7 +108,7 @@ if %NEED_INSTALL%==1 (
 echo.
 echo [3/3] Starting Vue development server...
 echo ==========================================
-echo    URL: http://localhost:80
+echo    URL: http://localhost:%FRONTEND_PORT%
 echo    Press Ctrl+C to stop
 echo ==========================================
 echo.

@@ -1,6 +1,7 @@
 <script>
 	// #ifdef APP-PLUS
 	import { initFallAlert } from '@/utils/ha-fall-alert.js'
+	import env from '@/config/env.js'
 	// #endif
 
 	export default {
@@ -8,9 +9,7 @@
 			console.log('App Launch')
 
 			// #ifdef APP-PLUS
-			// 初始化 HA WebSocket 告警监听
-			const haToken = uni.getStorageSync('ha_access_token') ||
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxZWVjM2Q4YzY3ZmU0OGIzYWNmZGQ5M2UyZGIxNDk1MyIsImlhdCI6MTc3Nzk2NjM1MywiZXhwIjoyMDkzMzI2MzUzfQ.Xi0xhMufcx_rlB0mFK7XNueIyR1eAPLaEmqPg2yrGtI'
+			const haToken = uni.getStorageSync('ha_access_token') || env.haAccessToken
 			if (haToken) {
 				initFallAlert(haToken)
 			}

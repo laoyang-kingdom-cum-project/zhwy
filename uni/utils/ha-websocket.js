@@ -16,7 +16,7 @@ function send(data) {
   }
 }
 
-export function connect(accessToken, url = 'ws://192.168.0.71:8123/api/websocket') {
+export function connect(accessToken, url) {
   return new Promise((resolve, reject) => {
     // 注册全局事件（uni socket API 是全局监听）
     uni.onSocketOpen(() => {

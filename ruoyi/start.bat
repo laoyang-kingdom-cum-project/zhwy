@@ -1,5 +1,23 @@
 @echo off
+setlocal enabledelayedexpansion
 chcp 65001 >nul
+
+REM 加载根目录统一环境变量
+set "ROOT_DIR=%~dp0.."
+if exist "%ROOT_DIR%\.env" (
+    for /f "usebackq tokens=1,2 delims==" %%a in ("%ROOT_DIR%\.env") do (
+        set "LINE=%%a"
+        if not "!LINE:~0,1!"=="#" (
+            if not "%%a"=="" (
+                if not "%%b"=="" set "%%a=%%b"
+            )
+        )
+    )
+    echo [INFO] 已加载根目录 .env 环境变量
+) else (
+    echo [WARN] 根目录 .env 文件未找到，使用默认配置
+)
+
 echo ==========================================
 echo    RuoYi Management System Startup Script
 echo ==========================================
@@ -113,7 +131,7 @@ echo [INFO] Project compiled successfully!
 echo.
 echo [4/4] Starting RuoYi Application...
 echo ==========================================
-echo    URL: http://localhost:8080
+echo    URL: http://localhost:%API_PORT%
 echo    Press Ctrl+C to stop
 echo ==========================================
 echo.

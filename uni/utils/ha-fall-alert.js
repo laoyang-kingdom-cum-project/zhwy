@@ -4,10 +4,11 @@
 // 使用方法: 在 App.vue 的 onLaunch 中调用 initFallAlert()
 
 import { connect, subscribe } from './ha-websocket.js'
+import env from '@/config/env.js'
 
-const ENTITY_ID = 'sensor.lumi_cn_918860765_mcn02_status_p_2_1'
-const ALERT_STATE = '自检'
-const HA_URL = 'ws://192.168.0.71:8123/api/websocket'
+const ENTITY_ID = env.haFallSensorEntity
+const ALERT_STATE = env.haFallAlertState
+const HA_WS_URL = `ws://${env.haHost}:${env.haPort}/api/websocket`
 
 let connected = false
 
@@ -18,7 +19,7 @@ export async function initFallAlert(token) {
   }
 
   try {
-    await connect(token, HA_URL)
+    await connect(token, HA_WS_URL)
     connected = true
     console.log('[跌倒告警] HA WebSocket 已连接')
 

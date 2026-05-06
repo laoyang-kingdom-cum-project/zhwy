@@ -1,19 +1,25 @@
 <template>
   <web-view
-    src="http://192.168.0.71:8123/?external_auth=1"
+    :src="haUrl"
     :update-title="false"
   ></web-view>
 </template>
 
 <script>
+import env from '@/config/env.js'
+
 export default {
+  data() {
+    return {
+      haUrl: `http://${env.haHost}:${env.haPort}/?external_auth=1`
+    }
+  },
   onShow() {
     uni.showTabBar()
   },
   onReady() {
     // #ifdef APP-PLUS
-    const token = uni.getStorageSync('ha_access_token') ||
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxZWVjM2Q4YzY3ZmU0OGIzYWNmZGQ5M2UyZGIxNDk1MyIsImlhdCI6MTc3Nzk2NjM1MywiZXhwIjoyMDkzMzI2MzUzfQ.Xi0xhMufcx_rlB0mFK7XNueIyR1eAPLaEmqPg2yrGtI'
+    const token = uni.getStorageSync('ha_access_token') || env.haAccessToken
 
     const injectCode = `
       window.externalApp = {
@@ -35,7 +41,6 @@ export default {
       }
     `
 
-    // 多次注入确保 HA 页面加载前/后都能拿到
     const doInject = () => {
       const currentWebview = this.$scope.$getAppWebview()
       const wv = currentWebview && currentWebview.children() && currentWebview.children()[0]
