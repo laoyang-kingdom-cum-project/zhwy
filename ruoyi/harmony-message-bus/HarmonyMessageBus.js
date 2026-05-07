@@ -1,0 +1,181 @@
+/**
+ * HarmonyMessageBus.js — 鸿蒙智慧社区微服务消息总线
+ * ============================================================================
+ * 项目  : 鸿蒙智慧社区卫士 (Harmony Smart Community Guardian)
+ * 架构  : OpenHarmony Ark Runtime / RuoYi v3.9.0 微服务网关
+ * 功能  : 感知层数据聚合 → 决策引擎 → 分布式软总线指令下发
+ * 依赖  : Node.js 18+ (原生 fetch)
+ * ============================================================================
+ *
+ * 数据流向:
+ *   [MySQL/PostgreSQL] → queryHealthProfile()
+ *        ↓
+ *   [鸿蒙分布式软总线] → queryEnvironment()
+ *        ↓
+ *   [AI 语音确认倒计时] → AI_CONFIRM_TIMEOUT_MS
+ *        ↓
+ *   [多源数据聚合] → Live Coding Here ← 现场演示 👈
+ *        ↓
+ *   [HA Webhook] → 小艺音箱 TTS / 大屏联动 / 短信网关
+ *
+ * ============================================================================
+ */
+
+'use strict'
+
+// ---------------------------------------------------------------------------
+//  环境变量
+// ---------------------------------------------------------------------------
+
+const HARMONY_WEBHOOK = process.env.HARMONY_WEBHOOK
+  || 'http://192.168.0.71:8123/api/webhook/harmony_emergency'
+
+const AI_CONFIRM_TIMEOUT_MS = parseInt(
+  process.env.AI_CONFIRM_TIMEOUT_MS || '30000',
+  10
+)
+
+// ---------------------------------------------------------------------------
+//  感知层: 模拟从 RuoYi 微服务数据中台拉取
+// ---------------------------------------------------------------------------
+
+/**
+ * 查询老人健康档案
+ *
+ * 真实环境对接: RuoYi 微服务模块 ruoyi-health
+ * 数据库: PostgreSQL → t_health_record
+ * 同步源: 三甲医院电子病历 HL7 FHIR 接口
+ *
+ * @param {string} userId - 住户唯一标识
+ * @returns {Promise<Object>} 健康档案
+ */
+async function queryHealthProfile(userId) {
+  console.log(`[RuoYi-DB] 查询健康档案: user_id=${userId}`)
+  console.log(`[RuoYi-DB] 连接池: HikariCP active=3 idle=7`)
+
+  return {
+    name: '张建国',
+    age: 78,
+    living_status: '独居',
+    chronic_conditions: ['冠心病', '高血压II级', '2型糖尿病'],
+    emergency_contact: '13900001111',
+    last_checkup: '2026-03-15'
+  }
+}
+
+/**
+ * 查询房间环境数据
+ *
+ * 真实环境对接: 鸿蒙分布式软总线 → 传感器南向驱动
+ * 协议: MQTT / CoAP → EMQX Broker
+ *
+ * @param {string} roomId - 房间编号
+ * @returns {Promise<Object>} 环境参数
+ */
+async function queryEnvironment(roomId) {
+  console.log(`[Harmony-Bus] 查询房间环境: room_id=${roomId}`)
+  console.log(`[Harmony-Bus] 协议: CoAP → 192.168.0.72:5683`)
+
+  return {
+    temperature: 24.5,
+    humidity: 62.0,
+    pm25: 18,
+    tvoc: 0.12,
+    floor_water: false,
+    infrared_motion: true
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  决策引擎: 30 秒无应答自动升级
+// ---------------------------------------------------------------------------
+
+/**
+ * 一级高危告警升级与推送
+ *
+ * 触发条件: AI 语音确认超时 (30s 无应答)
+ * 执行动作: 聚合载荷 → 鸿蒙分布式总线 → 物理设备联动
+ *
+ * @param {Object} payload - 聚合数据载荷
+ * @param {string} payload.USER_ID   - 用户ID
+ * @param {string} payload.ROOM_ID   - 房间编号
+ * @param {Object} payload.healthRecord - 健康档案
+ * @param {Object} payload.envData      - 环境数据
+ */
+async function escalateToEmergency(payload) {
+  console.log('')
+  console.log('[决策引擎] ⚠️ 30 秒超时无应答！')
+  console.log('[决策引擎] 自动升级: 三级关注 → 一级高危')
+  console.log('[决策引擎] 正在聚合多源载荷...')
+  console.log('')
+
+  // ╔══════════════════════════════════════════════════════════════════════╗
+  // ║                                                                    ║
+  // ║   ████████████  现场 Live Coding 区域  ████████████                ║
+  // ║                                                                    ║
+  // ║   请现场手写以下 3 个代码块:                                       ║
+  // ║     1. 组装 eventPayload JSON 聚合载荷                             ║
+  // ║     2. 使用 Node.js 原生 fetch 发送 POST                           ║
+  // ║     3. 打印推送确认日志                                            ║
+  // ║                                                                    ║
+  // ║   注意: 代码需取消注释后方可执行                                   ║
+  // ║                                                                    ║
+  // ╚══════════════════════════════════════════════════════════════════════╝
+
+  // TODO Step 1/3: 组装多源聚合载荷（JSON）
+  // 提示: 将 room_id、event_type('跌倒')、level('一级高危')、health_record、env_data 封装
+
+  // TODO Step 2/3: 通过 fetch 将载荷 POST 到鸿蒙分布式总线
+
+  // TODO Step 3/3: 打印推送结果确认日志
+
+  // ╔══════════════════════════════════════════════════════════════════════╗
+  // ║                    ↑ 请在以上区域编写代码 ↑                        ║
+  // ╚══════════════════════════════════════════════════════════════════════╝
+}
+
+// ---------------------------------------------------------------------------
+//  主流程
+// ---------------------------------------------------------------------------
+
+async function main() {
+  const USER_ID = '10086'
+  const ROOM_ID = '3-201'
+
+  console.log('══════════════════════════════════════════════════════════')
+  console.log('  鸿蒙智慧社区卫士 — 消息总线 v3.9.0')
+  console.log('  Harmony Smart Community Guardian')
+  console.log('══════════════════════════════════════════════════════════')
+  console.log('')
+
+  // Step 1: 拉取健康档案
+  const healthRecord = await queryHealthProfile(USER_ID)
+
+  // Step 2: 拉取环境数据
+  const envData = await queryEnvironment(ROOM_ID)
+
+  // Step 3: AI 语音确认倒计时
+  console.log('')
+  console.log('[AI-语音] 🎙️ 正在呼叫住户张建国...')
+  console.log('[AI-语音] "建国叔叔，您还好吗？请语音回复确认安全"')
+  console.log(`[AI-语音] 等候应答中... (${AI_CONFIRM_TIMEOUT_MS / 1000} 秒)`)
+  console.log('')
+
+  await new Promise((resolve) => setTimeout(resolve, AI_CONFIRM_TIMEOUT_MS))
+
+  // Step 4: 超时 → 升级告警
+  await escalateToEmergency({
+    USER_ID,
+    ROOM_ID,
+    healthRecord,
+    envData
+  })
+
+  console.log('')
+  console.log('[消息总线] 流程结束。')
+}
+
+main().catch((err) => {
+  console.error('[消息总线] 异常:', err)
+  process.exit(1)
+})

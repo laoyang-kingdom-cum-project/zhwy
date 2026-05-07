@@ -1,0 +1,12 @@
+{
+  "name": "harmony-message-bus",
+  "version": "3.9.0",
+  "description": "鸿蒙智慧社区微服务消息总线 — RuoYi + Harmony Distributed Bus",
+  "main": "HarmonyMessageBus.js",
+  "scripts": {
+    "start": "node HarmonyMessageBus.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
