@@ -1,59 +1,55 @@
 <template>
-  <web-view
-    :src="haUrl"
-    :update-title="false"
-  ></web-view>
+  <view class="device-page"></view>
 </template>
 
 <script>
 import env from '@/config/env.js'
 
 export default {
-  data() {
-    return {
-      haUrl: `http://${env.haHost}:${env.haPort}/?external_auth=1`
-    }
-  },
   onShow() {
     uni.showTabBar()
   },
   onReady() {
     // #ifdef APP-PLUS
+    const info = uni.getSystemInfoSync()
     const token = uni.getStorageSync('ha_access_token') || env.haAccessToken
+    const haUrl = `http://${env.haHost}:${env.haPort}/?external_auth=1`
 
     const injectCode = `
-      window.externalApp = {
-        getExternalAuth: function(options) {
-          window.externalAuthSetToken(true, {
-            access_token: '${token}',
-            expires_in: 315360000
-          })
-        },
-        revokeExternalAuth: function() {
-          window.externalAuthRevokeToken(false)
-        }
-      }
-      if (typeof window.externalAuthSetToken === 'function') {
-        window.externalAuthSetToken(true, {
-          access_token: '${token}',
-          expires_in: 315360000
-        })
-      }
+      window.externalApp={
+        getExternalAuth:function(o){window.externalAuthSetToken(true,{access_token:"${token}",expires_in:315360000})},
+        revokeExternalAuth:function(){window.externalAuthRevokeToken(false)}
+      };
+      window.externalAppV2={
+        getExternalAuth:function(o){window.externalAuthSetToken(true,{access_token:"${token}",expires_in:315360000})},
+        revokeExternalAuth:function(){window.externalAuthRevokeToken(false)}
+      };
     `
 
-    const doInject = () => {
-      const currentWebview = this.$scope.$getAppWebview()
-      const wv = currentWebview && currentWebview.children() && currentWebview.children()[0]
-      if (wv) {
-        wv.evalJS(injectCode)
-        console.log('[HA-Auth] 外部认证代码已注入')
-      }
-    }
+    const wv = plus.webview.create('about:blank', 'ha-webview', {
+      top: (info.statusBarHeight + 44) + 'px',
+      bottom: '50px',
+      'uni-app': 'none'
+    })
 
-    setTimeout(doInject, 200)
-    setTimeout(doInject, 800)
-    setTimeout(doInject, 2000)
+    // 关键：在 HA 页面加载前注入，确保 externalApp 在 HA 脚本执行前就存在
+    wv.addEventListener('loading', function() {
+      wv.evalJS(injectCode)
+    })
+
+    wv.loadURL(haUrl)
+
+    const currentWebview = this.$scope.$getAppWebview()
+    currentWebview.append(wv)
     // #endif
   }
 }
 </script>
+
+<style>
+.device-page {
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+}
+</style>
