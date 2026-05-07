@@ -15,42 +15,61 @@ export default {
     const token = uni.getStorageSync('ha_access_token') || env.haAccessToken
     const haUrl = `http://${env.haHost}:${env.haPort}/?external_auth=1`
 
-    const authJs = `
-window.externalApp={
-  getExternalAuth:function(o){window.externalAuthSetToken(!0,{access_token:"${token}",expires_in:315360000})},
-  revokeExternalAuth:function(o){window.externalAuthRevokeToken(!1)},
-  postMessage:function(msg){}
-};
-window.externalAppV2={
-  getExternalAuth:function(o){window.externalAuthSetToken(!0,{access_token:"${token}",expires_in:315360000})},
-  revokeExternalAuth:function(o){window.externalAuthRevokeToken(!1)},
-  postMessage:function(msg){},
-  connectionStatus:function(cb){cb(!0)},
-  setThemeColor:function(c){}
-};`
+    // 注入代码：V1 + V2 双协议 + 主动出击打破 60 秒死锁
+    const injectCode = `
+(function(){
+  if (window.__ha_auth_injected) return;
+  window.__ha_auth_injected = true;
 
-    const fileName = 'ha-auth-' + Date.now() + '.js'
-    const filePath = '_doc/' + fileName
+  var TK = { access_token: "${token}", expires_in: 315360000 };
 
-    plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
-      fs.root.getFile(fileName, { create: true }, function(fileEntry) {
-        fileEntry.createWriter(function(writer) {
-          writer.onwriteend = function() {
-            const wv = plus.webview.create(haUrl, 'ha-webview', {
-              top: (info.statusBarHeight + 44) + 'px',
-              bottom: '50px',
-              'uni-app': 'none'
-            })
+  // V1 协议降级
+  window.externalApp = {
+    getExternalAuth: function(o) { window.externalAuthSetToken(true, TK); },
+    revokeExternalAuth: function(o) { window.externalAuthRevokeToken(false); },
+    postMessage: function(msg) {}
+  };
 
-            wv.appendJsFile(filePath)
+  // V2 协议（官方 HA Companion 标准）
+  window.externalAppV2 = {
+    getExternalAuth: function(o) { window.externalAuthSetToken(true, TK); },
+    revokeExternalAuth: function(o) { window.externalAuthRevokeToken(false); },
+    connectionStatus: function(cb) { cb(true); },
+    setThemeColor: function(c) {},
+    postMessage: function(msg) {
+      try {
+        var data = typeof msg === 'string' ? JSON.parse(msg) : msg;
+        if (data && data.payload && typeof data.payload.callback === 'function') {
+          data.payload.callback(TK);
+        }
+      } catch(e) {}
+    }
+  };
 
-            const currentWebview = this.$scope.$getAppWebview()
-            currentWebview.append(wv)
-          }.bind(this)
-          writer.write(authJs)
-        }.bind(this))
-      }.bind(this))
-    }.bind(this))
+  // 主动出击：如果 HA 已经把接收端准备好了，直接硬塞 Token
+  if (typeof window.externalAuthSetToken === 'function') {
+    window.externalAuthSetToken(true, TK);
+  }
+})();`
+
+    // 创建 webview
+    const wv = plus.webview.create(haUrl, 'ha-webview', {
+      top: (info.statusBarHeight + 44) + 'px',
+      bottom: '50px',
+      'uni-app': 'none'
+    })
+
+    // 多重生命周期注入 — loading 抢跑 + loaded 补刀
+    wv.addEventListener('loading', function() {
+      wv.evalJS(injectCode)
+    })
+
+    wv.addEventListener('loaded', function() {
+      wv.evalJS(injectCode)
+    })
+
+    const currentWebview = this.$scope.$getAppWebview()
+    currentWebview.append(wv)
     // #endif
   }
 }
