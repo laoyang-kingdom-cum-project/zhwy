@@ -119,5 +119,17 @@
     "navigationBarBackgroundColor": "#ffffff",
     "backgroundColor": "#f5f7fa"
   },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#007AFF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "static/icon/fangwu_weixuanzhong.png", "selectedIconPath": "static/icon/fangwu_xuanzhong.png" },
+      { "pagePath": "pages/warning/index", "text": "预警", "iconPath": "static/icon/yujing.png", "selectedIconPath": "static/icon/yujing_1.png" },
+      { "pagePath": "pages/device/index", "text": "设备", "iconPath": "static/icon/a-shebieguanlibeifen4.png", "selectedIconPath": "static/icon/shebiejiankong.png" },
+      { "pagePath": "pages/user/index", "text": "我的", "iconPath": "static/icon/wodedangxuan.png", "selectedIconPath": "static/icon/icon-myself.png" }
+    ]
+  },
   "uniIdRouter": {}
 }

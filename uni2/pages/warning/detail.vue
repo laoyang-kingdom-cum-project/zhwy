@@ -92,7 +92,7 @@
 <script>
 import { getWarningDetail, handleWarning } from '@/api/warning.js'
 import { getEmergencyResources } from '@/api/ai.js'
-import { emergencyAiConfig } from '../../uni/config/ai-config.js'
+import { emergencyAiConfig } from '@/config/ai-config.js'
 
 export default {
   data() {

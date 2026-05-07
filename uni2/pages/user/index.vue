@@ -71,8 +71,6 @@
       <button class="logout-btn" @click="logout">退出登录</button>
     </view>
     
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="3"></custom-tabbar>
   </view>
 </template>
 
@@ -102,6 +100,7 @@ export default {
     this.loadStats()
   },
   onShow() {
+    uni.showTabBar()
     this.loadUserInfo()
     this.loadStats()
   },
