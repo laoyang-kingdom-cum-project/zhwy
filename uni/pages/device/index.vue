@@ -15,65 +15,73 @@ export default {
     const token = uni.getStorageSync('ha_access_token') || env.haAccessToken
     const haUrl = `http://${env.haHost}:${env.haPort}/?external_auth=1`
 
-    // 注入代码：V1 + V2 双协议 + 主动出击打破 60 秒死锁
-    const injectCode = `
-(function(){
-  if (window.__ha_auth_injected) return;
-  window.__ha_auth_injected = true;
+    // 修复了 V2 协议回调名字解析的致命错误，并且确保严丝合缝
+    const authJs = `
+    (function(){
+      var TK = { access_token: "${token}", expires_in: 315360000 };
+      
+      // V2 协议（官方 HA Companion 标准）
+      window.externalAppV2 = {
+        postMessage: function(msgStr) {
+          try {
+            var msg = typeof msgStr === 'string' ? JSON.parse(msgStr) : msgStr;
+            if (msg && msg.type === 'getExternalAuth' && msg.payload && msg.payload.callback) {
+              // HA 发来的是回调函数的名字（字符串），我们需要去 window 里找这个函数执行它
+              var cbName = msg.payload.callback;
+              if (typeof window[cbName] === 'function') {
+                window[cbName](true, TK);
+              }
+            }
+          } catch(e) {}
+        }
+      };
 
-  var TK = { access_token: "${token}", expires_in: 315360000 };
-
-  // V1 协议降级
-  window.externalApp = {
-    getExternalAuth: function(o) { window.externalAuthSetToken(true, TK); },
-    revokeExternalAuth: function(o) { window.externalAuthRevokeToken(false); },
-    postMessage: function(msg) {}
-  };
-
-  // V2 协议（官方 HA Companion 标准）
-  window.externalAppV2 = {
-    getExternalAuth: function(o) { window.externalAuthSetToken(true, TK); },
-    revokeExternalAuth: function(o) { window.externalAuthRevokeToken(false); },
-    connectionStatus: function(cb) { cb(true); },
-    setThemeColor: function(c) {},
-    postMessage: function(msg) {
-      try {
-        var data = typeof msg === 'string' ? JSON.parse(msg) : msg;
-        // 关键修复：HA 发来的是回调函数的名字（字符串），我们要去 window 里找这个函数
-        if (data && data.type === 'getExternalAuth' && data.payload && data.payload.callback) {
-          var cbName = data.payload.callback; 
-          if (typeof window[cbName] === 'function') {
-            window[cbName](true, TK); // 执行 window.xxx(true, {Token})
+      // V1 协议降级保护
+      window.externalApp = {
+        getExternalAuth: function(o) {
+          if (typeof window.externalAuthSetToken === 'function') {
+            window.externalAuthSetToken(true, TK);
+          }
+        },
+        revokeExternalAuth: function(o) {
+          if (typeof window.externalAuthRevokeToken === 'function') {
+            window.externalAuthRevokeToken(false);
           }
         }
-      } catch(e) {}
-    }
-  };
+      };
+    })();`;
 
-  // 主动出击：如果 HA 已经把接收端准备好了，直接硬塞 Token
-  if (typeof window.externalAuthSetToken === 'function') {
-    window.externalAuthSetToken(true, TK);
-  }
-})();`
+    const fileName = 'ha-auth-' + Date.now() + '.js'
+    const filePath = '_doc/' + fileName
 
-    // 创建 webview
-    const wv = plus.webview.create(haUrl, 'ha-webview', {
-      top: (info.statusBarHeight + 44) + 'px',
-      bottom: '50px',
-      'uni-app': 'none'
-    })
+    // 开始异步写文件...
+    plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
+      fs.root.getFile(fileName, { create: true }, function(fileEntry) {
+        fileEntry.createWriter(function(writer) {
+          writer.onwriteend = function() {
+            
+            // 🌟 核心破局点 1：先创建一个【空白】的 Webview，绝对不要在这里传入 haUrl！
+            const wv = plus.webview.create('', 'ha-webview', {
+              top: (info.statusBarHeight + 44) + 'px',
+              bottom: '50px',
+              'uni-app': 'none'
+            })
 
-    // 多重生命周期注入 — loading 抢跑 + loaded 补刀
-    wv.addEventListener('loading', function() {
-      wv.evalJS(injectCode)
-    })
+            // 🌟 核心破局点 2：趁着网页空白，将魔法代码深深植入
+            wv.appendJsFile(filePath)
 
-    wv.addEventListener('loaded', function() {
-      wv.evalJS(injectCode)
-    })
+            const currentWebview = this.$scope.$getAppWebview()
+            currentWebview.append(wv)
 
-    const currentWebview = this.$scope.$getAppWebview()
-    currentWebview.append(wv)
+            // 🌟 核心破局点 3：子弹全部上膛完毕，正式命令加载 HA！
+            // 这样能保证我们的 JS 绝对会在 HA 的任何环境检查之前执行完毕喵！
+            wv.loadURL(haUrl)
+
+          }.bind(this)
+          writer.write(authJs)
+        }.bind(this))
+      }.bind(this))
+    }.bind(this))
     // #endif
   }
 }
