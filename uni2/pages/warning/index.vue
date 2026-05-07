@@ -114,8 +114,6 @@
       </view>
     </scroll-view>
 
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="1"></custom-tabbar>
   </view>
 </template>
 
@@ -146,6 +144,7 @@ export default {
     this.loadData()
   },
   onShow() {
+    uni.showTabBar()
     this.loadData()
   },
   methods: {

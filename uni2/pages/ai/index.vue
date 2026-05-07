@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { propertyAiConfig } from '../../uni/config/ai-config.js'
+import { propertyAiConfig } from '@/config/ai-config.js'
 
 export default {
   data() {

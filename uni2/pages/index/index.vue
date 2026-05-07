@@ -121,9 +121,6 @@
 
     <!-- 底部安全间距 -->
     <view class="safe-bottom"></view>
-
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="0"></custom-tabbar>
   </view>
 </template>
 
@@ -149,6 +146,7 @@ export default {
     this.updateDateTime()
   },
   onShow() {
+    uni.showTabBar()
     this.loadData()
     this.updateDateTime()
   },
