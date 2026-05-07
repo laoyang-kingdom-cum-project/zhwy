@@ -95,9 +95,9 @@ export default {
     setLayout(event) {
       this.$emit('setLayout')
     },
-    // 跳转到数据大屏
+    // 跳转到沙盘
     goToDashboard() {
-      window.open('/dashboard', '_blank')
+      this.$router.push('/sandbox')
     },
     logout() {
       this.$confirm('确定注销并退出系统吗？', '提示', {

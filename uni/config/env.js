@@ -1,7 +1,7 @@
 // UniApp 前端统一配置（修改此文件后需重新编译 App 生效）
 const env = {
   // 后端 API
-  baseUrl: 'http://192.168.0.114:8080',
+  baseUrl: 'http://192.168.0.114:81',
   apiPrefix: '/por-api',
   timeout: 10000,
   debug: true,

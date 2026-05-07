@@ -68,6 +68,12 @@ export const constantRoutes = [
     meta: { title: '数据大屏' }
   },
   {
+    path: '/sandbox',
+    component: () => import('@/views/sandbox'),
+    hidden: true,
+    meta: { title: '沙盘' }
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
