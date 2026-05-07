@@ -18,11 +18,15 @@ export default {
     const authJs = `
 window.externalApp={
   getExternalAuth:function(o){window.externalAuthSetToken(!0,{access_token:"${token}",expires_in:315360000})},
-  revokeExternalAuth:function(){window.externalAuthRevokeToken(!1)}
+  revokeExternalAuth:function(o){window.externalAuthRevokeToken(!1)},
+  postMessage:function(msg){}
 };
 window.externalAppV2={
   getExternalAuth:function(o){window.externalAuthSetToken(!0,{access_token:"${token}",expires_in:315360000})},
-  revokeExternalAuth:function(){window.externalAuthRevokeToken(!1)}
+  revokeExternalAuth:function(o){window.externalAuthRevokeToken(!1)},
+  postMessage:function(msg){},
+  connectionStatus:function(cb){cb(!0)},
+  setThemeColor:function(c){}
 };`
 
     plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
