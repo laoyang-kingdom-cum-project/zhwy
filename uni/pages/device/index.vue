@@ -29,8 +29,11 @@ window.externalAppV2={
   setThemeColor:function(c){}
 };`
 
+    const fileName = 'ha-auth-' + Date.now() + '.js'
+    const filePath = '_doc/' + fileName
+
     plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
-      fs.root.getFile('ha-auth.js', { create: true }, function(fileEntry) {
+      fs.root.getFile(fileName, { create: true }, function(fileEntry) {
         fileEntry.createWriter(function(writer) {
           writer.onwriteend = function() {
             const wv = plus.webview.create(haUrl, 'ha-webview', {
@@ -39,7 +42,7 @@ window.externalAppV2={
               'uni-app': 'none'
             })
 
-            wv.appendJsFile('_doc/ha-auth.js')
+            wv.appendJsFile(filePath)
 
             const currentWebview = this.$scope.$getAppWebview()
             currentWebview.append(wv)
