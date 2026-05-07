@@ -158,6 +158,7 @@
 <script>
 import * as THREE from 'three'
 import * as echarts from 'echarts'
+import buildingTextureImg from './tt.png'
 
 export default {
   name: 'Sandbox',
@@ -168,6 +169,7 @@ export default {
       camera: null,
       renderer: null,
       buildings: [],
+      buildingTexture: null,
       isDragging: false,
       lastMouseX: 0,
       lastMouseY: 0,
@@ -282,6 +284,83 @@ export default {
       this.currentEvent = event
       this.detailVisible = true
     },
+    generateBuildingTexture(width, height, depth, baseColor) {
+      const canvas = document.createElement('canvas')
+      const size = 512
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+
+      // 解析颜色
+      const r = (baseColor >> 16) & 255
+      const g = (baseColor >> 8) & 255
+      const b = baseColor & 255
+
+      // 绘制墙面背景
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
+      ctx.fillRect(0, 0, size, size)
+
+      // 添加噪点纹理
+      for (let i = 0; i < 5000; i++) {
+        const x = Math.random() * size
+        const y = Math.random() * size
+        const brightness = Math.random() * 40 - 20
+        ctx.fillStyle = `rgba(${r + brightness}, ${g + brightness}, ${b + brightness}, 0.3)`
+        ctx.fillRect(x, y, 2, 2)
+      }
+
+      // 窗户参数
+      const windowRows = Math.floor(height / 15)
+      const windowCols = Math.floor(width / 10)
+      const windowW = size / (windowCols + 1) * 0.6
+      const windowH = size / (windowRows + 1) * 0.5
+      const spacingX = size / (windowCols + 1)
+      const spacingY = size / (windowRows + 1)
+
+      // 绘制窗户
+      for (let row = 0; row < windowRows; row++) {
+        for (let col = 0; col < windowCols; col++) {
+          const x = spacingX * (col + 0.5) - windowW / 2
+          const y = spacingY * (row + 0.5) - windowH / 2
+
+          // 随机决定窗户是否亮灯
+          const isLit = Math.random() > 0.4
+
+          if (isLit) {
+            // 亮灯窗户 - 暖黄色
+            const lightIntensity = 0.5 + Math.random() * 0.5
+            ctx.fillStyle = `rgba(255, 220, 100, ${lightIntensity})`
+            ctx.fillRect(x, y, windowW, windowH)
+
+            // 窗户光晕
+            const gradient = ctx.createRadialGradient(
+              x + windowW / 2, y + windowH / 2, 0,
+              x + windowW / 2, y + windowH / 2, windowW
+            )
+            gradient.addColorStop(0, `rgba(255, 220, 100, ${lightIntensity * 0.5})`)
+            gradient.addColorStop(1, 'rgba(255, 220, 100, 0)')
+            ctx.fillStyle = gradient
+            ctx.fillRect(x - 5, y - 5, windowW + 10, windowH + 10)
+          } else {
+            // 暗窗户 - 深蓝色
+            ctx.fillStyle = '#1a2332'
+            ctx.fillRect(x, y, windowW, windowH)
+          }
+
+          // 窗框
+          ctx.strokeStyle = '#2a3a4a'
+          ctx.lineWidth = 2
+          ctx.strokeRect(x, y, windowW, windowH)
+        }
+      }
+
+      // 创建纹理
+      const texture = new THREE.CanvasTexture(canvas)
+      texture.wrapS = THREE.RepeatWrapping
+      texture.wrapT = THREE.RepeatWrapping
+
+      return texture
+    },
     initLogStream() {
       // 初始化显示5条日志
       for (let i = 0; i < 5; i++) {
@@ -350,6 +429,41 @@ export default {
       ground.rotation.x = -Math.PI / 2
       ground.receiveShadow = true
       this.scene.add(ground)
+
+      // 预加载建筑贴图
+      const textureLoader = new THREE.TextureLoader()
+      console.log('开始加载贴图:', buildingTextureImg)
+      const self = this
+      textureLoader.load(
+        buildingTextureImg,
+        function(texture) {
+          console.log('贴图加载成功:', texture)
+          self.buildingTexture = texture
+          self.buildingTexture.wrapS = THREE.RepeatWrapping
+          self.buildingTexture.wrapT = THREE.RepeatWrapping
+          // 重新生成建筑以应用贴图
+          console.log('准备调用 rebuildBuildings')
+          self.rebuildBuildings()
+        },
+        function(progress) {
+          console.log('贴图加载进度:', progress)
+        },
+        function(error) {
+          console.error('建筑贴图加载失败:', error)
+        }
+      )
+    },
+    rebuildBuildings() {
+      console.log('重新生成建筑，贴图:', this.buildingTexture)
+      // 清除现有建筑
+      this.buildings.forEach(building => {
+        this.scene.remove(building)
+        building.geometry.dispose()
+        building.material.dispose()
+      })
+      this.buildings = []
+      // 重新生成
+      this.initBuildings()
     },
     initBuildings() {
       const grayColors = [0x4a5568, 0x5a6578, 0x6a7588, 0x7a8598, 0x8a95a8]
@@ -467,12 +581,36 @@ export default {
         const height = baseHeight * heightFactor + Math.random() * 30
 
         const isSpecial = Math.random() < 0.1
-        const color = isSpecial
+        const buildingColor = isSpecial
           ? specialColors[Math.floor(Math.random() * specialColors.length)]
           : grayColors[Math.floor(Math.random() * grayColors.length)]
 
         const geometry = new THREE.BoxGeometry(width, height, depth)
-        const material = new THREE.MeshLambertMaterial({ color })
+
+        // 创建材质 - 使用纯色或贴图
+         let material
+         if (this.buildingTexture) {
+           console.log('使用贴图创建建筑, 尺寸:', width, height)
+           // 克隆贴图以支持不同的重复次数
+           const texture = this.buildingTexture.clone()
+           texture.wrapS = THREE.RepeatWrapping
+           texture.wrapT = THREE.RepeatWrapping
+           // 根据建筑尺寸调整贴图重复
+           const repeatX = Math.max(1, width / 10)
+           const repeatY = Math.max(1, height / 10)
+           texture.repeat.set(repeatX, repeatY)
+           texture.needsUpdate = true
+           material = new THREE.MeshStandardMaterial({
+             map: texture,
+             color: 0xffffff,
+             roughness: 0.8,
+             metalness: 0.1
+           })
+         } else {
+           console.log('使用纯色创建建筑')
+           // 备用：使用纯色
+           material = new THREE.MeshLambertMaterial({ color: buildingColor })
+         }
         const building = new THREE.Mesh(geometry, material)
 
         building.position.set(x, height / 2 + 0.5, z)

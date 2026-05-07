@@ -86,36 +86,13 @@
       <button class="action-btn btn-default" @click="contactSupport">联系支援</button>
     </view>
 
-    <!-- API密钥输入弹窗 -->
-    <view class="api-key-modal" v-if="showApiKeyModal">
-      <view class="modal-mask" @click="closeApiKeyModal"></view>
-      <view class="modal-content">
-        <view class="modal-header">
-          <text class="modal-title">请输入API密钥</text>
-          <text class="modal-close" @click="closeApiKeyModal">×</text>
-        </view>
-        <view class="modal-body">
-          <text class="modal-desc">首次使用AI功能需要输入SiliconFlow API密钥</text>
-          <input 
-            class="api-key-input" 
-            v-model="tempApiKey" 
-            placeholder="sk-xxxxxxxxxxxxxxxx"
-            type="text"
-          />
-          <text class="modal-tip">密钥将保存在本地，仅用于AI对话</text>
-        </view>
-        <view class="modal-footer">
-          <view class="modal-btn cancel" @click="closeApiKeyModal">取消</view>
-          <view class="modal-btn confirm" @click="saveApiKey">确定</view>
-        </view>
-      </view>
-    </view>
   </view>
 </template>
 
 <script>
 import { getWarningDetail, handleWarning } from '@/api/warning.js'
 import { getEmergencyResources } from '@/api/ai.js'
+import { emergencyAiConfig } from '../../uni/config/ai-config.js'
 
 export default {
   data() {
@@ -124,10 +101,7 @@ export default {
       warning: {},
       emergencyPlan: '',
       resources: [],
-      aiLoading: false,
-      apiKey: '',
-      showApiKeyModal: false,
-      tempApiKey: ''
+      aiLoading: false
     }
   },
   onLoad(options) {
@@ -164,68 +138,19 @@ export default {
       }
     },
 
-    // 检查API密钥
-    checkApiKey() {
-      const storedKey = uni.getStorageSync('ai_api_key')
-      if (storedKey) {
-        this.apiKey = storedKey
-        return true
-      }
-      this.showApiKeyModal = true
-      return false
-    },
-
-    // 关闭弹窗
-    closeApiKeyModal() {
-      this.showApiKeyModal = false
-      this.tempApiKey = ''
-    },
-
-    // 保存API密钥
-    saveApiKey() {
-      const key = this.tempApiKey.trim()
-      if (!key) {
-        uni.showToast({ title: '请输入API密钥', icon: 'none' })
-        return
-      }
-      if (!key.startsWith('sk-')) {
-        uni.showToast({ title: '密钥格式不正确', icon: 'none' })
-        return
-      }
-      this.apiKey = key
-      uni.setStorageSync('ai_api_key', key)
-      this.showApiKeyModal = false
-      this.tempApiKey = ''
-      uni.showToast({ title: '保存成功', icon: 'success' })
-      // 保存成功后重新加载AI方案
-      this.loadAIPlan(this.warning.title, this.warning.location)
-    },
-    
     // 使用AI接口获取应急方案
     async loadAIPlan(title, location) {
-      // 检查API密钥
-      if (!this.checkApiKey()) {
-        this.emergencyPlan = ''
-        return
-      }
-
       this.aiLoading = true
       this.emergencyPlan = ''
 
       try {
         const message = `请为以下物业预警提供应急处理方案：\n预警类型：${title}\n发生位置：${location}\n\n请提供详细的应急处理步骤和注意事项。`
-        
+
         const plan = await this.callAI(message)
         this.emergencyPlan = plan.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
       } catch (error) {
         console.error('获取AI应急方案失败', error)
-        // 如果是因为token错误，显示输入框
-        if (error.message && (error.message.includes('401') || error.message.includes('Unauthorized'))) {
-          this.showApiKeyModal = true
-          uni.showToast({ title: 'API密钥无效，请重新输入', icon: 'none' })
-        } else {
-          this.emergencyPlan = '获取AI方案失败，请根据现场情况采取相应措施，确保人员安全。'
-        }
+        this.emergencyPlan = '获取AI方案失败，请根据现场情况采取相应措施，确保人员安全。'
       } finally {
         this.aiLoading = false
       }
@@ -233,26 +158,23 @@ export default {
 
     // 调用SiliconFlow AI接口
     async callAI(message) {
-      const API_URL = 'https://api.siliconflow.cn/v1/chat/completions'
-
       const res = await uni.request({
-        url: API_URL,
+        url: emergencyAiConfig.apiUrl,
         method: 'POST',
         header: {
-          'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
         },
         data: {
-          model: 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
+          model: emergencyAiConfig.model,
           messages: [
             {
               role: 'system',
-              content: '你是物业应急处理专家，可以为各种物业预警提供专业的应急处理方案。请用简洁友好的中文回答，提供清晰的操作步骤和注意事项。'
+              content: emergencyAiConfig.systemPrompt
             },
             { role: 'user', content: message }
           ],
-          temperature: 0.7,
-          max_tokens: 2048,
+          temperature: emergencyAiConfig.temperature,
+          max_tokens: emergencyAiConfig.maxTokens,
           stream: false
         }
       })
@@ -539,109 +461,5 @@ export default {
 .btn-default {
   background: #f5f7fa;
   color: #666;
-}
-
-/* API密钥弹窗 */
-.api-key-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-  width: 80%;
-  background: #fff;
-  border-radius: 16rpx;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.modal-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.modal-close {
-  font-size: 40rpx;
-  color: #999;
-  padding: 10rpx;
-}
-
-.modal-body {
-  padding: 30rpx;
-}
-
-.modal-desc {
-  display: block;
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 20rpx;
-}
-
-.api-key-input {
-  width: 100%;
-  height: 80rpx;
-  background: #f5f7fa;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  color: #333;
-  box-sizing: border-box;
-  margin-bottom: 16rpx;
-}
-
-.modal-tip {
-  display: block;
-  font-size: 24rpx;
-  color: #999;
-}
-
-.modal-footer {
-  display: flex;
-  padding: 20rpx 30rpx 30rpx;
-  gap: 20rpx;
-}
-
-.modal-btn {
-  flex: 1;
-  padding: 24rpx 0;
-  border-radius: 12rpx;
-  text-align: center;
-  font-size: 30rpx;
-}
-
-.modal-btn.cancel {
-  background: #f5f7fa;
-  color: #666;
-}
-
-.modal-btn.confirm {
-  background: #667eea;
-  color: #fff;
 }
 </style>

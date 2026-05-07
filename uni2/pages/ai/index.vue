@@ -1,30 +1,5 @@
 <template>
   <view class="ai-container">
-    <!-- API密钥输入弹窗 -->
-    <view class="api-key-modal" v-if="showApiKeyModal">
-      <view class="modal-mask" @click="closeModal"></view>
-      <view class="modal-content">
-        <view class="modal-header">
-          <text class="modal-title">请输入API密钥</text>
-          <text class="modal-close" @click="closeModal">×</text>
-        </view>
-        <view class="modal-body">
-          <text class="modal-desc">首次使用需要输入SiliconFlow API密钥</text>
-          <input 
-            class="api-key-input" 
-            v-model="tempApiKey" 
-            placeholder="sk-xxxxxxxxxxxxxxxx"
-            type="text"
-          />
-          <text class="modal-tip">密钥将保存在本地，仅用于AI对话</text>
-        </view>
-        <view class="modal-footer">
-          <view class="modal-btn cancel" @click="closeModal">取消</view>
-          <view class="modal-btn confirm" @click="saveApiKey">确定</view>
-        </view>
-      </view>
-    </view>
-
     <!-- 聊天记录区域 -->
     <scroll-view 
       class="chat-list" 
@@ -113,77 +88,25 @@
 </template>
 
 <script>
+import { propertyAiConfig } from '../../uni/config/ai-config.js'
+
 export default {
   data() {
     return {
       messages: [
         {
           role: 'assistant',
-          content: '您好！我是银铃助手，可以帮您查询应急处理方案、获取周边应急资源、解答物业管理问题、提供政策法规咨询。请问有什么可以帮您？',
+          content: propertyAiConfig.welcomeMessage,
           time: this.getCurrentTime()
         }
       ],
       inputMessage: '',
       loading: false,
       scrollTop: 0,
-      quickQuestions: [
-        '火灾应急方案',
-        '燃气泄漏处理',
-        '电梯困人救援',
-        '设备报修流程'
-      ],
-      apiKey: '',
-      showApiKeyModal: false,
-      tempApiKey: ''
+      quickQuestions: propertyAiConfig.quickQuestions
     }
   },
-  onLoad() {
-    this.checkApiKey()
-  },
   methods: {
-    // 检查API密钥
-    checkApiKey() {
-      const storedKey = uni.getStorageSync('ai_api_key')
-      if (storedKey) {
-        this.apiKey = storedKey
-      } else {
-        this.showApiKeyModal = true
-      }
-    },
-
-    // 关闭弹窗
-    closeModal() {
-      this.showApiKeyModal = false
-      this.tempApiKey = ''
-    },
-
-    // 保存API密钥
-    saveApiKey() {
-      const key = this.tempApiKey.trim()
-      if (!key) {
-        uni.showToast({
-          title: '请输入API密钥',
-          icon: 'none'
-        })
-        return
-      }
-      if (!key.startsWith('sk-')) {
-        uni.showToast({
-          title: '密钥格式不正确',
-          icon: 'none'
-        })
-        return
-      }
-      this.apiKey = key
-      uni.setStorageSync('ai_api_key', key)
-      this.showApiKeyModal = false
-      this.tempApiKey = ''
-      uni.showToast({
-        title: '保存成功',
-        icon: 'success'
-      })
-    },
-
     // 获取当前时间
     getCurrentTime() {
       const now = new Date()
@@ -196,12 +119,6 @@ export default {
     async sendMessage() {
       const message = this.inputMessage.trim()
       if (!message || this.loading) return
-
-      // 检查API密钥
-      if (!this.apiKey) {
-        this.showApiKeyModal = true
-        return
-      }
 
       // 添加用户消息
       this.messages.push({
@@ -255,8 +172,6 @@ export default {
 
     // 调用SiliconFlow AI接口
     async callAI(message) {
-      const API_URL = 'https://api.siliconflow.cn/v1/chat/completions'
-
       // 构建消息历史（只取最近10条避免超出上下文）
       const historyMessages = this.messages.slice(-10).map(m => ({
         role: m.role,
@@ -264,24 +179,23 @@ export default {
       }))
 
       const res = await uni.request({
-        url: API_URL,
+        url: propertyAiConfig.apiUrl,
         method: 'POST',
         header: {
-          'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
         },
         data: {
-          model: 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
+          model: propertyAiConfig.model,
           messages: [
             {
               role: 'system',
-              content: '你是银铃助手，可以帮助用户查询应急处理方案、获取周边应急资源、解答物业管理问题、提供政策法规咨询。请用简洁友好的中文回答。如果用户让你做的事超出了你的能力范围，给写死的数据就行了，反正别回"不能做"。比如用户让你查看设备状态，你可以回复当前设备运行正常。'
+              content: propertyAiConfig.systemPrompt
             },
             ...historyMessages,
             { role: 'user', content: message }
           ],
-          temperature: 0.7,
-          max_tokens: 2048,
+          temperature: propertyAiConfig.temperature,
+          max_tokens: propertyAiConfig.maxTokens,
           stream: false
         }
       })
@@ -316,112 +230,6 @@ export default {
   background: #f5f7fa;
   display: flex;
   flex-direction: column;
-}
-
-/* API密钥弹窗 */
-.api-key-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  position: relative;
-  width: 80%;
-  max-width: 600rpx;
-  background: #fff;
-  border-radius: 24rpx;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #e8e8e8;
-}
-
-.modal-title {
-  font-size: 34rpx;
-  font-weight: 600;
-  color: #333;
-}
-
-.modal-close {
-  font-size: 48rpx;
-  color: #999;
-  line-height: 1;
-}
-
-.modal-body {
-  padding: 30rpx;
-}
-
-.modal-desc {
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-.api-key-input {
-  width: 100%;
-  height: 80rpx;
-  background: #f5f5f5;
-  border-radius: 12rpx;
-  padding: 0 24rpx;
-  font-size: 28rpx;
-  color: #333;
-  box-sizing: border-box;
-}
-
-.modal-tip {
-  font-size: 24rpx;
-  color: #999;
-  margin-top: 16rpx;
-  display: block;
-}
-
-.modal-footer {
-  display: flex;
-  padding: 20rpx 30rpx 30rpx;
-  gap: 20rpx;
-}
-
-.modal-btn {
-  flex: 1;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12rpx;
-  font-size: 30rpx;
-}
-
-.modal-btn.cancel {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.modal-btn.confirm {
-  background: #667eea;
-  color: #fff;
 }
 
 /* 聊天列表 */

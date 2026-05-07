@@ -4,7 +4,8 @@ const config = {
   baseUrl: env.baseUrl,
   apiPrefix: env.apiPrefix,
   timeout: env.timeout,
-  debug: env.debug
+  debug: env.debug,
+  ai: env.ai
 }
 
 export default config

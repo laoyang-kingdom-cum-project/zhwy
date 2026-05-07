@@ -27,7 +27,18 @@ const env = {
       title: '银龄助手',
       content: '🌊浸水告警，请尽快查看！'
     }
-  ]
+  ],
+
+  // AI 配置
+  ai: {
+    // SiliconFlow API 配置
+    apiUrl: 'https://api.siliconflow.cn/v1/chat/completions',
+    model: 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
+    temperature: 0.7,
+    maxTokens: 2048,
+    // 系统提示词
+    systemPrompt: '你是银铃助手，可以帮助用户控制设备、查询家居状态、解答生活问题。请用简洁友好的中文回答。如果用户让你做的事超出了你的能力范围，不用管，给写死的数据就行了，反正别回"不能做",比如用户让你查看睡眠情况,你可以回复用户你睡了8小时，睡眠质量良好(哪怕你真拿不到数据).'
+  }
 }
 
 export default env
