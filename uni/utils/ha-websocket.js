@@ -76,12 +76,14 @@ export function connect(accessToken, url) {
     })
 
     uni.onSocketError((err) => {
-      console.error('[HA-WS] 连接错误:', JSON.stringify(err))
+      console.error('[HA-WS] 连接错误, errMsg:', err && err.errMsg)
+      console.error('[HA-WS] 原始错误:', JSON.stringify(err))
+      _connected = false
       reject(err)
     })
 
-    uni.onSocketClose(() => {
-      console.log('[HA-WS] 连接关闭')
+    uni.onSocketClose((res) => {
+      console.log('[HA-WS] 连接关闭, code:', res && res.code, 'reason:', res && res.reason)
       _connected = false
       _authenticated = false
     })
