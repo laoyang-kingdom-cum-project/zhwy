@@ -19,13 +19,13 @@ const env = {
       entityId: 'sensor.lumi_cn_918860765_mcn02_status_p_2_1',
       alertState: '自检',
       title: '银龄助手',
-      content: '⚠️老人跌倒告警，请尽快查看！'
+      content: '⚠️101住户老人跌倒告警，请尽快查看！'
     },
     {
       entityId: 'event.xiaomi_cn_blt_3_1otprfbc0cc03_oh83w_submersion_sensor_event_e_2_1104',
       alertState: null,
       title: '银龄助手',
-      content: '🌊浸水告警，请尽快查看！'
+      content: '🌊101住户浸水告警，请尽快查看！'
     }
   ],
 

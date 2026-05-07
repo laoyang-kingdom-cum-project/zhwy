@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import config from '@/config/index.js'
+import env from '@/config/env.js'
 
 export default {
   onShow() {
@@ -12,32 +12,13 @@ export default {
   onReady() {
     // #ifdef APP-PLUS
     const info = uni.getSystemInfoSync()
-    const token = uni.getStorageSync('ha_access_token') || config.haAccessToken
-    const haUrl = `http://${config.haHost}:${config.haPort}/?external_auth=1`
+    const haUrl = `http://${env.haHost}:${env.haPort}` // 连后缀都不需要了！
 
-    const injectCode = `
-      window.externalApp={
-        getExternalAuth:function(o){window.externalAuthSetToken(true,{access_token:"${token}",expires_in:315360000})},
-        revokeExternalAuth:function(){window.externalAuthRevokeToken(false)}
-      };
-      window.externalAppV2={
-        getExternalAuth:function(o){window.externalAuthSetToken(true,{access_token:"${token}",expires_in:315360000})},
-        revokeExternalAuth:function(){window.externalAuthRevokeToken(false)}
-      };
-    `
-
-    const wv = plus.webview.create('about:blank', 'ha-webview', {
+    const wv = plus.webview.create(haUrl, 'ha-webview', {
       top: (info.statusBarHeight + 44) + 'px',
-      bottom: '50px',
+      bottom: '50uni2/utils uni/utils/ha-fall-alert.js uni/utils/ha-websocket.jspx',
       'uni-app': 'none'
     })
-
-    // 关键：在 HA 页面加载前注入，确保 externalApp 在 HA 脚本执行前就存在
-    wv.addEventListener('loading', function() {
-      wv.evalJS(injectCode)
-    })
-
-    wv.loadURL(haUrl)
 
     const currentWebview = this.$scope.$getAppWebview()
     currentWebview.append(wv)
@@ -47,9 +28,5 @@ export default {
 </script>
 
 <style>
-.device-page {
-  width: 100%;
-  height: 100vh;
-  background: #fff;
-}
+.device-page { width: 100%; height: 100vh; background: #fff; }
 </style>
