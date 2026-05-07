@@ -39,8 +39,12 @@ export default {
     postMessage: function(msg) {
       try {
         var data = typeof msg === 'string' ? JSON.parse(msg) : msg;
-        if (data && data.payload && typeof data.payload.callback === 'function') {
-          data.payload.callback(TK);
+        // 关键修复：HA 发来的是回调函数的名字（字符串），我们要去 window 里找这个函数
+        if (data && data.type === 'getExternalAuth' && data.payload && data.payload.callback) {
+          var cbName = data.payload.callback; 
+          if (typeof window[cbName] === 'function') {
+            window[cbName](true, TK); // 执行 window.xxx(true, {Token})
+          }
         }
       } catch(e) {}
     }
