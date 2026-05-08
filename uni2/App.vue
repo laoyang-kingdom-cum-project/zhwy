@@ -1,4 +1,9 @@
 <script>
+// #ifdef APP-PLUS
+import { initFallAlert } from '@/utils/ha-fall-alert.js'
+import env from '@/config/env.js'
+// #endif
+
 export default {
   onLaunch: function() {
     console.log('App Launch')
@@ -9,6 +14,13 @@ export default {
         url: '/pages/login/index'
       })
     }
+
+    // #ifdef APP-PLUS
+    const haToken = uni.getStorageSync('ha_access_token') || env.haAccessToken
+    if (haToken) {
+      initFallAlert(haToken)
+    }
+    // #endif
   },
   onShow: function() {
     console.log('App Show')

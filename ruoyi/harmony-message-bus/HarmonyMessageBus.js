@@ -31,7 +31,7 @@ const HARMONY_WEBHOOK = process.env.HARMONY_WEBHOOK
   || 'http://192.168.0.71:8123/api/webhook/harmony_emergency'
 
 const AI_CONFIRM_TIMEOUT_MS = parseInt(
-  process.env.AI_CONFIRM_TIMEOUT_MS || '30000',
+  process.env.AI_CONFIRM_TIMEOUT_MS || '2000',
   10
 )
 
@@ -125,9 +125,26 @@ async function escalateToEmergency(payload) {
   // TODO Step 1/3: 组装多源聚合载荷（JSON）
   // 提示: 将 room_id、event_type('跌倒')、level('一级高危')、health_record、env_data 封装
 
+  // const eventPayload = {
+  //   room_id: payload.ROOM_ID,
+  //   event_type: '跌倒',
+  //   level: '一级高危',
+  //   health_record: payload.healthRecord,
+  //   env_data: payload.envData
+  // }
+    
+
   // TODO Step 2/3: 通过 fetch 将载荷 POST 到鸿蒙分布式总线
 
+  // await fetch(HARMONY_WEBHOOK, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(eventPayload)
+  // })
+
   // TODO Step 3/3: 打印推送结果确认日志
+
+  // console.log('[消息总线] ✅ 告警已推送到鸿蒙分布式总线')
 
   // ╔══════════════════════════════════════════════════════════════════════╗
   // ║                    ↑ 请在以上区域编写代码 ↑                        ║
