@@ -103,7 +103,8 @@ export default {
       inputMessage: '',
       loading: false,
       scrollTop: 0,
-      quickQuestions: propertyAiConfig.quickQuestions
+      quickQuestions: propertyAiConfig.quickQuestions,
+      conversationId: '' // Dify 会话 ID，用于保持上下文
     }
   },
   methods: {
@@ -134,8 +135,8 @@ export default {
       // 调用AI接口
       try {
         let aiResponse = await this.callAI(message)
-        // 删除开头的 <br> 标签和换行
-        aiResponse = aiResponse.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+        // 处理AI回复：删除 <think> 标签及其内容，以及开头的 <br> 标签和换行
+        aiResponse = this.formatAIResponse(aiResponse)
         this.messages.push({
           role: 'assistant',
           content: aiResponse,
@@ -170,40 +171,52 @@ export default {
       }, 100)
     },
 
-    // 调用SiliconFlow AI接口
+    // 格式化AI回复，去除 <think> 标签及其内容
+    formatAIResponse(response) {
+      if (!response) return ''
+      // 删除 <think> 标签及其内部内容（包括多行内容）
+      let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
+      // 删除开头的 <br> 标签和换行
+      formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+      // 删除多余的空行
+      formatted = formatted.replace(/\n{3,}/g, '\n\n')
+      // 去除首尾空白
+      formatted = formatted.trim()
+      return formatted
+    },
+
+    // 调用 Dify AI 接口
     async callAI(message) {
-      // 构建消息历史（只取最近10条避免超出上下文）
-      const historyMessages = this.messages.slice(-10).map(m => ({
-        role: m.role,
-        content: m.content
-      }))
+      const requestData = {
+        inputs: {},
+        query: message,
+        user: propertyAiConfig.userId,
+        response_mode: 'blocking'
+      }
+
+      // 如果有会话 ID，则传入以保持上下文
+      if (this.conversationId) {
+        requestData.conversation_id = this.conversationId
+      }
 
       const res = await uni.request({
         url: propertyAiConfig.apiUrl,
         method: 'POST',
         header: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${propertyAiConfig.apiKey}`
         },
-        data: {
-          model: propertyAiConfig.model,
-          messages: [
-            {
-              role: 'system',
-              content: propertyAiConfig.systemPrompt
-            },
-            ...historyMessages,
-            { role: 'user', content: message }
-          ],
-          temperature: propertyAiConfig.temperature,
-          max_tokens: propertyAiConfig.maxTokens,
-          stream: false
-        }
+        data: requestData
       })
 
-      if (res.statusCode === 200 && res.data.choices && res.data.choices[0]) {
-        return res.data.choices[0].message.content
+      if (res.statusCode === 200 && res.data.answer) {
+        // 保存会话 ID 用于后续对话
+        if (res.data.conversation_id) {
+          this.conversationId = res.data.conversation_id
+        }
+        return res.data.answer
       } else {
-        throw new Error(res.data.error?.message || 'AI请求失败')
+        throw new Error(res.data.message || 'AI请求失败')
       }
     },
 
