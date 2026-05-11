@@ -147,7 +147,7 @@ export default {
         const message = `请为以下物业预警提供应急处理方案：\n预警类型：${title}\n发生位置：${location}\n\n请提供详细的应急处理步骤和注意事项。`
 
         const plan = await this.callAI(message)
-        this.emergencyPlan = plan.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+        this.emergencyPlan = this.formatAIResponse(plan)
       } catch (error) {
         console.error('获取AI应急方案失败', error)
         this.emergencyPlan = '获取AI方案失败，请根据现场情况采取相应措施，确保人员安全。'
@@ -156,38 +156,46 @@ export default {
       }
     },
 
-    // 调用SiliconFlow AI接口
+    // 调用 Dify AI 接口
     async callAI(message) {
       const res = await uni.request({
         url: emergencyAiConfig.apiUrl,
         method: 'POST',
         header: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${emergencyAiConfig.apiKey}`
         },
         data: {
-          model: emergencyAiConfig.model,
-          messages: [
-            {
-              role: 'system',
-              content: emergencyAiConfig.systemPrompt
-            },
-            { role: 'user', content: message }
-          ],
-          temperature: emergencyAiConfig.temperature,
-          max_tokens: emergencyAiConfig.maxTokens,
-          stream: false
+          inputs: {},
+          query: message,
+          user: emergencyAiConfig.userId,
+          response_mode: 'blocking'
         }
       })
 
-      if (res.statusCode === 200 && res.data.choices && res.data.choices[0]) {
-        return res.data.choices[0].message.content
+      if (res.statusCode === 200 && res.data.answer) {
+        return res.data.answer
       } else if (res.statusCode === 401) {
         throw new Error('401 Unauthorized: API密钥无效')
       } else {
-        throw new Error(res.data.error?.message || 'AI请求失败')
+        throw new Error(res.data.message || 'AI请求失败')
       }
     },
-    
+
+    // 格式化AI回复，去除 <think> 标签及其内容
+    formatAIResponse(response) {
+      if (!response) return ''
+      // 删除 <think> 标签及其内部内容（包括多行内容）
+      let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
+      // 删除开头的 <br> 标签和换行
+      formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+      // 删除多余的空行
+      formatted = formatted.replace(/\n{3,}/g, '\n\n')
+      // 去除首尾空白
+      formatted = formatted.trim()
+      return formatted
+    },
+
     async loadResources(location) {
       try {
         const res = await getEmergencyResources({ location })

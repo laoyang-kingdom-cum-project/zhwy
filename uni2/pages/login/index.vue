@@ -126,7 +126,7 @@ export default {
         uni.setStorageSync('savedUsername', this.loginForm.username)
       }
     },
-
+    
     // 刷新验证码
     async refreshCaptcha() {
       try {

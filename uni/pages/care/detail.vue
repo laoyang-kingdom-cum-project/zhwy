@@ -223,31 +223,39 @@ export default {
         url: healthAiConfig.apiUrl,
         method: 'POST',
         header: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${healthAiConfig.apiKey}`
         },
         data: {
-          model: healthAiConfig.model,
-          messages: [
-            {
-              role: 'system',
-              content: `${healthAiConfig.systemPrompt}\n\n${healthData}`
-            },
-            {
-              role: 'user',
-              content: '请分析这位家人的健康状况，并给出专业建议。'
-            }
-          ],
-          temperature: healthAiConfig.temperature,
-          max_tokens: healthAiConfig.maxTokens,
-          stream: false
+          inputs: {
+            health_data: healthData
+          },
+          query: '请分析这位家人的健康状况，并给出专业建议。',
+          user: healthAiConfig.userId,
+          response_mode: 'blocking'
         }
       })
 
-      if (res.statusCode === 200 && res.data.choices && res.data.choices[0]) {
-        return res.data.choices[0].message.content
+      if (res.statusCode === 200 && res.data.answer) {
+        // 处理AI回复：删除 <think> 标签及其内容
+        return this.formatAIResponse(res.data.answer)
       } else {
-        throw new Error(res.data.error?.message || 'AI请求失败')
+        throw new Error(res.data.message || 'AI请求失败')
       }
+    },
+
+    // 格式化AI回复，去除 <think> 标签及其内容
+    formatAIResponse(response) {
+      if (!response) return ''
+      // 删除 <think> 标签及其内部内容（包括多行内容）
+      let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
+      // 删除开头的 <br> 标签和换行
+      formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+      // 删除多余的空行
+      formatted = formatted.replace(/\n{3,}/g, '\n\n')
+      // 去除首尾空白
+      formatted = formatted.trim()
+      return formatted
     }
   }
 }
