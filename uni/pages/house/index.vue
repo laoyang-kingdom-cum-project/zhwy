@@ -37,7 +37,7 @@
       <view class="device-grid">
         <view class="device-card" v-for="(device, index) in devices" :key="index" :class="{ offline: !device.online }">
           <view class="device-icon" :style="{ background: device.bgColor }">
-            <text>{{ device.icon }}</text>
+            <image :src="device.icon" class="icon-image" />
           </view>
           <view class="device-info">
             <text class="device-name">{{ device.name }}</text>
@@ -53,12 +53,12 @@
       <!-- 告警数据 -->
       <view class="section">
         <view class="section-header">
-          <text class="section-title">⚠️ 告警记录</text>
+          <text class="section-title"><image class="inline-icon" src="/static/emojis/emoji_39_warning.png" /> 告警记录</text>
         </view>
         <view class="alarm-list">
           <view class="alarm-item" v-for="(alarm, index) in alarmList" :key="index" @click="showAlarmDetail(alarm)">
             <view class="alarm-icon" :class="'level-' + alarm.level">
-              <text>{{ alarm.icon }}</text>
+              <image :src="alarm.icon" class="icon-image" />
             </view>
             <view class="alarm-info">
               <text class="alarm-type">{{ alarm.type }}</text>
@@ -76,7 +76,7 @@
         <view class="sensor-card" v-for="(sensor, index) in sensors" :key="index" :class="{ abnormal: sensor.status === '异常' }">
           <view class="sensor-header">
             <view class="sensor-icon" :style="{ background: sensor.bgColor }">
-              <text>{{ sensor.icon }}</text>
+              <image :src="sensor.icon" class="icon-image" />
             </view>
             <view class="sensor-status-tag" :class="'status-' + sensor.status">{{ sensor.status }}</view>
           </view>
@@ -93,32 +93,32 @@
       <!-- 传感器说明 -->
       <view class="section">
         <view class="section-header">
-          <text class="section-title">📡 传感器说明</text>
+          <text class="section-title"><image class="inline-icon" src="/static/emojis/emoji_36_satellite.png" /> 传感器说明</text>
         </view>
         <view class="sensor-desc-list">
           <view class="sensor-desc-item">
-            <text class="desc-icon">📡</text>
+            <image class="desc-icon" src="/static/emojis/emoji_36_satellite.png" />
             <view class="desc-info">
               <text class="desc-name">全屋毫米波雷达</text>
               <text class="desc-text">检测人体存在和活动状态，用于智能联动和跌倒检测</text>
             </view>
           </view>
           <view class="sensor-desc-item">
-            <text class="desc-icon">🌡️</text>
+            <image class="desc-icon" src="/static/emojis/emoji_37_thermometer.png" />
             <view class="desc-info">
               <text class="desc-name">红外传感器</text>
               <text class="desc-text">检测人体红外信号，判断是否有人进入区域</text>
             </view>
           </view>
           <view class="sensor-desc-item">
-            <text class="desc-icon">👤</text>
+            <image class="desc-icon" src="/static/emojis/emoji_02_person.png" />
             <view class="desc-info">
               <text class="desc-name">人体存在传感器</text>
               <text class="desc-text">高精度存在感知，判断是否有人持续存在</text>
             </view>
           </view>
           <view class="sensor-desc-item">
-            <text class="desc-icon">🔊</text>
+            <image class="desc-icon" src="/static/emojis/emoji_34_speaker.png" />
             <view class="desc-info">
               <text class="desc-name">声学异响传感器</text>
               <text class="desc-text">监测异常声响，如摔倒声、玻璃破碎声等</text>
@@ -350,33 +350,33 @@ export default {
       currentAlarm: null,
       
       devices: [
-        { name: '小艺音箱', icon: '🔊', room: '客厅', online: true, bgColor: '#E8F5E9' },
-        { name: '小艺音箱', icon: '🔊', room: '卧室', online: true, bgColor: '#E8F5E9' },
-        { name: '智能灯', icon: '💡', room: '客厅', online: true, bgColor: '#FFF8E1' },
-        { name: '智能灯', icon: '💡', room: '卧室', online: true, bgColor: '#FFF8E1' },
-        { name: '智能灯', icon: '💡', room: '厨房', online: false, bgColor: '#FFF8E1' },
-        { name: '智能窗帘', icon: '🪟', room: '客厅', online: true, bgColor: '#E3F2FD' },
-        { name: '智能窗帘', icon: '🪟', room: '卧室', online: true, bgColor: '#E3F2FD' },
-        { name: '智能插座', icon: '🔌', room: '客厅', online: true, bgColor: '#FCE4EC' },
-        { name: '智能插座', icon: '🔌', room: '厨房', online: true, bgColor: '#FCE4EC' },
-        { name: '智能插座', icon: '🔌', room: '书房', online: false, bgColor: '#FCE4EC' }
+        { name: '小艺音箱', icon: '/static/emojis/emoji_34_speaker.png', room: '客厅', online: true, bgColor: '#E8F5E9' },
+        { name: '小艺音箱', icon: '/static/emojis/emoji_34_speaker.png', room: '卧室', online: true, bgColor: '#E8F5E9' },
+        { name: '智能灯', icon: '/static/emojis/emoji_25_bulb.png', room: '客厅', online: true, bgColor: '#FFF8E1' },
+        { name: '智能灯', icon: '/static/emojis/emoji_25_bulb.png', room: '卧室', online: true, bgColor: '#FFF8E1' },
+        { name: '智能灯', icon: '/static/emojis/emoji_25_bulb.png', room: '厨房', online: false, bgColor: '#FFF8E1' },
+        { name: '智能窗帘', icon: '/static/emojis/emoji_30_switch.png', room: '客厅', online: true, bgColor: '#E3F2FD' },
+        { name: '智能窗帘', icon: '/static/emojis/emoji_30_switch.png', room: '卧室', online: true, bgColor: '#E3F2FD' },
+        { name: '智能插座', icon: '/static/emojis/emoji_35_plug.png', room: '客厅', online: true, bgColor: '#FCE4EC' },
+        { name: '智能插座', icon: '/static/emojis/emoji_35_plug.png', room: '厨房', online: true, bgColor: '#FCE4EC' },
+        { name: '智能插座', icon: '/static/emojis/emoji_35_plug.png', room: '书房', online: false, bgColor: '#FCE4EC' }
       ],
       
       sensors: [
-        { name: '全屋毫米波雷达', icon: '📡', location: '全屋覆盖', status: '正常', value: '3人', unit: '检测中', updateTime: '刚刚', bgColor: '#E3F2FD' },
-        { name: '红外传感器', icon: '🌡️', location: '门口', status: '正常', value: '未检测', unit: '', updateTime: '刚刚', bgColor: '#FFEBEE' },
-        { name: '人体存在传感器', icon: '👤', location: '客厅', status: '正常', value: '有人', unit: '', updateTime: '刚刚', bgColor: '#F3E5F5' },
-        { name: '声学异响传感器', icon: '🔊', location: '客厅', status: '正常', value: '安静', unit: '', updateTime: '刚刚', bgColor: '#E0F7FA' },
-        { name: '全屋毫米波雷达', icon: '📡', location: '卧室', status: '正常', value: '1人', unit: '检测中', updateTime: '刚刚', bgColor: '#E3F2FD' },
-        { name: '红外传感器', icon: '🌡️', location: '阳台', status: '异常', value: '-', unit: '', updateTime: '5分钟前', bgColor: '#FFEBEE' }
+        { name: '全屋毫米波雷达', icon: '/static/emojis/emoji_36_satellite.png', location: '全屋覆盖', status: '正常', value: '3人', unit: '检测中', updateTime: '刚刚', bgColor: '#E3F2FD' },
+        { name: '红外传感器', icon: '/static/emojis/emoji_37_thermometer.png', location: '门口', status: '正常', value: '未检测', unit: '', updateTime: '刚刚', bgColor: '#FFEBEE' },
+        { name: '人体存在传感器', icon: '/static/emojis/emoji_02_person.png', location: '客厅', status: '正常', value: '有人', unit: '', updateTime: '刚刚', bgColor: '#F3E5F5' },
+        { name: '声学异响传感器', icon: '/static/emojis/emoji_34_speaker.png', location: '客厅', status: '正常', value: '安静', unit: '', updateTime: '刚刚', bgColor: '#E0F7FA' },
+        { name: '全屋毫米波雷达', icon: '/static/emojis/emoji_36_satellite.png', location: '卧室', status: '正常', value: '1人', unit: '检测中', updateTime: '刚刚', bgColor: '#E3F2FD' },
+        { name: '红外传感器', icon: '/static/emojis/emoji_37_thermometer.png', location: '阳台', status: '异常', value: '-', unit: '', updateTime: '5分钟前', bgColor: '#FFEBEE' }
       ],
       
       alarmList: [
-        { type: '人员跌倒事件', icon: '🧍', time: '2026-04-28 14:30', location: '客厅', level: 1, status: '处理中', description: '检测到客厅区域有人员跌倒动作，已通知家人和物业' },
-        { type: '燃气长时间未关', icon: '🔥', time: '2026-04-27 20:15', location: '厨房', level: 1, status: '已处理', description: '厨房燃气使用超过2小时未关闭，已自动关闭并通知' },
-        { type: '用水量异常', icon: '💧', time: '2026-04-26 03:20', location: '卫生间', level: 2, status: '已处理', description: '检测到深夜时段用水量异常，疑似漏水' },
-        { type: '人员跌倒事件', icon: '🧍', time: '2026-04-25 16:45', location: '卧室', level: 1, status: '已处理', description: '检测到卧室区域有人员跌倒动作' },
-        { type: '声学异响', icon: '🔊', time: '2026-04-24 22:10', location: '厨房', level: 2, status: '已处理', description: '检测到厨房区域有玻璃破碎声' }
+        { type: '人员跌倒事件', icon: '/static/emojis/emoji_08_standing.png', time: '2026-04-28 14:30', location: '客厅', level: 1, status: '处理中', description: '检测到客厅区域有人员跌倒动作，已通知家人和物业' },
+        { type: '燃气长时间未关', icon: '/static/emojis/emoji_27_fire.png', time: '2026-04-27 20:15', location: '厨房', level: 1, status: '已处理', description: '厨房燃气使用超过2小时未关闭，已自动关闭并通知' },
+        { type: '用水量异常', icon: '/static/emojis/emoji_28_droplet.png', time: '2026-04-26 03:20', location: '卫生间', level: 2, status: '已处理', description: '检测到深夜时段用水量异常，疑似漏水' },
+        { type: '人员跌倒事件', icon: '/static/emojis/emoji_08_standing.png', time: '2026-04-25 16:45', location: '卧室', level: 1, status: '已处理', description: '检测到卧室区域有人员跌倒动作' },
+        { type: '声学异响', icon: '/static/emojis/emoji_34_speaker.png', time: '2026-04-24 22:10', location: '厨房', level: 2, status: '已处理', description: '检测到厨房区域有玻璃破碎声' }
       ],
       
       waterHistory: [
@@ -470,6 +470,12 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
   padding-bottom: 40rpx;
+
+  .inline-icon {
+    width: 28rpx;
+    height: 28rpx;
+    vertical-align: middle;
+  }
 }
 
 .header {
@@ -567,8 +573,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40rpx;
     margin-right: 16rpx;
+
+    .icon-image {
+      width: 40rpx;
+      height: 40rpx;
+    }
   }
 
   .device-info {
@@ -646,8 +656,12 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36rpx;
       margin-right: 16rpx;
+
+      .icon-image {
+        width: 36rpx;
+        height: 36rpx;
+      }
 
       &.level-1 { background: #FFEBEE; }
       &.level-2 { background: #FFF3E0; }
@@ -708,7 +722,11 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32rpx;
+
+      .icon-image {
+        width: 32rpx;
+        height: 32rpx;
+      }
     }
 
     .sensor-status-tag {
@@ -766,7 +784,8 @@ export default {
     }
 
     .desc-icon {
-      font-size: 36rpx;
+      width: 36rpx;
+      height: 36rpx;
       margin-right: 16rpx;
     }
 

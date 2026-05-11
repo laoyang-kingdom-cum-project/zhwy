@@ -17,7 +17,7 @@
         >
           <!-- AI头像 -->
           <view class="avatar ai-avatar" v-if="item.role === 'assistant'">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           
           <!-- 消息内容 -->
@@ -30,14 +30,14 @@
 
           <!-- 用户头像 -->
           <view class="avatar user-avatar" v-if="item.role === 'user'">
-            <text class="avatar-icon">👤</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_02_person.png" />
           </view>
         </view>
 
         <!-- 加载中 -->
         <view class="message-row ai-row" v-if="loading">
           <view class="avatar ai-avatar">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           <view class="loading-bubble">
             <view class="loading-dot"></view>
@@ -58,7 +58,7 @@
           :key="i"
           @click="sendQuickQuestion(q)"
         >
-          <text class="question-icon">💡</text>
+          <image class="question-icon" src="/static/emojis/emoji_25_bulb.png" />
           <text class="question-text">{{ q }}</text>
         </view>
       </view>
@@ -80,7 +80,7 @@
           :class="{ active: inputMessage.trim() && !loading }" 
           @click="sendMessage"
         >
-          <text class="send-icon">➤</text>
+          <image class="send-icon" src="/static/emojis/emoji_24_arrow.png" />
         </view>
       </view>
     </view>
@@ -104,7 +104,7 @@ export default {
       loading: false,
       scrollTop: 0,
       quickQuestions: propertyAiConfig.quickQuestions,
-      conversationId: '' // Dify 会话 ID，用于保持上下文
+      conversationId: '' // Dify 会话 
     }
   },
   methods: {
@@ -293,7 +293,8 @@ export default {
 }
 
 .avatar-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 /* 消息体 */
@@ -425,7 +426,8 @@ export default {
 }
 
 .question-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   margin-right: 8rpx;
 }
 
@@ -478,7 +480,8 @@ export default {
 }
 
 .send-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   color: #fff;
   margin-left: 4rpx;
 }

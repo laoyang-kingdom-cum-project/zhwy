@@ -17,7 +17,7 @@
         >
           <!-- AI头像 -->
           <view class="avatar ai-avatar" v-if="item.role === 'assistant'">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           
           <!-- 消息内容 -->
@@ -30,14 +30,14 @@
 
           <!-- 用户头像 -->
           <view class="avatar user-avatar" v-if="item.role === 'user'">
-            <text class="avatar-icon">👤</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_02_person.png" />
           </view>
         </view>
 
         <!-- 加载中 -->
         <view class="message-row ai-row" v-if="loading">
           <view class="avatar ai-avatar">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           <view class="loading-bubble">
             <view class="loading-dot"></view>
@@ -58,7 +58,7 @@
           :key="i"
           @click="sendQuickQuestion(q)"
         >
-          <text class="question-icon">💡</text>
+          <image class="question-icon" src="/static/emojis/emoji_25_bulb.png" />
           <text class="question-text">{{ q }}</text>
         </view>
       </view>
@@ -80,7 +80,7 @@
           :class="{ active: inputMessage.trim() && !loading }" 
           @click="sendMessage"
         >
-          <text class="send-icon">➤</text>
+          <image class="send-icon" src="/static/emojis/emoji_10_send.png" />
         </view>
       </view>
     </view>
@@ -277,7 +277,8 @@ export default {
   }
 
   .avatar-icon {
-    font-size: 36rpx;
+    width: 40rpx;
+    height: 40rpx;
   }
 }
 
@@ -407,7 +408,8 @@ export default {
       }
 
       .question-icon {
-        font-size: 24rpx;
+        width: 28rpx;
+        height: 28rpx;
         margin-right: 8rpx;
       }
 
@@ -460,9 +462,8 @@ export default {
       }
 
       .send-icon {
-        font-size: 28rpx;
-        color: #fff;
-        margin-left: 4rpx;
+        width: 32rpx;
+        height: 32rpx;
       }
     }
   }

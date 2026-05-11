@@ -29,14 +29,14 @@
 				const currentPage = pages[0] ? pages[0].route : ''
 				
 				if (token) {
-					// 有token，如果在登录页则跳转到首页
+					// 有token，如果在登录页则跳转到首�?
 					if (currentPage === 'pages/login/index') {
 						uni.reLaunch({
 							url: '/pages/index/index'
 						})
 					}
 				} else {
-					// 没有token，如果不在登录页则跳转到登录页
+					// 没有token，如果不在登录页则跳转到登录�?
 					if (currentPage !== 'pages/login/index') {
 						uni.reLaunch({
 							url: '/pages/login/index'
@@ -100,3 +100,4 @@
 		font-size: 1.1em !important;
 	}
 </style>
+

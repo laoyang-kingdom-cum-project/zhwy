@@ -3,7 +3,7 @@
     <!-- 设备信息卡片 -->
     <view class="device-card">
       <view class="device-icon" :class="device.deviceType">
-        <text>{{ getDeviceIcon(device.deviceType) }}</text>
+        <image class="device-icon-img" :src="getDeviceIcon(device.deviceType)" />
       </view>
       <text class="device-name">{{ device.deviceName }}</text>
       <text class="device-status" :class="device.online ? 'online' : 'offline'">
@@ -65,7 +65,7 @@
           :class="{ active: currentMode === mode.value }"
           @click="selectMode(mode.value)"
         >
-          <text class="mode-icon">{{ mode.icon }}</text>
+          <image class="mode-icon" :src="mode.icon" />
           <text class="mode-name">{{ mode.name }}</text>
         </view>
       </view>
@@ -114,10 +114,10 @@ export default {
       },
       currentMode: 'cool',
       modes: [
-        { name: '制冷', value: 'cool', icon: '❄️' },
-        { name: '制热', value: 'heat', icon: '🔥' },
-        { name: '除湿', value: 'dry', icon: '💧' },
-        { name: '送风', value: 'fan', icon: '🌪️' }
+        { name: '制冷', value: 'cool', icon: '/static/emojis/emoji_26_snowflake.png' },
+        { name: '制热', value: 'heat', icon: '/static/emojis/emoji_27_fire.png' },
+        { name: '除湿', value: 'dry', icon: '/static/emojis/emoji_28_droplet.png' },
+        { name: '送风', value: 'fan', icon: '/static/emojis/emoji_29_tornado.png' }
       ]
     }
   },
@@ -149,14 +149,14 @@ export default {
 
     getDeviceIcon(type) {
       const icons = {
-        light: '💡',
-        air_conditioner: '❄️',
-        curtain: '🪟',
-        switch: '🔘',
-        lock: '🔒',
-        camera: '📷'
+        light: '/static/emojis/emoji_25_bulb.png',
+        air_conditioner: '/static/emojis/emoji_26_snowflake.png',
+        curtain: '/static/emojis/emoji_30_switch.png',
+        switch: '/static/emojis/emoji_30_switch.png',
+        lock: '/static/emojis/emoji_31_lock.png',
+        camera: '/static/emojis/emoji_32_camera.png'
       }
-      return icons[type] || '📟'
+      return icons[type] || '/static/emojis/emoji_33_pager.png'
     },
     getDeviceTypeName(type) {
       const names = {
@@ -233,8 +233,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 80rpx;
-    margin-bottom: 30rpx;
+    .device-icon-img {
+      width: 80rpx;
+      height: 80rpx;
+    }
 
     &.light { background: #FFF8E1; }
     &.air_conditioner { background: #E3F2FD; }
@@ -333,7 +335,8 @@ export default {
     padding: 20rpx 0;
 
     .mode-icon {
-      font-size: 48rpx;
+      width: 48rpx;
+      height: 48rpx;
       margin-bottom: 12rpx;
     }
 

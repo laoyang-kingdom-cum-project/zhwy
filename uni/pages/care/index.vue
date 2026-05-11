@@ -2,7 +2,7 @@
   <view class="care-container">
     <view class="care-toolbar">
       <view class="toolbar-btn" @click="navigateToFamily">
-        <text class="toolbar-icon">👨‍👩‍👧‍👦</text>
+        <image class="toolbar-icon" src="/static/emojis/emoji_06_family.png" />
         <text class="toolbar-text">家人管理</text>
         <text class="toolbar-arrow">›</text>
       </view>
@@ -27,17 +27,17 @@
         <view class="care-body">
           <view class="care-stats">
             <view class="stat">
-              <text class="stat-icon">👣</text>
+              <image class="stat-icon" src="/static/emojis/emoji_03_footprints.png" />
               <text class="stat-value">{{ item.steps }}</text>
               <text class="stat-label">步数</text>
             </view>
             <view class="stat">
-              <text class="stat-icon">😴</text>
+              <image class="stat-icon" src="/static/emojis/emoji_04_sleeping.png" />
               <text class="stat-value">{{ item.sleep }}小时</text>
               <text class="stat-label">睡眠</text>
             </view>
             <view class="stat">
-              <text class="stat-icon">❤️</text>
+              <image class="stat-icon" src="/static/emojis/emoji_05_heart.png" />
               <text class="stat-value">{{ item.heartRate }}</text>
               <text class="stat-label">心率</text>
             </view>
@@ -292,7 +292,8 @@ export default {
     }
 
     .toolbar-icon {
-      font-size: 40rpx;
+      width: 40rpx;
+      height: 40rpx;
       margin-right: 16rpx;
     }
 
@@ -380,7 +381,8 @@ export default {
           align-items: center;
 
           .stat-icon {
-            font-size: 40rpx;
+            width: 40rpx;
+            height: 40rpx;
             margin-bottom: 8rpx;
           }
 

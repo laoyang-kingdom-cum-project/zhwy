@@ -3,11 +3,11 @@
     <!-- 顶部状态栏 -->
     <view class="header">
       <view class="location">
-        <text class="icon">📍</text>
+        <image class="icon" src="/static/emojis/emoji_43_location.png" />
         <text class="text">{{ address || '阳光花园小区' }}</text>
       </view>
       <view class="weather">
-        <text class="icon">🌡️</text>
+        <image class="icon" src="/static/emojis/emoji_37_thermometer.png" />
         <text class="text">{{ temperature }}°C</text>
       </view>
     </view>
@@ -75,7 +75,7 @@
       </view>
       <view class="warning-list">
         <view class="warning-item" v-for="(item, index) in warnings" :key="index" @click="navigateTo('/pages/warning/detail')">
-          <view class="warning-icon" :class="'level-' + item.level">⚠️</view>
+          <view class="warning-icon" :class="'level-' + item.level"><image class="warning-icon-img" src="/static/emojis/emoji_39_warning.png" /></view>
           <view class="warning-info">
             <text class="warning-title">{{ item.title }}</text>
             <text class="warning-location">{{ item.location }}</text>
@@ -293,7 +293,8 @@ export default {
     align-items: center;
 
     .icon {
-      font-size: 32rpx;
+      width: 32rpx;
+      height: 32rpx;
       margin-right: 8rpx;
     }
 
@@ -489,6 +490,11 @@ export default {
       justify-content: center;
       font-size: 36rpx;
       margin-right: 20rpx;
+
+      .warning-icon-img {
+        width: 36rpx;
+        height: 36rpx;
+      }
 
       &.level-1 {
         background: #FFEBEE;

@@ -47,7 +47,7 @@
         <view class="card-header">
           <view class="order-type">
             <view class="type-icon-box" :class="'type-' + getTypeClass(item.type)">
-              <text class="type-icon">{{getTypeIcon(item.type)}}</text>
+              <image class="type-icon" :src="getTypeIcon(item.type)" />
             </view>
             <view class="type-info">
               <text class="type-text">{{item.type}}</text>
@@ -65,28 +65,28 @@
           </view>
           <view class="info-grid">
             <view class="info-item">
-              <text class="info-icon">👤</text>
+              <image class="info-icon" src="/static/emojis/emoji_02_person.png" />
               <view class="info-text">
                 <text class="info-label">联系人</text>
                 <text class="info-value">{{item.contactName}}</text>
               </view>
             </view>
             <view class="info-item">
-              <text class="info-icon">📞</text>
+              <image class="info-icon" src="/static/emojis/emoji_18_phone.png" />
               <view class="info-text">
                 <text class="info-label">联系电话</text>
                 <text class="info-value">{{item.contactPhone}}</text>
               </view>
             </view>
             <view class="info-item full-width">
-              <text class="info-icon">📍</text>
+              <image class="info-icon" src="/static/emojis/emoji_43_location.png" />
               <view class="info-text">
                 <text class="info-label">服务地址</text>
                 <text class="info-value">{{item.address}}</text>
               </view>
             </view>
             <view class="info-item">
-              <text class="info-icon">🕐</text>
+              <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
               <view class="info-text">
                 <text class="info-label">提交时间</text>
                 <text class="info-value">{{item.createTime}}</text>
@@ -101,7 +101,7 @@
           </view>
           <view class="action-btns">
             <button v-if="item.status === 0" class="btn btn-primary" @click.stop="assignOrder(item)">
-              <text class="btn-icon">📋</text>
+              <image class="btn-icon" src="/static/emojis/emoji_21_clipboard.png" />
               <text>分配工单</text>
             </button>
             <button v-if="item.status === 1" class="btn btn-success" @click.stop="completeOrder(item)">
@@ -118,7 +118,7 @@
 
       <view class="empty-tip" v-if="orderList.length === 0 && !loading">
         <view class="empty-icon-box">
-          <text class="empty-icon">📭</text>
+          <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
         </view>
         <text class="empty-text">暂无服务订单</text>
         <text class="empty-subtext">暂无相关订单数据</text>
@@ -246,13 +246,13 @@ export default {
 
     getTypeIcon(type) {
       const map = {
-        '保洁服务': '🧹',
-        '维修服务': '🔧',
-        '搬家服务': '🚚',
-        '洗衣服务': '👕',
-        '其他': '📋'
+        '保洁服务': '/static/emojis/emoji_48_broom.png',
+        '维修服务': '/static/emojis/emoji_19_wrench.png',
+        '搬家服务': '/static/emojis/emoji_49_truck.png',
+        '洗衣服务': '/static/emojis/emoji_50_shirt.png',
+        '其他': '/static/emojis/emoji_21_clipboard.png'
       }
-      return map[type] || '📋'
+      return map[type] || '/static/emojis/emoji_21_clipboard.png'
     },
 
     getTypeClass(type) {
@@ -468,7 +468,8 @@ export default {
 .type-icon-box.type-other { background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%); }
 
 .type-icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .type-info {
@@ -560,7 +561,8 @@ export default {
 }
 
 .info-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
   margin-top: 4rpx;
 }
@@ -627,7 +629,8 @@ export default {
 
 .btn-icon {
   margin-right: 8rpx;
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .btn-primary {
@@ -689,7 +692,8 @@ export default {
 }
 
 .empty-icon {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
 }
 
 .empty-text {

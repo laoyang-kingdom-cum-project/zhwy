@@ -20,7 +20,7 @@
         <text class="value">{{fault.reportTime}}</text>
       </view>
       <view class="info-item">
-        <text class="label">处理状态</text>
+        <text class="label">处理状�?/text>
         <view class="status-tag" :class="'status-' + (fault.handleStatus || '0')">
           {{getStatusText(fault.handleStatus || '0')}}
         </view>
@@ -37,7 +37,7 @@
 
     <!-- 操作按钮 -->
     <view class="action-section" v-if="(fault.handleStatus || '0') !== '2'">
-      <button v-if="(fault.handleStatus || '0') === '0'" class="action-btn btn-primary" @click="handleFault('1')">开始处理</button>
+      <button v-if="(fault.handleStatus || '0') === '0'" class="action-btn btn-primary" @click="handleFault('1')">开始处�?/button>
       <button v-if="(fault.handleStatus || '0') === '1'" class="action-btn btn-success" @click="completeFault">完成处理</button>
     </view>
   </view>
@@ -62,7 +62,7 @@ export default {
   methods: {
     async loadDetail() {
       uni.showLoading({
-        title: '加载中...'
+        title: '加载�?..'
       })
 
       try {
@@ -82,8 +82,8 @@ export default {
     },
 
     getStatusText(status) {
-      const map = { '0': '待处理', '1': '处理中', '2': '已处理' }
-      return map[status] || '待处理'
+      const map = { '0': '待处�?, '1': '处理�?, '2': '已处�? }
+      return map[status] || '待处�?
     },
 
     formatDateTime(date) {
@@ -102,7 +102,7 @@ export default {
         content: '确定要开始处理该故障吗？',
         success: async (res) => {
           if (res.confirm) {
-            uni.showLoading({ title: '处理中...' })
+            uni.showLoading({ title: '处理�?..' })
             try {
               const updateData = {
                 id: this.fault.id,
@@ -133,10 +133,10 @@ export default {
       uni.showModal({
         title: '处理结果',
         editable: true,
-        placeholderText: '请输入处理结果...',
+        placeholderText: '请输入处理结�?..',
         success: async (res) => {
           if (res.confirm && res.content) {
-            uni.showLoading({ title: '提交中...' })
+            uni.showLoading({ title: '提交�?..' })
             try {
               const updateData = {
                 id: this.fault.id,
@@ -261,3 +261,4 @@ export default {
   color: #fff;
 }
 </style>
+

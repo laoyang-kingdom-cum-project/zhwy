@@ -2,7 +2,7 @@
   <view class="warning-detail-container">
     <!-- 预警状态卡片 -->
     <view class="status-card" :class="'level-' + warning.level">
-      <view class="status-icon">⚠️</view>
+      <view class="status-icon"><image class="status-icon-img" src="/static/emojis/emoji_39_warning.png" /></view>
       <text class="status-title">{{ warning.levelText }}预警</text>
     </view>
 
@@ -112,8 +112,12 @@ export default {
   }
 
   .status-icon {
-    font-size: 80rpx;
     margin-bottom: 20rpx;
+
+    .status-icon-img {
+      width: 80rpx;
+      height: 80rpx;
+    }
   }
 
   .status-title {

@@ -9,7 +9,7 @@
         @click="navigateTo(item.path)"
       >
         <view class="service-icon" :style="{ background: item.bgColor }">
-          <text>{{ item.icon }}</text>
+          <image class="service-icon-img" :src="item.icon" />
         </view>
         <text class="service-name">{{ item.name }}</text>
       </view>
@@ -55,7 +55,7 @@
             <text class="phone-name">{{ item.name }}</text>
             <text class="phone-number">{{ item.phone }}</text>
           </view>
-          <text class="phone-icon">📞</text>
+          <image class="phone-icon" src="/static/emojis/emoji_18_phone.png" />
         </view>
         <view class="empty-tip" v-if="phones.length === 0">暂无常用电话</view>
       </view>
@@ -72,10 +72,10 @@ export default {
   data() {
     return {
       services: [
-        { name: '物业报修', icon: '🔧', bgColor: '#FF6B6B', path: '/pages/service/repair' },
-        { name: '活动报名', icon: '🎉', bgColor: '#4ECDC4', path: '/pages/activity/index' },
-        { name: '缴费服务', icon: '💰', bgColor: '#FFEAA7', path: '/pages/user/payment' },
-        { name: '我的订单', icon: '📋', bgColor: '#45B7D1', path: '/pages/service/list' }
+        { name: '物业报修', icon: '/static/emojis/emoji_45_wrench.png', bgColor: '#FF6B6B', path: '/pages/service/repair' },
+        { name: '活动报名', icon: '/static/emojis/emoji_46_party.png', bgColor: '#4ECDC4', path: '/pages/activity/index' },
+        { name: '缴费服务', icon: '/static/emojis/emoji_47_money.png', bgColor: '#FFEAA7', path: '/pages/user/payment' },
+        { name: '我的订单', icon: '/static/emojis/emoji_21_clipboard.png', bgColor: '#45B7D1', path: '/pages/service/list' }
       ],
       orders: [],
       phones: []
@@ -177,8 +177,9 @@ export default {
       justify-content: center;
       margin-bottom: 16rpx;
 
-      text {
-        font-size: 48rpx;
+      .service-icon-img {
+        width: 48rpx;
+        height: 48rpx;
       }
     }
 
@@ -331,7 +332,8 @@ export default {
     }
 
     .phone-icon {
-      font-size: 40rpx;
+      width: 40rpx;
+      height: 40rpx;
     }
   }
 

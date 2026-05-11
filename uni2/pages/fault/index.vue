@@ -3,21 +3,21 @@
     <!-- 顶部统计卡片 -->
     <view class="stats-section">
       <view class="stat-card pending" @click="setFilter('0')">
-        <view class="stat-icon">⏳</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_51_hourglass.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.pending}}</text>
           <text class="stat-label">待处理</text>
         </view>
       </view>
       <view class="stat-card processing" @click="setFilter('1')">
-        <view class="stat-icon">🔧</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_19_wrench.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.processing}}</text>
           <text class="stat-label">处理中</text>
         </view>
       </view>
       <view class="stat-card completed" @click="setFilter('2')">
-        <view class="stat-icon">✅</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_52_check.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.completed}}</text>
           <text class="stat-label">已完成</text>

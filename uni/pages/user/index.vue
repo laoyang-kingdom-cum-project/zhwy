@@ -30,21 +30,21 @@
       <view class="menu-group">
         <view class="menu-item" @click="navigateTo('/pages/user/profile')">
           <view class="menu-left">
-            <text class="menu-icon">👤</text>
+            <image class="menu-icon" src="/static/emojis/emoji_02_person.png" />
             <text class="menu-name">个人信息</text>
           </view>
           <text class="menu-arrow">></text>
         </view>
         <view class="menu-item" @click="navigateTo('/pages/user/password')">
           <view class="menu-left">
-            <text class="menu-icon">🔒</text>
+            <image class="menu-icon" src="/static/emojis/emoji_31_lock.png" />
             <text class="menu-name">修改密码</text>
           </view>
           <text class="menu-arrow">></text>
         </view>
         <view class="menu-item">
           <view class="menu-left">
-            <text class="menu-icon">👴</text>
+            <image class="menu-icon" src="/static/emojis/emoji_11_elderly.png" />
             <text class="menu-name">关怀模式</text>
           </view>
           <switch :checked="careMode" @change="onCareModeChange" color="#007AFF" />
@@ -54,14 +54,14 @@
       <view class="menu-group">
         <view class="menu-item" @click="navigateTo('/pages/service/list')">
           <view class="menu-left">
-            <text class="menu-icon">📋</text>
+            <image class="menu-icon" src="/static/emojis/emoji_21_clipboard.png" />
             <text class="menu-name">我的订单</text>
           </view>
           <text class="menu-arrow">></text>
         </view>
         <view class="menu-item" @click="navigateTo('/pages/user/payment')">
           <view class="menu-left">
-            <text class="menu-icon">💰</text>
+            <image class="menu-icon" src="/static/emojis/emoji_17_money.png" />
             <text class="menu-name">缴费记录</text>
           </view>
           <text class="menu-arrow">></text>
@@ -71,21 +71,21 @@
       <view class="menu-group">
         <view class="menu-item" @click="navigateTo('/pages/user/settings')">
           <view class="menu-left">
-            <text class="menu-icon">⚙️</text>
+            <image class="menu-icon" src="/static/emojis/emoji_44_gear.png" />
             <text class="menu-name">系统设置</text>
           </view>
           <text class="menu-arrow">></text>
         </view>
         <view class="menu-item" @click="navigateTo('/pages/user/help')">
           <view class="menu-left">
-            <text class="menu-icon">❓</text>
+            <image class="menu-icon" src="/static/emojis/emoji_40_question.png" />
             <text class="menu-name">帮助中心</text>
           </view>
           <text class="menu-arrow">></text>
         </view>
         <view class="menu-item" @click="navigateTo('/pages/user/about')">
           <view class="menu-left">
-            <text class="menu-icon">📄</text>
+            <image class="menu-icon" src="/static/emojis/emoji_45_document.png" />
             <text class="menu-name">关于我们</text>
           </view>
           <text class="menu-arrow">></text>
@@ -324,7 +324,8 @@ export default {
         align-items: center;
 
         .menu-icon {
-          font-size: 36rpx;
+          width: 36rpx;
+          height: 36rpx;
           margin-right: 20rpx;
         }
 

@@ -1,8 +1,8 @@
 <template>
   <view class="notice-detail-container">
-    <!-- 加载中 -->
+    <!-- 加载�?-->
     <view v-if="loading" class="loading">
-      <text>加载中...</text>
+      <text>加载�?..</text>
     </view>
     
     <!-- 公告内容 -->
@@ -141,3 +141,7 @@ export default {
   }
 }
 </style>
+
+
+
+
