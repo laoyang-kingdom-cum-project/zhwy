@@ -5,7 +5,7 @@
       <view class="user-info">
         <view class="avatar">
           <image v-if="userInfo.avatar" class="avatar-img" :src="baseUrl + '/por-api' + userInfo.avatar" mode="aspectFill"></image>
-          <text v-else>👤</text>
+          <image v-else class="avatar-default" src="/static/emojis/emoji_02_person.png" />
         </view>
         <view class="info">
           <text class="name">{{userInfo.userName || '物业管理员'}}</text>
@@ -38,28 +38,28 @@
     <view class="menu-section">
       <view class="menu-item" @click="goToProfile">
         <view class="menu-left">
-          <text class="menu-icon">👤</text>
+          <image class="menu-icon" src="/static/emojis/emoji_02_person.png" />
           <text class="menu-text">个人信息</text>
         </view>
         <text class="arrow">></text>
       </view>
       <view class="menu-item" @click="goToPassword">
         <view class="menu-left">
-          <text class="menu-icon">🔒</text>
+          <image class="menu-icon" src="/static/emojis/emoji_31_lock.png" />
           <text class="menu-text">修改密码</text>
         </view>
         <text class="arrow">></text>
       </view>
       <view class="menu-item" @click="goToHelp">
         <view class="menu-left">
-          <text class="menu-icon">❓</text>
+          <image class="menu-icon" src="/static/emojis/emoji_40_question.png" />
           <text class="menu-text">帮助中心</text>
         </view>
         <text class="arrow">></text>
       </view>
       <view class="menu-item" @click="goToAbout">
         <view class="menu-left">
-          <text class="menu-icon">ℹ️</text>
+          <image class="menu-icon" src="/static/emojis/emoji_54_info.png" />
           <text class="menu-text">关于我们</text>
         </view>
         <text class="arrow">></text>
@@ -254,6 +254,11 @@ export default {
   font-size: 60rpx;
 }
 
+.avatar-default {
+  width: 60rpx;
+  height: 60rpx;
+}
+
 .info {
   flex: 1;
 }
@@ -330,7 +335,8 @@ export default {
 }
 
 .menu-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
   margin-right: 20rpx;
 }
 

@@ -84,7 +84,7 @@
 
       <!-- 空状态 -->
       <view class="empty-state" v-if="visitorList.length === 0 && !loading">
-        <text class="empty-icon">📋</text>
+        <image class="empty-icon" src="/static/emojis/emoji_21_clipboard.png" />
         <text class="empty-text">暂无访客预约记录</text>
         <text class="empty-tip">点击右上角新建预约</text>
       </view>
@@ -420,7 +420,8 @@ export default {
   padding: 100rpx 0;
   
   .empty-icon {
-    font-size: 120rpx;
+    width: 120rpx;
+    height: 120rpx;
     margin-bottom: 20rpx;
   }
   

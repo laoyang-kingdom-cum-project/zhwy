@@ -32,7 +32,7 @@
           <text class="health-label">心率</text>
         </view>
         <view class="health-item">
-          <text class="health-icon">🩸</text>
+          <image class="health-icon" src="/static/emojis/emoji_60_blood.png" />
           <text class="health-value">{{ careInfo.pressure || '120/80' }}</text>
           <text class="health-label">血压</text>
         </view>

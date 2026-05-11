@@ -2,7 +2,7 @@
   <view class="about-container">
     <!-- Logo区域 -->
     <view class="logo-section">
-      <view class="app-logo">🏢</view>
+      <image class="app-logo" src="/static/emojis/emoji_57_building.png" />
       <text class="app-name">智慧社区物业端</text>
       <text class="app-version">版本 {{ version }}</text>
     </view>
@@ -20,42 +20,42 @@
       <view class="section-title">核心功能</view>
       <view class="feature-list">
         <view class="feature-item">
-          <text class="feature-icon">🚨</text>
+          <image class="feature-icon" src="/static/emojis/emoji_53_siren.png" />
           <view class="feature-info">
             <text class="feature-name">预警处置</text>
             <text class="feature-desc">实时接收安全预警，快速响应处理</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">📹</text>
+          <image class="feature-icon" src="/static/emojis/emoji_32_camera.png" />
           <view class="feature-info">
             <text class="feature-name">设备监控</text>
             <text class="feature-desc">实时监控设备状态，故障及时预警</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">🔧</text>
+          <image class="feature-icon" src="/static/emojis/emoji_19_wrench.png" />
           <view class="feature-info">
             <text class="feature-name">故障维修</text>
             <text class="feature-desc">在线派单跟踪，维修进度实时掌握</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">📋</text>
+          <image class="feature-icon" src="/static/emojis/emoji_21_clipboard.png" />
           <view class="feature-info">
             <text class="feature-name">服务订单</text>
             <text class="feature-desc">居民报修服务，全流程闭环管理</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">📝</text>
+          <image class="feature-icon" src="/static/emojis/emoji_58_memo.png" />
           <view class="feature-info">
             <text class="feature-name">访客审核</text>
             <text class="feature-desc">访客预约审核，保障社区安全</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">🤖</text>
+          <image class="feature-icon" src="/static/emojis/emoji_01_robot.png" />
           <view class="feature-info">
             <text class="feature-name">AI助手</text>
             <text class="feature-desc">智能问答咨询，应急方案查询</text>
@@ -125,14 +125,7 @@ export default {
 .app-logo {
   width: 160rpx;
   height: 160rpx;
-  background: #fff;
-  border-radius: 32rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 80rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.2);
 }
 
 .app-name {
@@ -184,7 +177,8 @@ export default {
 }
 
 .feature-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-right: 24rpx;
 }
 

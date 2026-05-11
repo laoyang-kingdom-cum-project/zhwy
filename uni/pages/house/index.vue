@@ -132,7 +132,7 @@
     <view class="content" v-if="currentTab === 'history'">
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">💧 用水量 (m³)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_09_water.png" /> 用水量 (m³)</text>
           <text class="chart-period">近7天</text>
         </view>
         <view class="chart-box">
@@ -158,7 +158,7 @@
 
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">⚡ 用电量 (kWh)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_27_lightning.png" /> 用电量 (kWh)</text>
           <text class="chart-period">近7天</text>
         </view>
         <view class="chart-box">
@@ -184,7 +184,7 @@
 
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">🔥 用气量 (m³)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_08_fire.png" /> 用气量 (m³)</text>
           <text class="chart-period">近7天</text>
         </view>
         <view class="chart-box">
@@ -213,7 +213,7 @@
     <view class="content" v-if="currentTab === 'forecast'">
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">💧 用水量预测 (m³)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_09_water.png" /> 用水量预测 (m³)</text>
           <text class="chart-period">未来7天</text>
         </view>
         <view class="chart-box">
@@ -241,7 +241,7 @@
 
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">⚡ 用电量预测 (kWh)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_27_lightning.png" /> 用电量预测 (kWh)</text>
           <text class="chart-period">未来7天</text>
         </view>
         <view class="chart-box">
@@ -269,7 +269,7 @@
 
       <view class="chart-section">
         <view class="chart-header">
-          <text class="chart-title">🔥 用气量预测 (m³)</text>
+          <text class="chart-title"><image class="inline-icon" src="/static/emojis/emoji_08_fire.png" /> 用气量预测 (m³)</text>
           <text class="chart-period">未来7天</text>
         </view>
         <view class="chart-box">
@@ -826,6 +826,13 @@ export default {
       font-size: 28rpx;
       font-weight: 600;
       color: #333;
+    }
+
+    .inline-icon {
+      width: 28rpx;
+      height: 28rpx;
+      vertical-align: middle;
+      margin-right: 4rpx;
     }
 
     .chart-period {

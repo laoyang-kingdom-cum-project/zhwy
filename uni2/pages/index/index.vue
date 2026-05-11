@@ -8,7 +8,7 @@
       <view class="header-content">
         <view class="user-info">
           <view class="avatar-wrap">
-            <text class="avatar-icon">👮</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_47_police.png" />
           </view>
           <view class="user-text">
             <text class="greeting">{{greetingText}}，管理员</text>
@@ -21,7 +21,7 @@
     <!-- 数据概览卡片 -->
     <view class="stats-section">
       <view class="stats-card warning" @click="goToWarning">
-        <view class="stats-bg-icon">⚠️</view>
+        <image class="stats-bg-icon" src="/static/emojis/emoji_39_warning.png" />
         <view class="stats-content">
           <text class="stats-num">{{stats.pendingWarnings}}</text>
           <text class="stats-label">待处理预警</text>
@@ -31,7 +31,7 @@
         </view>
       </view>
       <view class="stats-card device" @click="goToDevice">
-        <view class="stats-bg-icon">🔧</view>
+        <image class="stats-bg-icon" src="/static/emojis/emoji_19_wrench.png" />
         <view class="stats-content">
           <text class="stats-num">{{stats.faultDevices}}</text>
           <text class="stats-label">设备故障</text>
@@ -50,37 +50,37 @@
       <view class="quick-grid">
         <view class="quick-item" @click="goToWarning">
           <view class="quick-icon warning-bg">
-            <text class="icon-text">🚨</text>
+            <image class="icon-text" src="/static/emojis/emoji_53_siren.png" />
           </view>
           <text class="quick-text">预警处置</text>
         </view>
         <view class="quick-item" @click="goToDevice">
           <view class="quick-icon device-bg">
-            <text class="icon-text">📹</text>
+            <image class="icon-text" src="/static/emojis/emoji_32_camera.png" />
           </view>
           <text class="quick-text">设备监控</text>
         </view>
         <view class="quick-item" @click="goToFault">
           <view class="quick-icon fault-bg">
-            <text class="icon-text">🔨</text>
+            <image class="icon-text" src="/static/emojis/emoji_59_hammer.png" />
           </view>
           <text class="quick-text">故障维修</text>
         </view>
         <view class="quick-item" @click="goToService">
           <view class="quick-icon service-bg">
-            <text class="icon-text">📋</text>
+            <image class="icon-text" src="/static/emojis/emoji_21_clipboard.png" />
           </view>
           <text class="quick-text">服务订单</text>
         </view>
         <view class="quick-item" @click="goToVisitor">
           <view class="quick-icon visitor-bg">
-            <text class="icon-text">📝</text>
+            <image class="icon-text" src="/static/emojis/emoji_58_memo.png" />
           </view>
           <text class="quick-text">访客审核</text>
         </view>
         <view class="quick-item" @click="goToAI">
           <view class="quick-icon ai-bg">
-            <text class="icon-text">🤖</text>
+            <image class="icon-text" src="/static/emojis/emoji_01_robot.png" />
           </view>
           <text class="quick-text">AI助手</text>
         </view>
@@ -104,7 +104,7 @@
           <view class="warning-body">
             <text class="warning-title">{{item.title}}</text>
             <view class="warning-meta">
-              <text class="warning-location">📍 {{item.location}}</text>
+              <text class="warning-location"><image class="inline-icon" src="/static/emojis/emoji_43_location.png" /> {{item.location}}</text>
               <text class="warning-time">{{item.time}}</text>
             </view>
           </view>
@@ -113,7 +113,7 @@
           </view>
         </view>
         <view class="empty-tip" v-if="recentWarnings.length === 0">
-          <view class="empty-icon">📭</view>
+          <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
           <text class="empty-text">暂无预警信息</text>
         </view>
       </view>
@@ -315,7 +315,8 @@ export default {
 }
 
 .avatar-icon {
-  font-size: 44rpx;
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .user-text {
@@ -360,7 +361,8 @@ export default {
   position: absolute;
   right: 10rpx;
   top: 10rpx;
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   opacity: 0.06;
 }
 
@@ -484,7 +486,8 @@ export default {
 .ai-bg { background: linear-gradient(135deg, #fa709a, #fb9eb8); }
 
 .icon-text {
-  font-size: 44rpx;
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .quick-text {
@@ -601,8 +604,16 @@ export default {
   padding: 80rpx 0;
 }
 
+.inline-icon {
+  width: 22rpx;
+  height: 22rpx;
+  vertical-align: middle;
+  margin-right: 4rpx;
+}
+
 .empty-icon {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   margin-bottom: 16rpx;
   opacity: 0.5;
 }

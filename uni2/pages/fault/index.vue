@@ -59,8 +59,8 @@
             <!-- 头部：设备名和状态 -->
             <view class="card-header">
               <view class="device-tag">
-                <text class="device-icon">🔌</text>
-                <text>{{item.deviceName}}</text>
+              <image class="device-icon" src="/static/emojis/emoji_35_plug.png" />
+              <text>{{item.deviceName}}</text>
               </view>
               <view class="status-tag" :class="'status-' + (item.handleStatus || '0')">
                 {{getStatusText(item.handleStatus || '0')}}
@@ -80,7 +80,7 @@
             <!-- 底部信息 -->
             <view class="card-footer">
               <view class="info-item">
-                <text class="info-icon">🕐</text>
+                <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
                 <text class="info-text">上报: {{item.reportTime}}</text>
               </view>
               <view class="info-item" v-if="item.handleTime">
@@ -118,7 +118,7 @@
       
       <!-- 空状态 -->
       <view class="empty-state" v-if="faultList.length === 0 && !loading">
-        <view class="empty-icon">🔧</view>
+        <image class="empty-icon" src="/static/emojis/emoji_19_wrench.png" />
         <text class="empty-text">暂无故障记录</text>
         <text class="empty-subtext">设备运行正常，继续保持！</text>
       </view>
@@ -397,8 +397,12 @@ export default {
 }
 
 .stat-icon {
-  font-size: 48rpx;
   margin-right: 12rpx;
+
+  .stat-icon-img {
+    width: 48rpx;
+    height: 48rpx;
+  }
 }
 
 .stat-info {
@@ -535,7 +539,8 @@ export default {
 }
 
 .device-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   margin-right: 8rpx;
 }
 
@@ -602,7 +607,8 @@ export default {
 }
 
 .info-icon {
-  font-size: 22rpx;
+  width: 22rpx;
+  height: 22rpx;
   margin-right: 6rpx;
   color: #999;
 }
@@ -675,7 +681,8 @@ export default {
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 30rpx;
 }
 
