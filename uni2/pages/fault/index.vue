@@ -3,21 +3,21 @@
     <!-- 顶部统计卡片 -->
     <view class="stats-section">
       <view class="stat-card pending" @click="setFilter('0')">
-        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_51_hourglass.png" /></view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_16_hourglass.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.pending}}</text>
           <text class="stat-label">待处理</text>
         </view>
       </view>
       <view class="stat-card processing" @click="setFilter('1')">
-        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_19_wrench.png" /></view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_45_wrench.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.processing}}</text>
           <text class="stat-label">处理中</text>
         </view>
       </view>
       <view class="stat-card completed" @click="setFilter('2')">
-        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_52_check.png" /></view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_11_check.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.completed}}</text>
           <text class="stat-label">已完成</text>
@@ -80,7 +80,7 @@
             <!-- 底部信息 -->
             <view class="card-footer">
               <view class="info-item">
-                <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
+                <image class="info-icon" src="/static/emojis/emoji_59_bell.png" />
                 <text class="info-text">上报: {{item.reportTime}}</text>
               </view>
               <view class="info-item" v-if="item.handleTime">
@@ -118,7 +118,7 @@
       
       <!-- 空状态 -->
       <view class="empty-state" v-if="faultList.length === 0 && !loading">
-        <image class="empty-icon" src="/static/emojis/emoji_19_wrench.png" />
+        <image class="empty-icon" src="/static/emojis/emoji_45_wrench.png" />
         <text class="empty-text">暂无故障记录</text>
         <text class="empty-subtext">设备运行正常，继续保持！</text>
       </view>

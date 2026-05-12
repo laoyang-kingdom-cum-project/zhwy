@@ -57,7 +57,7 @@
       </view>
       
       <view class="empty-tip" v-if="visitorList.length === 0 && !loading">
-        <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
+        <image class="empty-icon" src="/static/emojis/emoji_24_empty_mailbox.png" />
         <text class="empty-text">暂无访客预约</text>
       </view>
       

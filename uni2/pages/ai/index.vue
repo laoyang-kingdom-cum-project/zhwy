@@ -80,7 +80,7 @@
           :class="{ active: inputMessage.trim() && !loading }" 
           @click="sendMessage"
         >
-          <image class="send-icon" src="/static/emojis/emoji_24_arrow.png" />
+          <image class="send-icon" src="/static/emojis/emoji_10_send.png" />
         </view>
       </view>
     </view>

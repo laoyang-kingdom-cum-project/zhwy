@@ -52,14 +52,14 @@
       </view>
       <view class="menu-item" @click="goToHelp">
         <view class="menu-left">
-          <image class="menu-icon" src="/static/emojis/emoji_40_question.png" />
+          <image class="menu-icon" src="/static/emojis/emoji_54_question.png" />
           <text class="menu-text">帮助中心</text>
         </view>
         <text class="arrow">></text>
       </view>
       <view class="menu-item" @click="goToAbout">
         <view class="menu-left">
-          <image class="menu-icon" src="/static/emojis/emoji_54_info.png" />
+          <image class="menu-icon" src="/static/emojis/emoji_55_info.png" />
           <text class="menu-text">关于我们</text>
         </view>
         <text class="arrow">></text>

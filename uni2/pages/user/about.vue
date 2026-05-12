@@ -2,7 +2,7 @@
   <view class="about-container">
     <!-- Logo区域 -->
     <view class="logo-section">
-      <image class="app-logo" src="/static/emojis/emoji_57_building.png" />
+      <image class="app-logo" src="/static/emojis/emoji_51_building.png" />
       <text class="app-name">智慧社区物业端</text>
       <text class="app-version">版本 {{ version }}</text>
     </view>
@@ -20,7 +20,7 @@
       <view class="section-title">核心功能</view>
       <view class="feature-list">
         <view class="feature-item">
-          <image class="feature-icon" src="/static/emojis/emoji_53_siren.png" />
+          <image class="feature-icon" src="/static/emojis/emoji_40_siren.png" />
           <view class="feature-info">
             <text class="feature-name">预警处置</text>
             <text class="feature-desc">实时接收安全预警，快速响应处理</text>
@@ -34,7 +34,7 @@
           </view>
         </view>
         <view class="feature-item">
-          <image class="feature-icon" src="/static/emojis/emoji_19_wrench.png" />
+          <image class="feature-icon" src="/static/emojis/emoji_45_wrench.png" />
           <view class="feature-info">
             <text class="feature-name">故障维修</text>
             <text class="feature-desc">在线派单跟踪，维修进度实时掌握</text>
@@ -48,7 +48,7 @@
           </view>
         </view>
         <view class="feature-item">
-          <image class="feature-icon" src="/static/emojis/emoji_58_memo.png" />
+          <image class="feature-icon" src="/static/emojis/emoji_22_memo.png" />
           <view class="feature-info">
             <text class="feature-name">访客审核</text>
             <text class="feature-desc">访客预约审核，保障社区安全</text>

@@ -49,7 +49,7 @@
           </view>
         </view>
         <view class="contact-item" @click="openChat">
-          <image class="contact-icon" src="/static/emojis/emoji_56_chat.png" />
+          <image class="contact-icon" src="/static/emojis/emoji_56_diamond.png" />
           <view class="contact-info">
             <text class="contact-name">在线客服</text>
             <text class="contact-value">9:00-18:00</text>
@@ -91,9 +91,9 @@ export default {
       showFeedback: false,
       feedbackContent: '',
       categories: [
-        { name: '常见问题', icon: '/static/emojis/emoji_40_question.png' },
+        { name: '常见问题', icon: '/static/emojis/emoji_54_question.png' },
         { name: '账号相关', icon: '/static/emojis/emoji_02_person.png' },
-        { name: '预警处理', icon: '/static/emojis/emoji_53_siren.png' },
+        { name: '预警处理', icon: '/static/emojis/emoji_40_siren.png' },
         { name: '设备相关', icon: '/static/emojis/emoji_35_plug.png' }
       ],
       faqs: {

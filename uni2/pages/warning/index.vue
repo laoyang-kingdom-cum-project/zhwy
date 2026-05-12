@@ -3,7 +3,7 @@
     <!-- 顶部统计卡片 -->
     <view class="stats-section">
       <view class="stat-card urgent" @click="setFilter('1')">
-        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_53_siren.png" /></view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_40_siren.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.urgent}}</text>
           <text class="stat-label">紧急预警</text>
@@ -17,7 +17,7 @@
         </view>
       </view>
       <view class="stat-card normal" @click="setFilter('3')">
-        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_54_info.png" /></view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_55_info.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.normal}}</text>
           <text class="stat-label">一般预警</text>
@@ -58,7 +58,7 @@
             <!-- 头部：等级和状态 -->
             <view class="card-header">
               <view class="level-tag" :class="'level-' + item.level">
-                <image class="level-icon" :src="item.level === '1' ? '/static/emojis/emoji_53_siren.png' : item.level === '2' ? '/static/emojis/emoji_39_warning.png' : '/static/emojis/emoji_54_info.png'" />
+                <image class="level-icon" :src="item.level === '1' ? '/static/emojis/emoji_40_siren.png' : item.level === '2' ? '/static/emojis/emoji_39_warning.png' : '/static/emojis/emoji_55_info.png'" />
                 <text>{{item.levelText}}</text>
               </view>
               <view class="status-tag" :class="'status-' + (item.state || '0')">{{item.statusText}}</view>
@@ -76,7 +76,7 @@
                 <text class="info-text">{{item.location}}</text>
               </view>
               <view class="info-item">
-                <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
+                <image class="info-icon" src="/static/emojis/emoji_59_bell.png" />
                 <text class="info-text">{{item.time}}</text>
               </view>
             </view>
@@ -108,7 +108,7 @@
       
       <!-- 空状态 -->
       <view class="empty-state" v-if="warningList.length === 0 && !loading">
-        <image class="empty-icon" src="/static/emojis/emoji_55_shield.png" />
+        <image class="empty-icon" src="/static/emojis/emoji_42_shield.png" />
         <text class="empty-title">暂无预警信息</text>
         <text class="empty-desc">当前没有{{getFilterText()}}的预警</text>
       </view>

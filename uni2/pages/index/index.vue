@@ -8,7 +8,7 @@
       <view class="header-content">
         <view class="user-info">
           <view class="avatar-wrap">
-            <image class="avatar-icon" src="/static/emojis/emoji_47_police.png" />
+            <image class="avatar-icon" src="/static/emojis/emoji_09_police.png" />
           </view>
           <view class="user-text">
             <text class="greeting">{{greetingText}}，管理员</text>
@@ -31,7 +31,7 @@
         </view>
       </view>
       <view class="stats-card device" @click="goToDevice">
-        <image class="stats-bg-icon" src="/static/emojis/emoji_19_wrench.png" />
+        <image class="stats-bg-icon" src="/static/emojis/emoji_45_wrench.png" />
         <view class="stats-content">
           <text class="stats-num">{{stats.faultDevices}}</text>
           <text class="stats-label">设备故障</text>
@@ -50,7 +50,7 @@
       <view class="quick-grid">
         <view class="quick-item" @click="goToWarning">
           <view class="quick-icon warning-bg">
-            <image class="icon-text" src="/static/emojis/emoji_53_siren.png" />
+            <image class="icon-text" src="/static/emojis/emoji_40_siren.png" />
           </view>
           <text class="quick-text">预警处置</text>
         </view>
@@ -62,7 +62,7 @@
         </view>
         <view class="quick-item" @click="goToFault">
           <view class="quick-icon fault-bg">
-            <image class="icon-text" src="/static/emojis/emoji_59_hammer.png" />
+            <image class="icon-text" src="/static/emojis/emoji_12_close.png" />
           </view>
           <text class="quick-text">故障维修</text>
         </view>
@@ -74,7 +74,7 @@
         </view>
         <view class="quick-item" @click="goToVisitor">
           <view class="quick-icon visitor-bg">
-            <image class="icon-text" src="/static/emojis/emoji_58_memo.png" />
+            <image class="icon-text" src="/static/emojis/emoji_22_memo.png" />
           </view>
           <text class="quick-text">访客审核</text>
         </view>
@@ -113,7 +113,7 @@
           </view>
         </view>
         <view class="empty-tip" v-if="recentWarnings.length === 0">
-          <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
+          <image class="empty-icon" src="/static/emojis/emoji_24_empty_mailbox.png" />
           <text class="empty-text">暂无预警信息</text>
         </view>
       </view>

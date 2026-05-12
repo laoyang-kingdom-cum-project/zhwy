@@ -86,7 +86,7 @@
               </view>
             </view>
             <view class="info-item">
-              <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
+              <image class="info-icon" src="/static/emojis/emoji_59_bell.png" />
               <view class="info-text">
                 <text class="info-label">提交时间</text>
                 <text class="info-value">{{item.createTime}}</text>
@@ -101,7 +101,7 @@
           </view>
           <view class="action-btns">
             <button v-if="item.status === 0" class="btn btn-primary" @click.stop="assignOrder(item)">
-              <image class="btn-icon" src="/static/emojis/emoji_21_clipboard.png" />
+              <image class="btn-icon" src="/static/emojis/emoji_13_edit.png" />
               <text>分配工单</text>
             </button>
             <button v-if="item.status === 1" class="btn btn-success" @click.stop="completeOrder(item)">
@@ -118,7 +118,7 @@
 
       <view class="empty-tip" v-if="orderList.length === 0 && !loading">
         <view class="empty-icon-box">
-          <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
+          <image class="empty-icon" src="/static/emojis/emoji_24_empty_mailbox.png" />
         </view>
         <text class="empty-text">暂无服务订单</text>
         <text class="empty-subtext">暂无相关订单数据</text>
@@ -247,7 +247,7 @@ export default {
     getTypeIcon(type) {
       const map = {
         '保洁服务': '/static/emojis/emoji_48_broom.png',
-        '维修服务': '/static/emojis/emoji_19_wrench.png',
+        '维修服务': '/static/emojis/emoji_45_wrench.png',
         '搬家服务': '/static/emojis/emoji_49_truck.png',
         '洗衣服务': '/static/emojis/emoji_50_shirt.png',
         '其他': '/static/emojis/emoji_21_clipboard.png'
