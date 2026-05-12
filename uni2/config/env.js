@@ -28,8 +28,8 @@ const env = {
       content: '101住户浸水告警，请尽快查看！'
     },
     {
-      entityId: 'switch.xiaomi_cn_2084552653_l05b_mute_p_4_1',
-      alertState: on,
+      entityId: 'switch.xiaomi_cn_1194028668_069a03_motion_detection_p_5_1',
+      alertState: null,
       title: '银龄助手',
       content: '101住户需要一桶水，请安排时间配送'
     }
