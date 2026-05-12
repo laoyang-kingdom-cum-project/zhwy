@@ -13,7 +13,7 @@
       </view>
       <view class="info-item">
         <text class="label">身份证号</text>
-        <text class="value">{{visitor.idCard || '未填�?}}</text>
+        <text class="value">{{visitor.idCard || '未填写'}}</text>
       </view>
     </view>
 
@@ -21,7 +21,7 @@
     <view class="info-card">
       <view class="card-title">访问信息</view>
       <view class="info-item">
-        <text class="label">被访�?/text>
+        <text class="label">被访人</text>
         <text class="value">{{visitor.hostName}}</text>
       </view>
       <view class="info-item">
@@ -45,7 +45,7 @@
         <text class="value">{{visitor.createTime}}</text>
       </view>
       <view class="info-item">
-        <text class="label">审核状�?/text>
+        <text class="label">审核状态</text>
         <view class="status-tag" :class="'status-' + (visitor.status || '0')">
           {{getStatusText(visitor.status || '0')}}
         </view>
@@ -79,7 +79,7 @@ export default {
   methods: {
     async loadDetail() {
       uni.showLoading({
-        title: '加载�?..'
+        title: '加载中...'
       })
 
       try {
@@ -99,15 +99,15 @@ export default {
     },
 
     getStatusText(status) {
-      const map = { '0': '待审�?, '1': '已通过', '2': '已拒�? }
-      return map[status] || '待审�?
+      const map = { '0': '待审核', '1': '已通过', '2': '已拒绝' }
+      return map[status] || '待审核'
     },
 
     auditVisitor(status) {
       const statusText = status === '1' ? '通过' : '拒绝'
       uni.showModal({
         title: '确认',
-        content: `确定�?{statusText}该访客预约吗？`,
+        content: `确定要${statusText}该访客预约吗？`,
         success: async (res) => {
           if (res.confirm) {
             try {

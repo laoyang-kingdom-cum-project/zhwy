@@ -16,7 +16,7 @@ export default {
 
     const wv = plus.webview.create(haUrl, 'ha-webview', {
       top: (info.statusBarHeight + 44) + 'px',
-      bottom: '50uni2/utils uni/utils/ha-fall-alert.js uni/utils/ha-websocket.jspx',
+      bottom: '50px',
       'uni-app': 'none'
     })
 
