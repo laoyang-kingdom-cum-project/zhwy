@@ -9,7 +9,7 @@
     <!-- 数据概览卡片 -->
     <view class="stats-cards">
       <view class="stat-card">
-        <view class="stat-icon device"><image class="stat-icon-img" src="/static/emojis/emoji_64_phone.png" /></view>
+        <view class="stat-icon device"><image class="stat-icon-img" src="/static/emojis/emoji_64_cross.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalDevices }}</text>
           <text class="stat-label">设备总数</text>
@@ -42,7 +42,7 @@
       </view>
 
       <view class="stat-card">
-        <view class="stat-icon member"><image class="stat-icon-img" src="/static/emojis/emoji_65_group.png" /></view>
+        <view class="stat-icon member"><image class="stat-icon-img" src="/static/emojis/emoji_06_family.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalMembers }}</text>
           <text class="stat-label">社区居民</text>
@@ -124,7 +124,7 @@
           <view class="chart-header">
             <text class="chart-title">实时预警</text>
             <view class="refresh-btn" @click="refreshData">
-              <image class="refresh-icon" src="/static/emojis/emoji_66_refresh.png" />
+              <image class="refresh-icon" src="/static/emojis/emoji_17_refresh.png" />
             </view>
           </view>
           <view class="warning-list">
@@ -152,7 +152,7 @@
           </view>
           <view class="room-list">
             <view class="room-item" v-for="(item, index) in roomDeviceStats" :key="index">
-              <view class="room-icon"><image class="room-icon-img" src="/static/emojis/emoji_16_home.png" /></view>
+              <view class="room-icon"><image class="room-icon-img" src="/static/emojis/emoji_38_house.png" /></view>
               <view class="room-info">
                 <text class="room-name">{{ item.room }}</text>
                 <view class="room-bar">
@@ -171,21 +171,21 @@
           </view>
           <view class="special-group">
             <view class="group-item">
-              <view class="group-icon elderly"><image class="group-icon-img" src="/static/emojis/emoji_06_elderly.png" /></view>
+              <view class="group-icon elderly"><image class="group-icon-img" src="/static/emojis/emoji_07_old_man.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.elderlyCount }}</text>
                 <text class="group-label">老人</text>
               </view>
             </view>
             <view class="group-item">
-              <view class="group-icon child"><image class="group-icon-img" src="/static/emojis/emoji_67_baby.png" /></view>
+              <view class="group-icon child"><image class="group-icon-img" src="/static/emojis/emoji_02_person.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.childCount }}</text>
                 <text class="group-label">儿童</text>
               </view>
             </view>
             <view class="group-item">
-              <view class="group-icon activity"><image class="group-icon-img" src="/static/emojis/emoji_68_party.png" /></view>
+              <view class="group-icon activity"><image class="group-icon-img" src="/static/emojis/emoji_46_party.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.ongoingActivities }}</text>
                 <text class="group-label">进行中活动</text>

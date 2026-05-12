@@ -25,6 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="joinTime != null "> and join_time = #{joinTime}</if>
             <if test="status != null "> and status = #{status}</if>
         </where>
+        order by id DESC
     </select>
     
     <select id="selectActivityJoinById" parameterType="Long" resultMap="ActivityJoinResult">

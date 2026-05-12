@@ -89,13 +89,13 @@ export default {
     // 获取图标
     getIcon(type) {
       const iconMap = {
-        property: '/static/emojis/emoji_16_home.png',
-        water: '/static/emojis/emoji_09_water.png',
-        electric: '/static/emojis/emoji_27_lightning.png',
-        gas: '/static/emojis/emoji_08_fire.png',
-        parking: '/static/emojis/emoji_61_car.png'
+        property: '/static/emojis/emoji_38_house.png',
+        water: '/static/emojis/emoji_28_droplet.png',
+        electric: '/static/emojis/emoji_53_lightning.png',
+        gas: '/static/emojis/emoji_27_fire.png',
+        parking: '/static/emojis/emoji_49_truck.png'
       }
-      return iconMap[type] || '/static/emojis/emoji_17_money.png'
+      return iconMap[type] || '/static/emojis/emoji_47_money.png'
     },
     // 加载账单列表
     async loadBillList() {

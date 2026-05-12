@@ -15,12 +15,12 @@
         <text class="info-value">{{ activity.location }}</text>
       </view>
       <view class="info-item">
-        <text class="info-label">活动状�?/text>
+        <text class="info-label">活动状态</text>
         <text class="info-value status" :class="'status-' + activity.status">{{ getStatusText(activity.status) }}</text>
       </view>
       <view class="info-item">
         <text class="info-label">报名人数</text>
-        <text class="info-value">{{ activity.joinCount }}/{{ activity.maxCount }}�?/text>
+        <text class="info-value">{{ activity.joinCount }}/{{ activity.maxCount }}人</text>
       </view>
     </view>
 
@@ -70,7 +70,7 @@ export default {
   },
   computed: {
     canJoin() {
-      // 可以报名的条件：状态为报名中、未满员、未报名�?      return this.activity.status === 0 && 
+      // 可以报名的条件：状态为报名中、未满员、未报名      return this.activity.status === 0 && 
              this.activity.joinCount < this.activity.maxCount &&
              !this.joinedActivityIds.includes(this.activityId)
     }
@@ -85,9 +85,9 @@ export default {
   methods: {
     getStatusText(status) {
       const statusMap = {
-        0: '报名�?,
-        1: '进行�?,
-        2: '已结�?
+        0: '报名中',
+        1: '进行中',
+        2: '已结束'
       }
       return statusMap[status] || '未知'
     },
@@ -97,9 +97,9 @@ export default {
       return config.baseUrl + config.apiPrefix + image
     },
     getBtnText() {
-      if (this.joinedActivityIds.includes(this.activityId)) return '已报�?
-      if (this.activity.status === 2) return '活动已结�?
-      if (this.activity.status === 1) return '活动进行�?
+      if (this.joinedActivityIds.includes(this.activityId)) return '已报名'
+      if (this.activity.status === 2) return '活动已结束'
+      if (this.activity.status === 1) return '活动进行中'
       if (this.activity.joinCount >= this.activity.maxCount) return '名额已满'
       return '立即报名'
     },
@@ -125,7 +125,7 @@ export default {
           this.joinedActivityIds = res.rows.map(item => item.activityId)
         }
       } catch (e) {
-        console.error('获取已报名活动失�?, e)
+        console.error('获取已报名活动失败', e)
       }
     },
     async joinActivity() {
@@ -136,7 +136,7 @@ export default {
         content: `确认报名参加"${this.activity.title}"吗？`,
         success: async (res) => {
           if (res.confirm) {
-            uni.showLoading({ title: '报名�?..' })
+            uni.showLoading({ title: '报名中...' })
             try {
               const joinRes = await joinActivity({
                 activityId: this.activityId.toString(),

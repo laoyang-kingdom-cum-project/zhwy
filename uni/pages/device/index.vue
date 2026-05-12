@@ -12,7 +12,7 @@ export default {
   onReady() {
     // #ifdef APP-PLUS
     const info = uni.getSystemInfoSync()
-    const haUrl = `http://${env.haHost}:${env.haPort}` // 连后缀都不需要了�?
+    const haUrl = `http://${env.haHost}:${env.haPort}` // 连后缀都不需要了
 
     const wv = plus.webview.create(haUrl, 'ha-webview', {
       top: (info.statusBarHeight + 44) + 'px',

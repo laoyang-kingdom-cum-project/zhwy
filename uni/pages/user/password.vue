@@ -1,8 +1,8 @@
 <template>
   <view class="password-container">
-    <!-- 旧密�?-->
+    <!-- 旧密码-->
     <view class="form-item">
-      <text class="label">旧密�?/text>
+      <text class="label">旧密码</text>
       <input 
         class="input" 
         v-model="form.oldPassword" 
@@ -11,9 +11,9 @@
       />
     </view>
 
-    <!-- 新密�?-->
+    <!-- 新密码-->
     <view class="form-item">
-      <text class="label">新密�?/text>
+      <text class="label">新密码</text>
       <input 
         class="input" 
         v-model="form.newPassword" 
@@ -35,7 +35,7 @@
 
     <!-- 提示 -->
     <view class="tips">
-      <text>密码长度6-20位，建议包含字母和数�?/text>
+      <text>密码长度6-20位，建议包含字母和数字</text>
     </view>
 
     <!-- 保存按钮 -->
@@ -71,15 +71,15 @@ export default {
         return
       }
       if (this.form.newPassword.length < 6) {
-        uni.showToast({ title: '密码长度不能少于6�?, icon: 'none' })
+        uni.showToast({ title: '密码长度不能少于6位', icon: 'none' })
         return
       }
       if (this.form.newPassword !== this.form.confirmPassword) {
-        uni.showToast({ title: '两次输入的密码不一�?, icon: 'none' })
+        uni.showToast({ title: '两次输入的密码不一致', icon: 'none' })
         return
       }
       
-      uni.showLoading({ title: '修改�?..' })
+      uni.showLoading({ title: '修改中...' })
       try {
         const res = await updatePassword({
           oldPassword: this.form.oldPassword,

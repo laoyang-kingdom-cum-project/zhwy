@@ -116,13 +116,13 @@ export default {
     // 获取状态图标
     getStatusIcon(status) {
       const iconMap = {
-        '0': '/static/emojis/emoji_51_hourglass.png',
-        '1': '/static/emojis/emoji_52_check.png',
-        '2': '/static/emojis/emoji_62_cross.png',
-        '3': '/static/emojis/emoji_51_hourglass.png',
-        '4': '/static/emojis/emoji_63_ban.png'
+        '0': '/static/emojis/emoji_16_hourglass.png',
+        '1': '/static/emojis/emoji_11_check.png',
+        '2': '/static/emojis/emoji_12_close.png',
+        '3': '/static/emojis/emoji_16_hourglass.png',
+        '4': '/static/emojis/emoji_64_cross.png'
       }
-      return iconMap[status] || '/static/emojis/emoji_40_question.png'
+      return iconMap[status] || '/static/emojis/emoji_54_question.png'
     },
 
     // 格式化时间

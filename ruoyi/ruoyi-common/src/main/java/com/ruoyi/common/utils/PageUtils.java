@@ -24,12 +24,6 @@ public class PageUtils extends PageHelper
         String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
         Boolean reasonable = pageDomain.getReasonable();
         
-        // 如果没有指定排序，默认按创建时间倒序（新数据在前）
-        if (StringUtils.isEmpty(orderBy))
-        {
-            orderBy = "create_time DESC";
-        }
-        
         PageHelper.startPage(pageNum, pageSize, orderBy).setReasonable(reasonable);
     }
 

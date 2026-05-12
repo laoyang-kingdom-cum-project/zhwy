@@ -11,7 +11,7 @@
         <image class="activity-image" :src="getImageUrl(item.image)" mode="aspectFill"></image>
         <view class="activity-info">
           <text class="activity-title">{{ item.title }}</text>
-          <text class="activity-time"><image class="inline-icon" src="/static/emojis/emoji_46_alarm.png" /> {{ item.time }}</text>
+          <text class="activity-time"><image class="inline-icon" src="/static/emojis/emoji_14_alarm_clock.png" /> {{ item.time }}</text>
           <text class="activity-location"><image class="inline-icon" src="/static/emojis/emoji_43_location.png" /> {{ item.location }}</text>
           <view class="activity-footer">
             <text class="activity-status" :class="'status-' + item.status">{{ getStatusText(item.status) }}</text>
