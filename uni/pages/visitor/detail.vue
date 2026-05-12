@@ -3,7 +3,7 @@
     <!-- 状态卡片 -->
     <view class="status-card">
       <view class="status-icon" :class="getStatusClass(detail.status)">
-        {{ getStatusIcon(detail.status) }}
+        <image class="status-icon-img" :src="getStatusIcon(detail.status)" />
       </view>
       <text class="status-text">{{ getStatusText(detail.status) }}</text>
     </view>
@@ -116,13 +116,13 @@ export default {
     // 获取状态图标
     getStatusIcon(status) {
       const iconMap = {
-        '0': '⏳',
-        '1': '✅',
-        '2': '❌',
-        '3': '⌛',
-        '4': '🚫'
+        '0': '/static/emojis/emoji_51_hourglass.png',
+        '1': '/static/emojis/emoji_52_check.png',
+        '2': '/static/emojis/emoji_62_cross.png',
+        '3': '/static/emojis/emoji_51_hourglass.png',
+        '4': '/static/emojis/emoji_63_ban.png'
       }
-      return iconMap[status] || '❓'
+      return iconMap[status] || '/static/emojis/emoji_40_question.png'
     },
 
     // 格式化时间
@@ -184,8 +184,12 @@ export default {
   margin-bottom: 20rpx;
 
   .status-icon {
-    font-size: 80rpx;
     margin-bottom: 20rpx;
+
+    .status-icon-img {
+      width: 80rpx;
+      height: 80rpx;
+    }
   }
 
   .status-text {

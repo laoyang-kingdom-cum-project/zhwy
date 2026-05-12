@@ -23,7 +23,7 @@
           @click="goToPay(item)"
         >
           <view class="item-left">
-            <view class="item-icon" :class="item.billType">{{ getIcon(item.billType) }}</view>
+            <view class="item-icon" :class="item.billType"><image class="icon-img" :src="getIcon(item.billType)" /></view>
             <view class="item-info">
               <text class="item-name">{{ item.billName }}</text>
               <text class="item-time">{{ item.billPeriod }}</text>
@@ -48,7 +48,7 @@
           :key="index"
         >
           <view class="item-left">
-            <view class="item-icon" :class="item.billType">{{ getIcon(item.billType) }}</view>
+            <view class="item-icon" :class="item.billType"><image class="icon-img" :src="getIcon(item.billType)" /></view>
             <view class="item-info">
               <text class="item-name">{{ item.billName }}</text>
               <text class="item-time">{{ item.billPeriod }}</text>
@@ -89,13 +89,13 @@ export default {
     // 获取图标
     getIcon(type) {
       const iconMap = {
-        property: '🏠',
-        water: '💧',
-        electric: '⚡',
-        gas: '🔥',
-        parking: '🚗'
+        property: '/static/emojis/emoji_16_home.png',
+        water: '/static/emojis/emoji_09_water.png',
+        electric: '/static/emojis/emoji_27_lightning.png',
+        gas: '/static/emojis/emoji_08_fire.png',
+        parking: '/static/emojis/emoji_61_car.png'
       }
-      return iconMap[type] || '💰'
+      return iconMap[type] || '/static/emojis/emoji_17_money.png'
     },
     // 加载账单列表
     async loadBillList() {
@@ -238,8 +238,12 @@ export default {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 40rpx;
           margin-right: 20rpx;
+
+          .icon-img {
+            width: 40rpx;
+            height: 40rpx;
+          }
 
           &.property {
             background: #E3F2FD;

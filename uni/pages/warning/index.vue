@@ -34,7 +34,7 @@
         </view>
         <view class="warning-footer">
           <view class="warning-location">
-            <text class="icon">📍</text>
+            <image class="icon" src="/static/emojis/emoji_43_location.png" />
             <text>{{ item.location }}</text>
           </view>
           <text class="warning-time">{{ item.time }}</text>
@@ -257,6 +257,8 @@ export default {
         color: #999;
 
         .icon {
+          width: 24rpx;
+          height: 24rpx;
           margin-right: 8rpx;
         }
       }

@@ -2,26 +2,26 @@
   <view class="care-mode-container" :class="{ 'care-mode': true }">
     <!-- 大字体标题 -->
     <view class="care-header">
-      <text class="care-title">👴 关怀模式</text>
+      <text class="care-title"><image class="inline-icon" src="/static/emojis/emoji_07_old_man.png" /> 关怀模式</text>
       <text class="care-subtitle">简单操作，大字显示</text>
     </view>
 
     <!-- 常用功能大按钮 -->
     <view class="care-grid">
       <view class="care-btn-large" @click="navigateTo('/pages/care/index')">
-        <text class="btn-icon">❤️</text>
+        <image class="btn-icon" src="/static/emojis/emoji_05_heart.png" />
         <text class="btn-text">家人健康</text>
       </view>
       <view class="care-btn-large" @click="navigateTo('/pages/user/payment')">
-        <text class="btn-icon">💰</text>
+        <image class="btn-icon" src="/static/emojis/emoji_47_money.png" />
         <text class="btn-text">缴费记录</text>
       </view>
       <view class="care-btn-large" @click="navigateTo('/pages/service/index')">
-        <text class="btn-icon">🔧</text>
+        <image class="btn-icon" src="/static/emojis/emoji_45_wrench.png" />
         <text class="btn-text">物业服务</text>
       </view>
       <view class="care-btn-large" @click="makePhoneCall">
-        <text class="btn-icon">📞</text>
+        <image class="btn-icon" src="/static/emojis/emoji_18_phone.png" />
         <text class="btn-text">紧急呼叫</text>
       </view>
     </view>
@@ -84,6 +84,12 @@ export default {
   background: #f5f5f5;
   padding: 40rpx;
 
+  .inline-icon {
+    width: 56rpx;
+    height: 56rpx;
+    vertical-align: middle;
+  }
+
   .care-header {
     text-align: center;
     padding: 60rpx 0;
@@ -123,7 +129,8 @@ export default {
       }
 
       .btn-icon {
-        font-size: 80rpx;
+        width: 80rpx;
+        height: 80rpx;
         margin-bottom: 20rpx;
       }
 

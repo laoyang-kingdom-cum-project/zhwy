@@ -57,7 +57,7 @@
       </view>
       
       <view class="empty-tip" v-if="visitorList.length === 0 && !loading">
-        <text class="empty-icon">📭</text>
+        <image class="empty-icon" src="/static/emojis/emoji_47_mailbox.png" />
         <text class="empty-text">暂无访客预约</text>
       </view>
       
@@ -345,7 +345,8 @@ export default {
 
 .empty-icon {
   display: block;
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   margin-bottom: 20rpx;
 }
 

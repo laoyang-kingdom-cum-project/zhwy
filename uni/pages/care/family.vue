@@ -28,19 +28,19 @@
             </view>
             <text class="meta">{{ item.age ? item.age + '岁' : '' }}{{ item.age && item.room ? ' · ' : '' }}{{ item.room || '' }}</text>
             <view class="contact-row" v-if="item.emergencyContact">
-              <text class="contact-icon">☎</text>
+              <image class="contact-icon" src="/static/emojis/emoji_19_telephone.png" />
               <text class="contact-text">{{ item.emergencyContact }}</text>
             </view>
           </view>
         </view>
         <view class="card-actions">
           <view class="act-btn act-edit" @click="editFamily(item)">
-            <text class="act-icon">✎</text>
+            <image class="act-icon" src="/static/emojis/emoji_13_edit.png" />
             <text class="act-label">编辑</text>
           </view>
           <view class="act-divider"></view>
           <view class="act-btn act-del" @click="confirmUnbind(item)">
-            <text class="act-icon">✕</text>
+            <image class="act-icon" src="/static/emojis/emoji_12_close.png" />
             <text class="act-label">解绑</text>
           </view>
         </view>
@@ -49,7 +49,7 @@
 
     <view class="empty-wrap" v-else>
       <view class="empty-illust">
-        <text class="empty-emoji">🏠</text>
+        <image class="empty-emoji" src="/static/emojis/emoji_38_house.png" />
       </view>
       <text class="empty-title">还没有绑定家人</text>
       <text class="empty-desc">添加家人后可以实时关注他们的健康状况</text>
@@ -67,7 +67,7 @@
       <view class="popup-head">
         <text class="popup-title">{{ isEdit ? '编辑家人信息' : '添加家人' }}</text>
         <view class="popup-close" @click="closePopup">
-          <text class="close-x">✕</text>
+          <image class="close-x" src="/static/emojis/emoji_12_close.png" />
         </view>
       </view>
       <scroll-view scroll-y class="popup-body">
@@ -466,9 +466,9 @@ export default {
         align-items: center;
 
         .contact-icon {
-          font-size: 22rpx;
+          width: 22rpx;
+          height: 22rpx;
           margin-right: 6rpx;
-          color: #bfbfbf;
         }
 
         .contact-text {
@@ -496,7 +496,8 @@ export default {
       }
 
       .act-icon {
-        font-size: 28rpx;
+        width: 28rpx;
+        height: 28rpx;
         margin-right: 8rpx;
       }
 
@@ -546,7 +547,8 @@ export default {
     margin-bottom: 40rpx;
 
     .empty-emoji {
-      font-size: 80rpx;
+      width: 80rpx;
+      height: 80rpx;
     }
   }
 
@@ -652,8 +654,8 @@ export default {
       }
 
       .close-x {
-        font-size: 28rpx;
-        color: #8c8c8c;
+        width: 28rpx;
+        height: 28rpx;
       }
     }
   }

@@ -11,8 +11,8 @@
         <image class="activity-image" :src="getImageUrl(item.image)" mode="aspectFill"></image>
         <view class="activity-info">
           <text class="activity-title">{{ item.title }}</text>
-          <text class="activity-time">⏰ {{ item.time }}</text>
-          <text class="activity-location">📍 {{ item.location }}</text>
+          <text class="activity-time"><image class="inline-icon" src="/static/emojis/emoji_46_alarm.png" /> {{ item.time }}</text>
+          <text class="activity-location"><image class="inline-icon" src="/static/emojis/emoji_43_location.png" /> {{ item.location }}</text>
           <view class="activity-footer">
             <text class="activity-status" :class="'status-' + item.status">{{ getStatusText(item.status) }}</text>
             <text class="activity-count">已报名 {{ item.joinCount }}/{{ item.maxCount }}人</text>
@@ -83,6 +83,12 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
   padding: 20rpx;
+
+  .inline-icon {
+    width: 24rpx;
+    height: 24rpx;
+    vertical-align: middle;
+  }
 }
 
 .activity-list {

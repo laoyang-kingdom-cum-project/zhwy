@@ -32,7 +32,7 @@
     <!-- AI应急方案 -->
     <view class="ai-card" v-if="emergencyPlan || aiLoading">
       <view class="card-title">
-        <text class="ai-icon">🤖</text>
+        <image class="ai-icon" src="/static/emojis/emoji_01_robot.png" />
         <text>AI应急方案</text>
         <view class="ai-loading" v-if="aiLoading">
           <view class="loading-dot"></view>
@@ -55,7 +55,7 @@
             <text class="resource-address">{{item.address}}</text>
           </view>
           <view class="resource-phone">
-            <text class="phone-icon">📞</text>
+            <image class="phone-icon" src="/static/emojis/emoji_18_phone.png" />
             <text class="phone-num">{{item.phone}}</text>
           </view>
         </view>
@@ -291,6 +291,8 @@ export default {
 }
 
 .ai-icon {
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
 }
 
@@ -407,6 +409,8 @@ export default {
 }
 
 .phone-icon {
+  width: 28rpx;
+  height: 28rpx;
   margin-right: 8rpx;
 }
 

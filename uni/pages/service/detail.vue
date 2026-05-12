@@ -2,7 +2,7 @@
   <view class="service-detail-container">
     <!-- 状态卡片 -->
     <view class="status-card">
-      <view class="status-icon" :class="'status-' + order.status">📝</view>
+      <image class="status-icon-img" :class="'status-' + order.status" src="/static/emojis/emoji_22_memo.png" />
       <text class="status-title">{{ getStatusText(order.status) }}</text>
       <text class="order-no">订单号: {{ order.orderId }}</text>
     </view>
@@ -152,26 +152,27 @@ export default {
   background: #fff;
   margin-bottom: 20rpx;
 
-  .status-icon {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 60rpx;
+  .status-icon-img {
+    width: 60rpx;
+    height: 60rpx;
     margin-bottom: 20rpx;
 
     &.status-0 {
       background: #FFF3E0;
+      border-radius: 50%;
+      padding: 30rpx;
     }
 
     &.status-1 {
       background: #E3F2FD;
+      border-radius: 50%;
+      padding: 30rpx;
     }
 
     &.status-2 {
       background: #E8F5E9;
+      border-radius: 50%;
+      padding: 30rpx;
     }
   }
 

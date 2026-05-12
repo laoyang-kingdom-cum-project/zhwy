@@ -17,7 +17,7 @@
         >
           <!-- AI头像 -->
           <view class="avatar ai-avatar" v-if="item.role === 'assistant'">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           
           <!-- 消息内容 -->
@@ -30,14 +30,14 @@
 
           <!-- 用户头像 -->
           <view class="avatar user-avatar" v-if="item.role === 'user'">
-            <text class="avatar-icon">👤</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_02_person.png" />
           </view>
         </view>
 
         <!-- 加载中 -->
         <view class="message-row ai-row" v-if="loading">
           <view class="avatar ai-avatar">
-            <text class="avatar-icon">🤖</text>
+            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
           </view>
           <view class="loading-bubble">
             <view class="loading-dot"></view>
@@ -58,7 +58,7 @@
           :key="i"
           @click="sendQuickQuestion(q)"
         >
-          <text class="question-icon">💡</text>
+          <image class="question-icon" src="/static/emojis/emoji_25_bulb.png" />
           <text class="question-text">{{ q }}</text>
         </view>
       </view>
@@ -80,7 +80,7 @@
           :class="{ active: inputMessage.trim() && !loading }" 
           @click="sendMessage"
         >
-          <text class="send-icon">➤</text>
+          <image class="send-icon" src="/static/emojis/emoji_24_arrow.png" />
         </view>
       </view>
     </view>
@@ -104,7 +104,7 @@ export default {
       loading: false,
       scrollTop: 0,
       quickQuestions: propertyAiConfig.quickQuestions,
-      conversationId: '' // Dify 会话 ID，用于保持上下文
+      conversationId: '' // Dify 会话 
     }
   },
   methods: {
@@ -223,11 +223,11 @@ export default {
     // 模拟回复（当AI接口不可用时使用）
     getMockReply(msg) {
       if (msg.includes('火')) {
-        return '【火灾应急处理方案】\n\n1. 立即拨打119报警\n2. 组织人员疏散，确保居民安全\n3. 切断电源和燃气\n4. 使用灭火器进行初期灭火\n5. 引导消防车辆进入\n6. 清点人数，确保无人滞留\n\n⚠️ 注意：切勿乘坐电梯！'
+        return '【火灾应急处理方案】\n\n1. 立即拨打119报警\n2. 组织人员疏散，确保居民安全\n3. 切断电源和燃气\n4. 使用灭火器进行初期灭火\n5. 引导消防车辆进入\n6. 清点人数，确保无人滞留\n\n【注意】切勿乘坐电梯！'
       } else if (msg.includes('燃气') || msg.includes('煤气')) {
-        return '【燃气泄漏处理方案】\n\n1. 立即关闭燃气总阀\n2. 打开门窗通风\n3. 禁止开关电器、使用明火\n4. 疏散周边人员\n5. 拨打燃气公司电话：95598\n6. 在安全区域等待专业人员处理\n\n⚠️ 注意：切勿在现场拨打电话！'
+        return '【燃气泄漏处理方案】\n\n1. 立即关闭燃气总阀\n2. 打开门窗通风\n3. 禁止开关电器、使用明火\n4. 疏散周边人员\n5. 拨打燃气公司电话：95598\n6. 在安全区域等待专业人员处理\n\n【注意】切勿在现场拨打电话！'
       } else if (msg.includes('电梯')) {
-        return '【电梯困人救援流程】\n\n1. 安抚被困人员情绪\n2. 立即联系电梯维保单位\n3. 设置警示标志，防止他人使用\n4. 持续与被困人员保持沟通\n5. 必要时拨打119请求救援\n6. 记录事件经过，上报相关部门\n\n⚠️ 注意：切勿自行撬门救援！'
+        return '【电梯困人救援流程】\n\n1. 安抚被困人员情绪\n2. 立即联系电梯维保单位\n3. 设置警示标志，防止他人使用\n4. 持续与被困人员保持沟通\n5. 必要时拨打119请求救援\n6. 记录事件经过，上报相关部门\n\n【注意】切勿自行撬门救援！'
       } else if (msg.includes('设备') || msg.includes('报修')) {
         return '【设备报修流程】\n\n1. 接收居民报修申请\n2. 核实故障情况并分类\n3. 分配维修人员处理\n4. 跟踪维修进度\n5. 完成后通知居民验收\n6. 归档维修记录\n\n您可以在"服务订单"页面查看所有报修记录。'
       }
@@ -293,7 +293,8 @@ export default {
 }
 
 .avatar-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 /* 消息体 */
@@ -425,7 +426,8 @@ export default {
 }
 
 .question-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   margin-right: 8rpx;
 }
 
@@ -478,7 +480,8 @@ export default {
 }
 
 .send-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   color: #fff;
   margin-left: 4rpx;
 }

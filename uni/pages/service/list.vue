@@ -37,7 +37,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" v-if="filteredOrders.length === 0">
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon" src="/static/emojis/emoji_21_clipboard.png" />
       <text class="empty-text">暂无订单</text>
     </view>
   </view>
@@ -229,7 +229,8 @@ export default {
   padding: 100rpx 0;
 
   .empty-icon {
-    font-size: 100rpx;
+    width: 100rpx;
+    height: 100rpx;
     margin-bottom: 20rpx;
   }
 

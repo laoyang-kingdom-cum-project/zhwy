@@ -12,7 +12,7 @@
         <text class="value">{{order.description}}</text>
       </view>
       <view class="info-item">
-        <text class="label">报修人</text>
+        <text class="label">报修�?/text>
         <text class="value">{{order.userName}}</text>
       </view>
       <view class="info-item">
@@ -28,13 +28,13 @@
         <text class="value">{{order.createTime}}</text>
       </view>
       <view class="info-item">
-        <text class="label">当前状态</text>
+        <text class="label">当前状�?/text>
         <view class="status-tag" :class="'status-' + (order.status || '0')">
           {{getStatusText(order.status || '0')}}
         </view>
       </view>
       <view class="info-item" v-if="order.handler">
-        <text class="label">处理人</text>
+        <text class="label">处理�?/text>
         <text class="value">{{order.handler}}</text>
       </view>
     </view>
@@ -66,7 +66,7 @@ export default {
   methods: {
     async loadDetail() {
       uni.showLoading({
-        title: '加载中...'
+        title: '加载�?..'
       })
 
       try {
@@ -86,8 +86,8 @@ export default {
     },
 
     getStatusText(status) {
-      const map = { '0': '待分配', '1': '处理中', '2': '已完成' }
-      return map[status] || '待分配'
+      const map = { '0': '待分�?, '1': '处理�?, '2': '已完�? }
+      return map[status] || '待分�?
     },
 
     assignOrder() {
@@ -247,3 +247,4 @@ export default {
   color: #fff;
 }
 </style>
+

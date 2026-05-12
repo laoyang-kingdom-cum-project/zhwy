@@ -3,7 +3,7 @@
     <!-- 设备信息卡片 -->
     <view class="device-card">
       <view class="device-icon" :class="device.deviceType">
-        <text>{{ getDeviceIcon(device.deviceType) }}</text>
+        <image class="device-icon-img" :src="getDeviceIcon(device.deviceType)" />
       </view>
       <text class="device-name">{{ device.deviceName }}</text>
       <text class="device-status" :class="getStatusClass(device.status)">
@@ -95,14 +95,14 @@ export default {
 
     getDeviceIcon(type) {
       const icons = {
-        light: '💡',
-        air_conditioner: '❄️',
-        curtain: '🪟',
-        switch: '🔘',
-        lock: '🔒',
-        camera: '📷'
+        light: '/static/emojis/emoji_25_bulb.png',
+        air_conditioner: '/static/emojis/emoji_26_snowflake.png',
+        curtain: '/static/emojis/emoji_30_switch.png',
+        switch: '/static/emojis/emoji_30_switch.png',
+        lock: '/static/emojis/emoji_31_lock.png',
+        camera: '/static/emojis/emoji_32_camera.png'
       }
-      return icons[type] || '📟'
+      return icons[type] || '/static/emojis/emoji_33_pager.png'
     },
 
     getStatusClass(status) {
@@ -159,8 +159,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 80rpx;
   margin-bottom: 30rpx;
+
+  .device-icon-img {
+    width: 80rpx;
+    height: 80rpx;
+  }
 }
 
 .device-icon.light { background: #FFF9C4; }

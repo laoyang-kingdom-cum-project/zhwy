@@ -17,22 +17,22 @@
       <view class="section-title">今日健康数据</view>
       <view class="health-grid">
         <view class="health-item">
-          <text class="health-icon">👣</text>
+          <image class="health-icon" src="/static/emojis/emoji_03_footprints.png" />
           <text class="health-value">{{ careInfo.steps }}</text>
           <text class="health-label">步数</text>
         </view>
         <view class="health-item">
-          <text class="health-icon">😴</text>
+          <image class="health-icon" src="/static/emojis/emoji_04_sleeping.png" />
           <text class="health-value">{{ careInfo.sleep }}小时</text>
           <text class="health-label">睡眠</text>
         </view>
         <view class="health-item">
-          <text class="health-icon">❤️</text>
+          <image class="health-icon" src="/static/emojis/emoji_05_heart.png" />
           <text class="health-value">{{ careInfo.heartRate }}</text>
           <text class="health-label">心率</text>
         </view>
         <view class="health-item">
-          <text class="health-icon">🩸</text>
+          <image class="health-icon" src="/static/emojis/emoji_60_blood.png" />
           <text class="health-value">{{ careInfo.pressure || '120/80' }}</text>
           <text class="health-label">血压</text>
         </view>
@@ -44,7 +44,7 @@
       <view class="section-title">紧急联系人</view>
       <view class="contact-item">
         <text class="contact-name">{{ careInfo.emergencyContact }}</text>
-        <text class="call-btn" @click="makePhoneCall">📞 拨打电话</text>
+        <text class="call-btn" @click="makePhoneCall"><image class="inline-icon" src="/static/emojis/emoji_18_phone.png" /> 拨打电话</text>
       </view>
     </view>
 
@@ -62,9 +62,9 @@
     <!-- AI健康分析 -->
     <view class="section ai-section">
       <view class="section-title">
-        <text>🤖 AI健康分析</text>
+        <text><image class="inline-icon" src="/static/emojis/emoji_01_robot.png" /> AI健康分析</text>
         <view class="refresh-btn" @click="refreshAIAnalysis">
-          <text class="refresh-icon">🔄</text>
+          <image class="refresh-icon" src="/static/emojis/emoji_17_refresh.png" />
         </view>
       </view>
       
@@ -88,7 +88,7 @@
         </view>
         
         <view class="ai-empty" v-else>
-          <text class="empty-icon">📊</text>
+          <image class="empty-icon" src="/static/emojis/emoji_52_chart.png" />
           <text class="empty-text">点击刷新按钮获取AI健康分析</text>
         </view>
       </view>
@@ -268,6 +268,12 @@ export default {
   padding-bottom: 40rpx;
 }
 
+.inline-icon {
+  width: 28rpx;
+  height: 28rpx;
+  vertical-align: middle;
+}
+
 // 用户信息卡片
 .user-card {
   display: flex;
@@ -352,7 +358,8 @@ export default {
     box-sizing: border-box;
 
     .health-icon {
-      font-size: 48rpx;
+      width: 48rpx;
+      height: 48rpx;
       margin-bottom: 12rpx;
     }
 
@@ -461,7 +468,8 @@ export default {
       }
 
       .refresh-icon {
-        font-size: 32rpx;
+        width: 32rpx;
+        height: 32rpx;
       }
     }
   }
@@ -535,7 +543,8 @@ export default {
     padding: 60rpx 0;
 
     .empty-icon {
-      font-size: 80rpx;
+      width: 80rpx;
+      height: 80rpx;
       margin-bottom: 20rpx;
       opacity: 0.6;
     }

@@ -20,28 +20,28 @@
       <view class="section-title">核心功能</view>
       <view class="feature-list">
         <view class="feature-item">
-          <text class="feature-icon">🏠</text>
+          <image class="feature-icon" src="/static/emojis/emoji_16_home.png" />
           <view class="feature-info">
             <text class="feature-name">智能家居</text>
             <text class="feature-desc">远程控制家中设备，智能场景联动</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">🛡️</text>
+          <image class="feature-icon" src="/static/emojis/emoji_55_shield.png" />
           <view class="feature-info">
             <text class="feature-name">安全预警</text>
             <text class="feature-desc">实时安全监控，异常情况及时提醒</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">👴</text>
+          <image class="feature-icon" src="/static/emojis/emoji_06_elderly.png" />
           <view class="feature-info">
             <text class="feature-name">家人健康</text>
             <text class="feature-desc">关注家人健康状态，异常及时预警</text>
           </view>
         </view>
         <view class="feature-item">
-          <text class="feature-icon">🔧</text>
+          <image class="feature-icon" src="/static/emojis/emoji_19_wrench.png" />
           <view class="feature-info">
             <text class="feature-name">物业服务</text>
             <text class="feature-desc">在线报修、缴费，服务进度实时跟踪</text>
@@ -163,7 +163,8 @@ export default {
     }
 
     .feature-icon {
-      font-size: 48rpx;
+      width: 48rpx;
+      height: 48rpx;
       margin-right: 24rpx;
     }
 

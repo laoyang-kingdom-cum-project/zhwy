@@ -9,7 +9,7 @@
     <!-- 数据概览卡片 -->
     <view class="stats-cards">
       <view class="stat-card">
-        <view class="stat-icon device">📱</view>
+        <view class="stat-icon device"><image class="stat-icon-img" src="/static/emojis/emoji_64_phone.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalDevices }}</text>
           <text class="stat-label">设备总数</text>
@@ -20,7 +20,7 @@
       </view>
 
       <view class="stat-card">
-        <view class="stat-icon warning">⚠️</view>
+        <view class="stat-icon warning"><image class="stat-icon-img" src="/static/emojis/emoji_39_warning.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalWarnings }}</text>
           <text class="stat-label">预警总数</text>
@@ -31,7 +31,7 @@
       </view>
 
       <view class="stat-card">
-        <view class="stat-icon order">📋</view>
+        <view class="stat-icon order"><image class="stat-icon-img" src="/static/emojis/emoji_21_clipboard.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalOrders }}</text>
           <text class="stat-label">服务订单</text>
@@ -42,7 +42,7 @@
       </view>
 
       <view class="stat-card">
-        <view class="stat-icon member">👥</view>
+        <view class="stat-icon member"><image class="stat-icon-img" src="/static/emojis/emoji_65_group.png" /></view>
         <view class="stat-info">
           <text class="stat-value">{{ stats.totalMembers }}</text>
           <text class="stat-label">社区居民</text>
@@ -124,15 +124,15 @@
           <view class="chart-header">
             <text class="chart-title">实时预警</text>
             <view class="refresh-btn" @click="refreshData">
-              <text class="refresh-icon">🔄</text>
+              <image class="refresh-icon" src="/static/emojis/emoji_66_refresh.png" />
             </view>
           </view>
           <view class="warning-list">
             <view class="warning-item" v-for="(item, index) in recentWarnings" :key="index" :class="'level-' + (item.level || 1)">
-              <view class="warning-icon">⚠️</view>
+              <view class="warning-icon"><image class="warning-icon-img" src="/static/emojis/emoji_39_warning.png" /></view>
               <view class="warning-info">
                 <text class="warning-title">{{ item.title }}</text>
-                <text class="warning-location">📍 {{ item.location || '未知位置' }}</text>
+                <text class="warning-location"><image class="inline-icon" src="/static/emojis/emoji_43_location.png" /> {{ item.location || '未知位置' }}</text>
               </view>
               <text class="warning-time">{{ formatTime(item.createTime) }}</text>
             </view>
@@ -152,7 +152,7 @@
           </view>
           <view class="room-list">
             <view class="room-item" v-for="(item, index) in roomDeviceStats" :key="index">
-              <view class="room-icon">🏠</view>
+              <view class="room-icon"><image class="room-icon-img" src="/static/emojis/emoji_16_home.png" /></view>
               <view class="room-info">
                 <text class="room-name">{{ item.room }}</text>
                 <view class="room-bar">
@@ -171,21 +171,21 @@
           </view>
           <view class="special-group">
             <view class="group-item">
-              <view class="group-icon elderly">👴</view>
+              <view class="group-icon elderly"><image class="group-icon-img" src="/static/emojis/emoji_06_elderly.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.elderlyCount }}</text>
                 <text class="group-label">老人</text>
               </view>
             </view>
             <view class="group-item">
-              <view class="group-icon child">👶</view>
+              <view class="group-icon child"><image class="group-icon-img" src="/static/emojis/emoji_67_baby.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.childCount }}</text>
                 <text class="group-label">儿童</text>
               </view>
             </view>
             <view class="group-item">
-              <view class="group-icon activity">🎉</view>
+              <view class="group-icon activity"><image class="group-icon-img" src="/static/emojis/emoji_68_party.png" /></view>
               <view class="group-info">
                 <text class="group-value">{{ stats.ongoingActivities }}</text>
                 <text class="group-label">进行中活动</text>
@@ -422,8 +422,12 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 40rpx;
       margin-right: 20rpx;
+
+      .stat-icon-img {
+        width: 40rpx;
+        height: 40rpx;
+      }
 
       &.device { background: rgba(0, 212, 255, 0.2); }
       &.warning { background: rgba(255, 77, 79, 0.2); }
@@ -505,7 +509,8 @@ export default {
       padding: 10rpx;
 
       .refresh-icon {
-        font-size: 32rpx;
+        width: 32rpx;
+        height: 32rpx;
       }
     }
   }
@@ -689,8 +694,12 @@ export default {
       &.level-3 { border-left-color: #52c41a; }
 
       .warning-icon {
-        font-size: 36rpx;
         margin-right: 16rpx;
+
+        .warning-icon-img {
+          width: 36rpx;
+          height: 36rpx;
+        }
       }
 
       .warning-info {
@@ -706,6 +715,13 @@ export default {
         .warning-location {
           font-size: 22rpx;
           color: rgba(255, 255, 255, 0.6);
+
+          .inline-icon {
+            width: 22rpx;
+            height: 22rpx;
+            vertical-align: middle;
+            margin-right: 4rpx;
+          }
         }
       }
 
@@ -737,8 +753,12 @@ export default {
     }
 
     .room-icon {
-      font-size: 36rpx;
       margin-right: 16rpx;
+
+      .room-icon-img {
+        width: 36rpx;
+        height: 36rpx;
+      }
     }
 
     .room-info {
@@ -792,8 +812,12 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 48rpx;
       margin-bottom: 16rpx;
+
+      .group-icon-img {
+        width: 48rpx;
+        height: 48rpx;
+      }
 
       &.elderly { background: rgba(255, 77, 79, 0.2); }
       &.child { background: rgba(24, 144, 255, 0.2); }

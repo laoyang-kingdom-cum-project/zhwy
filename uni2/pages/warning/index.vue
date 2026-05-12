@@ -3,21 +3,21 @@
     <!-- 顶部统计卡片 -->
     <view class="stats-section">
       <view class="stat-card urgent" @click="setFilter('1')">
-        <view class="stat-icon">🚨</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_53_siren.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.urgent}}</text>
           <text class="stat-label">紧急预警</text>
         </view>
       </view>
       <view class="stat-card important" @click="setFilter('2')">
-        <view class="stat-icon">⚠️</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_39_warning.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.important}}</text>
           <text class="stat-label">重要预警</text>
         </view>
       </view>
       <view class="stat-card normal" @click="setFilter('3')">
-        <view class="stat-icon">ℹ️</view>
+        <view class="stat-icon"><image class="stat-icon-img" src="/static/emojis/emoji_54_info.png" /></view>
         <view class="stat-info">
           <text class="stat-num">{{stats.normal}}</text>
           <text class="stat-label">一般预警</text>
@@ -58,7 +58,7 @@
             <!-- 头部：等级和状态 -->
             <view class="card-header">
               <view class="level-tag" :class="'level-' + item.level">
-                <text class="level-icon">{{item.level === '1' ? '🚨' : item.level === '2' ? '⚠️' : 'ℹ️'}}</text>
+                <image class="level-icon" :src="item.level === '1' ? '/static/emojis/emoji_53_siren.png' : item.level === '2' ? '/static/emojis/emoji_39_warning.png' : '/static/emojis/emoji_54_info.png'" />
                 <text>{{item.levelText}}</text>
               </view>
               <view class="status-tag" :class="'status-' + (item.state || '0')">{{item.statusText}}</view>
@@ -72,11 +72,11 @@
             <!-- 底部信息 -->
             <view class="card-footer">
               <view class="info-item">
-                <text class="info-icon">📍</text>
+                <image class="info-icon" src="/static/emojis/emoji_43_location.png" />
                 <text class="info-text">{{item.location}}</text>
               </view>
               <view class="info-item">
-                <text class="info-icon">🕐</text>
+                <image class="info-icon" src="/static/emojis/emoji_46_alarm.png" />
                 <text class="info-text">{{item.time}}</text>
               </view>
             </view>
@@ -108,7 +108,7 @@
       
       <!-- 空状态 -->
       <view class="empty-state" v-if="warningList.length === 0 && !loading">
-        <view class="empty-icon">🛡️</view>
+        <image class="empty-icon" src="/static/emojis/emoji_55_shield.png" />
         <text class="empty-title">暂无预警信息</text>
         <text class="empty-desc">当前没有{{getFilterText()}}的预警</text>
       </view>
@@ -321,8 +321,12 @@ export default {
 }
 
 .stat-icon {
-  font-size: 40rpx;
   margin-bottom: 12rpx;
+
+  .stat-icon-img {
+    width: 40rpx;
+    height: 40rpx;
+  }
 }
 
 .stat-info {
@@ -471,6 +475,8 @@ export default {
 }
 
 .level-icon {
+  width: 24rpx;
+  height: 24rpx;
   margin-right: 8rpx;
 }
 
@@ -518,7 +524,8 @@ export default {
 }
 
 .info-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   margin-right: 8rpx;
 }
 
@@ -585,7 +592,8 @@ export default {
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 30rpx;
 }
 
