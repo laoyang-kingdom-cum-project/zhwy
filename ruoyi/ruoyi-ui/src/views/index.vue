@@ -2,7 +2,7 @@
   <div class="app-container home">
     <div class="title">
       <div>
-        <div style="font-size: 100px">老板好会工作啊!</div>
+        <div style="font-size: 100px"></div>
       </div>
     </div>
   </div>

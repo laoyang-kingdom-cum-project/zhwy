@@ -122,7 +122,7 @@ export default {
       uni.navigateTo({ url: path })
     },
     bindPhone() {
-      uni.showToast({ title: '功能开发中', icon: 'none' })
+     
     },
     toggleSetting(key) {
       this.settings[key] = !this.settings[key]

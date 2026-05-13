@@ -283,7 +283,7 @@ export default {
 .filter-bar {
   display: flex;
   background: #fff;
-  padding: 0 30rpx 20rpx;
+  padding: 30rpx 20rpx;
   border-bottom: 1rpx solid #f0f0f0;
   
   .filter-item {
