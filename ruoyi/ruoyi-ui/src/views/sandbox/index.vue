@@ -432,31 +432,43 @@ export default {
         console.log('User ID:', config.userId)
         console.log('请求消息长度:', message.length)
         
+        const requestBody = {
+          inputs: {},
+          query: message,
+          user: config.userId,
+          response_mode: 'blocking'
+        }
+        
+        console.log('=== 发送请求 ===')
+        console.log('请求方法:', 'POST')
+        console.log('请求URL:', config.apiUrl)
+        console.log('请求头:', {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${config.apiKey.substring(0, 10)}...`
+        })
+        console.log('请求体:', requestBody)
+        console.log('超时时间:', '60000ms (60秒)')
+        
+        // 设置 60 秒超时
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => {
+          controller.abort()
+          console.log('❌ 请求超时')
+        }, 60000) // 60秒超时
+        
         try {
-          const requestBody = {
-            inputs: {},
-            query: message,
-            user: config.userId,
-            response_mode: 'blocking'
-          }
-          
-          console.log('=== 发送请求 ===')
-          console.log('请求方法:', 'POST')
-          console.log('请求URL:', config.apiUrl)
-          console.log('请求头:', {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${config.apiKey.substring(0, 10)}...`
-          })
-          console.log('请求体:', requestBody)
-          
           const response = await fetch(config.apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${config.apiKey}`
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody),
+            signal: controller.signal
           })
+          
+          // 清除超时定时器
+          clearTimeout(timeoutId)
           
           console.log('=== 响应状态 ===')
           console.log('状态码:', response.status)
@@ -498,6 +510,15 @@ export default {
           throw new Error(data.message || data.error || 'AI 请求失败，未返回有效数据')
           
         } catch (error) {
+          // 清除超时定时器
+          clearTimeout(timeoutId)
+          
+          // 处理超时错误
+          if (error.name === 'AbortError') {
+            console.log('=== 请求超时 ===')
+            throw new Error('请求超时（60秒），请稍后重试')
+          }
+          
           console.log('=== 请求异常 ===')
           console.log('错误类型:', error.name)
           console.log('错误消息:', error.message)

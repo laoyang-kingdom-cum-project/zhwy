@@ -3,7 +3,7 @@ const env = {
   // 后端 API
   baseUrl: 'http://192.168.3.11:81',
   apiPrefix: '/por-api',
-  timeout: 10000,
+  timeout: 60000,
   debug: true,
 
   // Home Assistant
