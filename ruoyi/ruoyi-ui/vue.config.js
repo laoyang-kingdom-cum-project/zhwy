@@ -46,6 +46,14 @@ module.exports = {
       '^/v3/api-docs/(.*)': {
         target: baseUrl,
         changeOrigin: true
+      },
+      // Dify AI proxy
+      '/dify-api': {
+        target: 'https://api.dify.ai',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/dify-api': ''
+        }
       }
     },
     disableHostCheck: true

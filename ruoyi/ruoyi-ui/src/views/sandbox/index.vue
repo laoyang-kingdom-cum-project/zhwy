@@ -385,7 +385,14 @@ export default {
        * 加载 AI 应急方案
        */
       async loadAIPlan() {
-        if (!this.currentEvent) return
+        console.log('=== loadAIPlan 被调用 ===')
+        console.log('currentEvent:', this.currentEvent)
+        
+        if (!this.currentEvent) {
+          console.log('❌ currentEvent 为空，请先选择一个事件')
+          this.$message.warning('请先选择一个事件，再获取AI应急方案')
+          return
+        }
         
         this.aiLoading = true
         this.emergencyPlan = ''
@@ -402,7 +409,8 @@ export default {
           this.emergencyPlan = this.formatAIResponse(plan)
         } catch (error) {
           console.error('获取 AI 应急方案失败', error)
-          this.emergencyPlan = '获取 AI 方案失败，请根据现场情况采取相应措施，确保人员安全。'
+          // 显示详细错误信息给用户
+          this.emergencyPlan = `获取 AI 方案失败：${error.message}\n\n请根据现场情况采取相应措施，确保人员安全。`
         } finally {
           this.aiLoading = false
         }
@@ -413,37 +421,89 @@ export default {
        */
       async callDifyAI(message) {
         const config = {
-          apiUrl: 'https://api.dify.ai/v1/chat-messages',
+          apiUrl: '/dify-api/v1/chat-messages',
           apiKey: 'app-GgkaxIhg0WQAP8b1lzd9ct9L',
           userId: 'sandbox-web-user'
         }
         
-        const response = await fetch(config.apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${config.apiKey}`
-          },
-          body: JSON.stringify({
+        console.log('=== AI 请求配置 ===')
+        console.log('API URL:', config.apiUrl)
+        console.log('API Key:', config.apiKey ? '已配置' : '未配置')
+        console.log('User ID:', config.userId)
+        console.log('请求消息长度:', message.length)
+        
+        try {
+          const requestBody = {
             inputs: {},
             query: message,
             user: config.userId,
             response_mode: 'blocking'
-          })
-        })
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('401 Unauthorized: API 密钥无效')
           }
-          throw new Error(`AI 请求失败：${response.status}`)
+          
+          console.log('=== 发送请求 ===')
+          console.log('请求方法:', 'POST')
+          console.log('请求URL:', config.apiUrl)
+          console.log('请求头:', {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey.substring(0, 10)}...`
+          })
+          console.log('请求体:', requestBody)
+          
+          const response = await fetch(config.apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${config.apiKey}`
+            },
+            body: JSON.stringify(requestBody)
+          })
+          
+          console.log('=== 响应状态 ===')
+          console.log('状态码:', response.status)
+          console.log('状态文本:', response.statusText)
+          console.log('响应头:', response.headers)
+          
+          if (!response.ok) {
+            let errorText = await response.text()
+            console.log('=== 错误响应内容 ===')
+            console.log('错误文本:', errorText)
+            
+            // 尝试解析 JSON 错误信息
+            let errorMessage = `AI 请求失败：${response.status} - ${response.statusText}`
+            try {
+              const errorData = JSON.parse(errorText)
+              if (errorData.detail || errorData.message || errorData.error) {
+                errorMessage += `\n详细信息：${errorData.detail || errorData.message || errorData.error}`
+              }
+            } catch (e) {
+              // 不是 JSON 格式，直接使用文本
+              if (errorText && errorText.length > 0) {
+                errorMessage += `\n响应内容：${errorText.substring(0, 500)}`
+              }
+            }
+            
+            throw new Error(errorMessage)
+          }
+          
+          const data = await response.json()
+          console.log('=== 响应数据 ===')
+          console.log('完整响应:', data)
+          
+          if (data.answer) {
+            console.log('AI 回答获取成功，长度:', data.answer.length)
+            return data.answer
+          }
+          
+          console.log('响应中没有 answer 字段')
+          throw new Error(data.message || data.error || 'AI 请求失败，未返回有效数据')
+          
+        } catch (error) {
+          console.log('=== 请求异常 ===')
+          console.log('错误类型:', error.name)
+          console.log('错误消息:', error.message)
+          console.log('错误堆栈:', error.stack)
+          throw error
         }
-        
-        const data = await response.json()
-        if (data.answer) {
-          return data.answer
-        }
-        throw new Error(data.message || 'AI 请求失败')
       },
       
       /**
