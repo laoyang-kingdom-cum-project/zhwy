@@ -1,6 +1,15 @@
 <template>
+  <!-- 
+    智慧养老社区监测平台 - 3D可视化主页面
+    功能概述：
+    1. 3D沙盘展示：使用Three.js渲染社区建筑群
+    2. 数据面板：左右两侧展示实时数据、图表、日志和告警
+    3. 交互功能：支持鼠标拖拽旋转、滚轮缩放
+    4. 实时日志流：模拟实时告警日志推送
+    5. 事件详情弹窗：展示告警事件详细信息
+  -->
   <div class="data-screen">
-    <!-- 3D 沙盘 -->
+    <!-- Three.js 3D画布容器 -->
     <canvas ref="canvas" class="canvas-container"></canvas>
 
     <!-- 顶部标题栏 -->
@@ -156,28 +165,45 @@
 </template>
 
 <script>
-import * as THREE from 'three'
-import * as echarts from 'echarts'
-import buildingTextureImg from './tt.png'
+/**
+ * 智慧养老社区监测平台 - 3D可视化组件
+ * 依赖库：Three.js（3D渲染）、ECharts（数据图表）、Element UI（弹窗组件）
+ */
+import * as THREE from 'three'      // Three.js 3D图形库
+import * as echarts from 'echarts'  // ECharts 数据可视化图表库
+import buildingTextureImg from './tt.png'  // 建筑纹理贴图
 
 export default {
-  name: 'Sandbox',
+  name: 'Sandbox',  // 组件名称
   data() {
     return {
-      currentTime: '',
-      scene: null,
-      camera: null,
-      renderer: null,
-      buildings: [],
-      buildingTexture: null,
-      isDragging: false,
-      lastMouseX: 0,
-      lastMouseY: 0,
-      cameraTheta: Math.PI / 4,
-      cameraPhi: Math.PI / 3,
-      cameraRadius: 600,
-      detailVisible: false,
-      currentEvent: null,
+      // === 页面状态 ===
+      currentTime: '',           // 当前时间（实时更新）
+      detailVisible: false,      // 事件详情弹窗显示状态
+      currentEvent: null,        // 当前选中的事件详情
+
+      // === Three.js 场景核心对象 ===
+      scene: null,               // 3D场景对象
+      camera: null,              // 透视相机
+      renderer: null,            // WebGL渲染器
+      buildings: [],             // 建筑网格对象数组
+      buildingTexture: null,     // 建筑纹理贴图
+
+      // === 相机控制参数（球坐标系）===
+      cameraTheta: Math.PI / 4,  // 水平角度（绕Y轴）
+      cameraPhi: Math.PI / 3,    // 垂直角度（与Y轴夹角）
+      cameraRadius: 600,         // 相机距离原点距离
+      cameraTargetX: 0,          // 相机观察目标X坐标（平移用）
+      cameraTargetZ: 0,          // 相机观察目标Z坐标（平移用）
+
+      // === 鼠标交互状态 ===
+      isDragging: false,         // 是否正在拖拽
+      lastMouseX: 0,             // 上一帧鼠标X位置
+      lastMouseY: 0,             // 上一帧鼠标Y位置
+      dragButton: null,          // 当前拖拽的鼠标按键（0=左键, 2=右键）
+
+      // === 日志数据池 ===
+      // 用于模拟实时日志流，从池中随机选取日志展示
       logPool: [
         { type: '老人跌倒检测', level: 'high', levelText: '高', message: '客厅红外传感器检测到老人跌倒，已持续3分钟未移动', location: '5栋2单元301室', status: 'urgent', statusText: '紧急处理' },
         { type: '心率异常报警', level: 'high', levelText: '高', message: '智能手环检测到心率持续高于120次/分，持续15分钟', location: '3栋1单元502室', status: 'processing', statusText: '处理中' },
@@ -206,8 +232,13 @@ export default {
         { type: '紧急药物缺失', level: 'medium', levelText: '中', message: '智能药盒检测到硝酸甘油存量不足3天用量', location: '1栋1单元306室', status: 'pending', statusText: '待处理' },
         { type: '电视长时间开启', level: 'low', levelText: '低', message: '客厅电视从昨日20点持续播放至今', location: '6栋3单元402室', status: 'resolved', statusText: '已处理' }
       ],
-      displayLogs: [],
-      logTimer: null,
+
+      // === 当前显示的日志列表 ===
+      displayLogs: [],           // 当前显示的日志（最多6条，带入场动画）
+      logTimer: null,            // 日志自动轮换定时器
+
+      // === 需关注事件列表 ===
+      // 按时间倒序排列的重要告警事件，供右侧面板展示
       focusEvents: [
         { time: '2025-05-06 09:47:23', type: '老人跌倒检测', level: 'high', levelText: '高', location: '5栋2单元301室', message: '客厅红外传感器检测到老人跌倒，已持续3分钟未移动', status: 'urgent', statusText: '紧急处理' },
         { time: '2025-05-06 09:32:18', type: '心率异常报警', level: 'high', levelText: '高', location: '3栋1单元502室', message: '智能手环检测到心率持续高于120次/分，持续15分钟', status: 'processing', statusText: '处理中' },
@@ -238,26 +269,35 @@ export default {
       ]
     }
   },
+  /**
+   * 组件挂载后初始化
+   * 按顺序执行：时间更新、3D场景、建筑、交互控制、动画循环、日志流、图表
+   */
   mounted() {
-    this.updateTime()
-    setInterval(this.updateTime, 1000)
-    this.initScene()
-    this.initBuildings()
-    this.initControls()
-    this.animate()
-    this.initLogStream()
-    window.addEventListener('resize', this.handleResize)
+    this.updateTime()                              // 初始化时间显示
+    setInterval(this.updateTime, 1000)            // 每秒更新时间
+    this.initScene()                              // 初始化Three.js场景
+    this.initBuildings()                          // 生成建筑群
+    this.initControls()                           // 绑定鼠标交互事件
+    this.animate()                                // 启动渲染循环
+    this.initLogStream()                          // 启动实时日志流
+    window.addEventListener('resize', this.handleResize)  // 监听窗口大小变化
     setTimeout(() => {
-      this.initCharts()
+      this.initCharts()                           // 延迟初始化图表（等待DOM渲染）
     }, 100)
   },
+  /**
+   * 组件销毁前清理资源
+   * 移除事件监听、停止定时器、释放Three.js资源
+   */
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
     if (this.logTimer) {
-      clearInterval(this.logTimer)
+      clearInterval(this.logTimer)                // 停止日志轮换定时器
     }
     const canvas = this.$refs.canvas
     if (canvas) {
+      // 移除所有鼠标事件监听
       canvas.removeEventListener('mousedown', this.onMouseDown)
       canvas.removeEventListener('mousemove', this.onMouseMove)
       canvas.removeEventListener('mouseup', this.onMouseUp)
@@ -265,26 +305,42 @@ export default {
       canvas.removeEventListener('contextmenu', this.onContextMenu)
     }
     if (this.renderer) {
-      this.renderer.dispose()
+      this.renderer.dispose()                     // 释放WebGL资源
     }
   },
   methods: {
-    updateTime() {
-      const now = new Date()
-      this.currentTime = now.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      }).replace(/\//g, '-')
-    },
-    showDetail(event) {
-      this.currentEvent = event
-      this.detailVisible = true
-    },
-    generateBuildingTexture(width, height, depth, baseColor) {
+      /**
+       * 更新当前时间显示
+       * 格式：YYYY-MM-DD HH:MM:SS
+       */
+      updateTime() {
+        const now = new Date()
+        this.currentTime = now.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }).replace(/\//g, '-')
+      },
+      /**
+       * 显示事件详情弹窗
+       * @param {Object} event - 事件对象
+       */
+      showDetail(event) {
+        this.currentEvent = event
+        this.detailVisible = true
+      },
+      /**
+       * 动态生成建筑纹理（Canvas绘制）
+       * @param {number} width - 建筑宽度
+       * @param {number} height - 建筑高度
+       * @param {number} depth - 建筑深度
+       * @param {number} baseColor - 基础颜色（十六进制）
+       * @returns {THREE.CanvasTexture} 生成的纹理对象
+       */
+      generateBuildingTexture(width, height, depth, baseColor) {
       const canvas = document.createElement('canvas')
       const size = 512
       canvas.width = size
@@ -361,41 +417,59 @@ export default {
 
       return texture
     },
-    initLogStream() {
-      // 初始化显示5条日志
-      for (let i = 0; i < 5; i++) {
-        this.addNewLog()
-      }
-      // 每3秒轮换一条
-      this.logTimer = setInterval(() => {
-        this.rotateLog()
-      }, 3000)
-    },
-    addNewLog() {
-      const poolItem = this.logPool[Math.floor(Math.random() * this.logPool.length)]
-      const now = new Date()
-      const timeStr = now.toTimeString().slice(0, 8)
-      const newLog = {
-        id: Date.now() + Math.random(),
-        time: timeStr,
-        isNew: true,
-        ...poolItem
-      }
-      this.displayLogs.unshift(newLog)
-      // 保持最多6条
-      if (this.displayLogs.length > 6) {
-        this.displayLogs.pop()
-      }
-      // 1秒后移除高亮
-      setTimeout(() => {
-        newLog.isNew = false
-      }, 1000)
-    },
-    rotateLog() {
-      this.displayLogs.pop()
-      this.addNewLog()
-    },
-    initScene() {
+      /**
+       * 初始化实时日志流
+       * 1. 初始显示5条日志
+       * 2. 每3秒自动轮换一条（模拟实时推送）
+       */
+      initLogStream() {
+        // 初始化显示5条日志
+        for (let i = 0; i < 5; i++) {
+          this.addNewLog()
+        }
+        // 每3秒轮换一条日志
+        this.logTimer = setInterval(() => {
+          this.rotateLog()
+        }, 3000)
+      },
+      /**
+       * 从日志池中随机添加一条新日志
+       * @returns {Object} 新创建的日志对象
+       */
+      addNewLog() {
+        // 从日志池中随机选取一条
+        const poolItem = this.logPool[Math.floor(Math.random() * this.logPool.length)]
+        const now = new Date()
+        const timeStr = now.toTimeString().slice(0, 8)
+        const newLog = {
+          id: Date.now() + Math.random(),  // 唯一ID
+          time: timeStr,                   // 当前时间
+          isNew: true,                     // 标记为新日志（用于高亮动画）
+          ...poolItem                      // 展开日志内容
+        }
+        this.displayLogs.unshift(newLog)   // 插入到列表头部
+        // 保持最多6条日志
+        if (this.displayLogs.length > 6) {
+          this.displayLogs.pop()
+        }
+        // 1秒后移除高亮标记
+        setTimeout(() => {
+          newLog.isNew = false
+        }, 1000)
+        return newLog
+      },
+      /**
+       * 轮换日志（移除最旧的，添加新的）
+       */
+      rotateLog() {
+        this.displayLogs.pop()             // 移除最旧的日志
+        this.addNewLog()                   // 添加新日志
+      },
+      /**
+       * 初始化Three.js 3D场景
+       * 创建场景、相机、渲染器、光照和地面
+       */
+      initScene() {
       const canvas = this.$refs.canvas
       const width = canvas.clientWidth
       const height = canvas.clientHeight
@@ -453,19 +527,27 @@ export default {
         }
       )
     },
-    rebuildBuildings() {
-      console.log('重新生成建筑，贴图:', this.buildingTexture)
-      // 清除现有建筑
-      this.buildings.forEach(building => {
-        this.scene.remove(building)
-        building.geometry.dispose()
-        building.material.dispose()
-      })
-      this.buildings = []
-      // 重新生成
-      this.initBuildings()
-    },
-    initBuildings() {
+      /**
+       * 重新生成建筑（用于贴图加载完成后）
+       * 先销毁现有建筑，再重新生成以应用新贴图
+       */
+      rebuildBuildings() {
+        console.log('重新生成建筑，贴图:', this.buildingTexture)
+        // 清除现有建筑（释放资源）
+        this.buildings.forEach(building => {
+          this.scene.remove(building)
+          building.geometry.dispose()    // 释放几何体资源
+          building.material.dispose()    // 释放材质资源
+        })
+        this.buildings = []
+        // 重新生成建筑
+        this.initBuildings()
+      },
+      /**
+       * 初始化建筑群
+       * 生成道路网络和随机分布的建筑
+       */
+      initBuildings() {
       const grayColors = [0x4a5568, 0x5a6578, 0x6a7588, 0x7a8598, 0x8a95a8]
       const specialColors = [0xe53e3e, 0xdd6b20, 0x3182ce]
       const blockSize = 80
@@ -622,69 +704,108 @@ export default {
         placedBuildings.push({ x, z, width, depth })
       }
     },
-    initControls() {
-      const canvas = this.$refs.canvas
-      canvas.addEventListener('mousedown', this.onMouseDown)
-      canvas.addEventListener('mousemove', this.onMouseMove)
-      canvas.addEventListener('mouseup', this.onMouseUp)
-      canvas.addEventListener('wheel', this.onWheel)
-      canvas.addEventListener('contextmenu', this.onContextMenu)
-    },
-    onContextMenu(e) {
-      e.preventDefault()
-    },
-    onMouseDown(e) {
-      this.isDragging = true
+      /**
+       * 初始化鼠标交互控制
+       * 绑定Canvas的鼠标事件：拖拽旋转、滚轮缩放、右键平移
+       */
+      initControls() {
+        const canvas = this.$refs.canvas
+        canvas.addEventListener('mousedown', this.onMouseDown)   // 鼠标按下
+        canvas.addEventListener('mousemove', this.onMouseMove)   // 鼠标移动
+        canvas.addEventListener('mouseup', this.onMouseUp)       // 鼠标释放
+        canvas.addEventListener('wheel', this.onWheel)           // 滚轮缩放
+        canvas.addEventListener('contextmenu', this.onContextMenu) // 右键菜单（禁用）
+      },
+      /**
+       * 禁用右键菜单（避免与右键平移冲突）
+       */
+      onContextMenu(e) {
+        e.preventDefault()
+      },
+      /**
+       * 鼠标按下事件处理
+       */
+      onMouseDown(e) {
+        this.isDragging = true
       this.lastMouseX = e.clientX
       this.lastMouseY = e.clientY
       this.dragButton = e.button
     },
-    onMouseMove(e) {
-      if (!this.isDragging) return
+      /**
+       * 鼠标移动事件处理
+       * - 左键拖拽：旋转视角
+       * - 右键拖拽：平移视角
+       */
+      onMouseMove(e) {
+        if (!this.isDragging) return
 
-      const deltaX = e.clientX - this.lastMouseX
-      const deltaY = e.clientY - this.lastMouseY
+        const deltaX = e.clientX - this.lastMouseX
+        const deltaY = e.clientY - this.lastMouseY
 
-      if (this.dragButton === 0) {
-        this.cameraTheta += deltaX * 0.01
-        this.cameraPhi -= deltaY * 0.01
-        this.cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, this.cameraPhi))
-      } else if (this.dragButton === 2) {
-        const speed = this.cameraRadius * 0.001
-        this.cameraTargetX = (this.cameraTargetX || 0) - deltaX * speed * Math.cos(this.cameraTheta) + deltaY * speed * Math.sin(this.cameraTheta)
-        this.cameraTargetZ = (this.cameraTargetZ || 0) - deltaX * speed * Math.sin(this.cameraTheta) - deltaY * speed * Math.cos(this.cameraTheta)
-      }
+        if (this.dragButton === 0) {
+          // 左键：旋转视角
+          this.cameraTheta += deltaX * 0.01  // 水平旋转
+          this.cameraPhi -= deltaY * 0.01    // 垂直旋转
+          // 限制垂直角度范围（避免翻转）
+          this.cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, this.cameraPhi))
+        } else if (this.dragButton === 2) {
+          // 右键：平移视角
+          const speed = this.cameraRadius * 0.001
+          this.cameraTargetX = (this.cameraTargetX || 0) - deltaX * speed * Math.cos(this.cameraTheta) + deltaY * speed * Math.sin(this.cameraTheta)
+          this.cameraTargetZ = (this.cameraTargetZ || 0) - deltaX * speed * Math.sin(this.cameraTheta) - deltaY * speed * Math.cos(this.cameraTheta)
+        }
 
-      this.lastMouseX = e.clientX
-      this.lastMouseY = e.clientY
-      this.updateCameraPosition()
-    },
-    onMouseUp() {
-      this.isDragging = false
-      this.dragButton = null
-    },
-    onWheel(e) {
-      e.preventDefault()
-      this.cameraRadius += e.deltaY * 0.5
-      this.cameraRadius = Math.max(100, Math.min(1200, this.cameraRadius))
-      this.updateCameraPosition()
-    },
-    updateCameraPosition() {
-      const targetX = this.cameraTargetX || 0
-      const targetZ = this.cameraTargetZ || 0
+        this.lastMouseX = e.clientX
+        this.lastMouseY = e.clientY
+        this.updateCameraPosition()
+      },
+      /**
+       * 鼠标释放事件处理
+       */
+      onMouseUp() {
+        this.isDragging = false
+        this.dragButton = null
+      },
+      /**
+       * 滚轮缩放事件处理
+       * @param {WheelEvent} e - 滚轮事件
+       */
+      onWheel(e) {
+        e.preventDefault()
+        this.cameraRadius += e.deltaY * 0.5  // 调整相机距离
+        // 限制缩放范围
+        this.cameraRadius = Math.max(100, Math.min(1200, this.cameraRadius))
+        this.updateCameraPosition()
+      },
+      /**
+       * 根据球坐标参数更新相机位置
+       * 使用球坐标系：theta(水平角), phi(垂直角), radius(距离)
+       */
+      updateCameraPosition() {
+        const targetX = this.cameraTargetX || 0
+        const targetZ = this.cameraTargetZ || 0
 
-      this.camera.position.x = targetX + this.cameraRadius * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta)
-      this.camera.position.y = this.cameraRadius * Math.cos(this.cameraPhi)
-      this.camera.position.z = targetZ + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta)
-      this.camera.lookAt(targetX, 0, targetZ)
-    },
-    animate() {
-      requestAnimationFrame(this.animate)
-      this.cameraTheta += 0.001
-      this.updateCameraPosition()
-      this.renderer.render(this.scene, this.camera)
-    },
-    handleResize() {
+        // 球坐标转笛卡尔坐标
+        this.camera.position.x = targetX + this.cameraRadius * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta)
+        this.camera.position.y = this.cameraRadius * Math.cos(this.cameraPhi)
+        this.camera.position.z = targetZ + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta)
+        this.camera.lookAt(targetX, 0, targetZ)  // 始终看向目标点
+      },
+      /**
+       * 渲染动画循环
+       * 持续更新相机角度并渲染场景
+       */
+      animate() {
+        requestAnimationFrame(this.animate)  // 递归调用实现动画
+        this.cameraTheta += 0.001            // 自动缓慢旋转
+        this.updateCameraPosition()
+        this.renderer.render(this.scene, this.camera)  // 渲染场景
+      },
+      /**
+       * 窗口大小变化处理
+       * 更新相机宽高比和渲染器尺寸
+       */
+      handleResize() {
       const canvas = this.$refs.canvas
       const width = canvas.clientWidth
       const height = canvas.clientHeight
@@ -695,37 +816,93 @@ export default {
       if (this.sensorChart) this.sensorChart.resize()
       if (this.alertChart) this.alertChart.resize()
     },
-    initCharts() {
-      this.$nextTick(() => {
-        this.initHouseholdChart()
-        this.initSensorChart()
-        this.initAlertChart()
-      })
-    },
-    initHouseholdChart() {
-      const chartDom = this.$refs.householdChart
-      if (!chartDom) return
-      this.householdChart = echarts.init(chartDom)
-      const option = {
-        tooltip: { trigger: 'item' },
-        legend: { bottom: 0, textStyle: { color: '#94a3b8', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
-        series: [{
-          type: 'pie',
-          radius: ['40%', '70%'],
-          center: ['50%', '45%'],
-          avoidLabelOverlap: false,
-          itemStyle: { borderRadius: 5, borderColor: '#0a1628', borderWidth: 2 },
-          label: { show: false },
-          emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold', color: '#fff' } },
-          data: [
-            { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },
-            { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }
-          ]
-        }]
-      }
-      this.householdChart.setOption(option)
-    },
-    initSensorChart() {
+      /**
+       * 初始化所有ECharts图表
+       * 在nextTick中执行确保DOM已渲染
+       */
+      initCharts() {
+        this.$nextTick(() => {
+          this.initHouseholdChart()  // 基本信息饼图
+          this.initSensorChart()     // 传感器状态折线图
+          this.initAlertChart()      // 告警趋势折线图
+        })
+      },
+      /**
+       * 初始化基本信息饼图
+       * 展示在线/离线户数比例
+       */
+      initHouseholdChart() {
+        // 通过$refs获取DOM元素，householdChart是模板中定义的ref名称
+        const chartDom = this.$refs.householdChart
+        // 如果DOM元素不存在，直接返回，防止初始化失败
+        if (!chartDom) return
+        // 使用echarts.init()方法初始化图表实例
+        // 参数为DOM元素，会在此元素内渲染图表
+        this.householdChart = echarts.init(chartDom)
+        
+        // 定义图表配置项对象
+        const option = {
+          // tooltip配置：鼠标悬停时的提示框
+          // trigger: 'item'表示触发类型为数据项触发
+          tooltip: { trigger: 'item' },
+          
+          // legend配置：图例设置
+          // bottom: 0 图例位于底部
+          // textStyle: 图例文字样式，颜色#94a3b8，字号10px
+          // itemWidth/itemHeight: 图例标记的宽高
+          legend: { 
+            bottom: 0, 
+            textStyle: { color: '#94a3b8', fontSize: 10 }, 
+            itemWidth: 10, 
+            itemHeight: 10 
+          },
+          
+          // series配置：图表系列数据
+          series: [{
+            // type: 'pie'表示饼图类型
+            type: 'pie',
+            // radius: ['40%', '70%'] 设置内外半径，形成环形饼图（环形图）
+            // 内半径40%，外半径70%
+            radius: ['40%', '70%'],    // 环形饼图
+            // center: ['50%', '45%'] 设置饼图圆心位置，相对于容器的百分比
+            center: ['50%', '45%'],
+            // avoidLabelOverlap: false 禁止标签重叠
+            avoidLabelOverlap: false,
+            // itemStyle: 数据项样式
+            // borderRadius: 5 圆角半径5px
+            // borderColor: '#0a1628' 边框颜色（深色背景）
+            // borderWidth: 2 边框宽度2px
+            itemStyle: { borderRadius: 5, borderColor: '#0a1628', borderWidth: 2 },
+            // label: 标签配置，show: false表示不显示标签
+            label: { show: false },
+            // emphasis: 高亮状态配置
+            // 鼠标悬停时显示标签，字号14px，加粗，白色文字
+            emphasis: { 
+              label: { 
+                show: true, 
+                fontSize: 14, 
+                fontWeight: 'bold', 
+                color: '#fff' 
+              } 
+            },
+            // data: 饼图数据数组
+            data: [
+              // value: 数值，name: 名称，itemStyle: 自定义样式
+              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } }, // 绿色
+              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }  // 灰色
+            ]
+          }] // 结束series数组
+        } // 结束option配置对象
+        
+        // 将配置项应用到图表实例
+        // setOption方法将配置和数据设置到echarts实例中，触发图表渲染
+        this.householdChart.setOption(option)
+      }, // 结束initHouseholdChart方法
+      /**
+       * 初始化传感器状态折线图
+       * 展示在线/离线/异常传感器数量随时间变化
+       */
+      initSensorChart() {
       const chartDom = this.$refs.sensorChart
       if (!chartDom) return
       this.sensorChart = echarts.init(chartDom)
@@ -774,35 +951,39 @@ export default {
       }
       this.sensorChart.setOption(option)
     },
-    initAlertChart() {
-      const chartDom = this.$refs.alertChart
-      if (!chartDom) return
-      this.alertChart = echarts.init(chartDom)
-      const option = {
-        tooltip: { trigger: 'axis' },
-        legend: { top: 0, textStyle: { color: '#94a3b8', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
-        grid: { top: 30, right: 10, bottom: 25, left: 40 },
-        xAxis: {
-          type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
-          axisLabel: { color: '#94a3b8', fontSize: 9 }
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: { show: false },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-          axisLabel: { color: '#94a3b8', fontSize: 9 }
-        },
-        series: [
-          {
-            name: '正在进行',
-            type: 'line',
-            smooth: true,
-            data: [12, 15, 8, 20, 18, 25, 22],
-            lineStyle: { color: '#3b82f6' },
-            itemStyle: { color: '#3b82f6' }
+      /**
+       * 初始化告警趋势折线图
+       * 展示一周内告警事件数量变化（正在进行/已解决/需关注）
+       */
+      initAlertChart() {
+        const chartDom = this.$refs.alertChart
+        if (!chartDom) return
+        this.alertChart = echarts.init(chartDom)
+        const option = {
+          tooltip: { trigger: 'axis' },
+          legend: { top: 0, textStyle: { color: '#94a3b8', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
+          grid: { top: 30, right: 10, bottom: 25, left: 40 },
+          xAxis: {
+            type: 'category',
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+            axisLabel: { color: '#94a3b8', fontSize: 9 }
           },
+          yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+            axisLabel: { color: '#94a3b8', fontSize: 9 }
+          },
+          series: [
+            {
+              name: '正在进行',
+              type: 'line',
+              smooth: true,
+              data: [12, 15, 8, 20, 18, 25, 22],
+              lineStyle: { color: '#3b82f6' },
+              itemStyle: { color: '#3b82f6' }
+            },
           {
             name: '已解决',
             type: 'line',
@@ -828,16 +1009,18 @@ export default {
 </script>
 
 <style scoped>
+/* ==================== 全局样式 ==================== */
 .data-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0a1628;
+  background: #0a1628;  /* 深蓝色背景，营造科技感 */
   overflow: hidden;
 }
 
+/* Three.js画布容器 - 铺满整个屏幕 */
 .canvas-container {
   position: absolute;
   top: 0;
@@ -846,7 +1029,7 @@ export default {
   height: 100%;
 }
 
-/* 顶部标题栏 */
+/* ==================== 顶部标题栏 ==================== */
 .screen-header {
   position: absolute;
   top: 0;
@@ -899,7 +1082,7 @@ export default {
   font-size: 14px;
 }
 
-/* 左侧面板 */
+/* ==================== 左侧数据面板 ==================== */
 .panel-left {
   position: absolute;
   top: 90px;
@@ -913,7 +1096,7 @@ export default {
   overflow: hidden;
 }
 
-/* 右侧面板 */
+/* ==================== 右侧数据面板 ==================== */
 .panel-right {
   position: absolute;
   top: 90px;
@@ -927,7 +1110,8 @@ export default {
   overflow: hidden;
 }
 
-/* 面板盒子 */
+/* ==================== 通用面板样式 ==================== */
+/* 面板盒子 - 带毛玻璃效果的卡片容器 */
 .panel-box {
   background: rgba(16, 30, 50, 0.85);
   border: 1px solid rgba(0, 212, 255, 0.2);

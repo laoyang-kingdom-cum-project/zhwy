@@ -16,31 +16,60 @@ export default {
       const careMode = uni.getStorageSync('careMode')
 
       // #ifdef APP-PLUS
+      // APP-PLUS：UniApp平台专用于APP环境的条件编译分支
+      // 以下代码仅在原生APP（如Android、iOS）中编译和执行
+      // 获取UniApp页面栈，用于获取当前页面实例和webview对象
       const pages = getCurrentPages()
+      // pages是页面栈数组，如果数组长度大于0说明有页面存在
       if (pages.length > 0) {
+        // 数组length-1表示获取最后一个元素，即当前页面实例
+        // getCurrentPages()返回页面栈数组，最后一个是当前页面
         const currentPage = pages[pages.length - 1]
+        // $getAppWebview()是UniApp实例方法，用于获取当前页面所属的原生webview对象
+        // 返回值是5+App的Webview对象，可调用setStyle、evalJS等方法
         const currentWebview = currentPage.$getAppWebview()
+        // 判断webview对象是否存在，防止空指针异常
         if (currentWebview) {
-          // 在APP上尝试修改当前Webview的字体缩放比例 (130表示放大30%)
+          // setStyle用于设置webview的样式属性，可修改页面的缩放、背景色等
+          // textZoom属性用于设置页面的文字缩放比例
+          // 当careMode为true时文字放大到120%，false时恢复默认的100%
           currentWebview.setStyle({
+            // textZoom:120 表示将文字缩放设置为120%，即放大1.2倍
+            // 目的是适配老年用户的视力需求，提供更好的可读性
             textZoom: careMode ? 120 : 100
           })
-          
-          // 通过 evalJS 注入全局类名，解决部分机型 textZoom 不生效问题
+
+          // evalJS方法用于向webview中注入并执行JavaScript代码
+          // 这里注入的代码用于动态操作DOM元素的class类名
+          // 原因：部分Android机型上setStyle的textZoom属性设置后不生效
+          // 解决方案：通过CSS类名care-mode-active配合全局样式实现字体放大
           currentWebview.evalJS(`
+            // typeof document !== 'undefined' 判断document对象是否存在
+            // 兼容APP环境下webview可能不存在document的情况
             if (typeof document !== 'undefined') {
+              // document.body是页面的body元素
+              // document.querySelector('uni-page-body')是UniApp页面的根元素
+              // 使用||的原因是优先使用uni-page-body，如果不存在则使用body
               var body = document.body || document.querySelector('uni-page-body');
+              // 判断body元素是否存在，防止操作空对象报错
               if (body) {
+                // 如果careMode为true，则添加care-mode-active类名
+                // 如果careMode为false，则移除care-mode-active类名
+                // 类名的添加和移除会触发CSS样式变化，实现字体放大/缩小效果
                 if (${careMode}) {
+                  // classList.add()方法向元素的class列表中添加指定类名
+                  // 添加后CSS中定义的.care-mode-active样式会生效
                   body.classList.add('care-mode-active');
                 } else {
+                  // classList.remove()方法从元素的class列表中移除指定类名
+                  // 移除后字体缩小恢复到默认状态
                   body.classList.remove('care-mode-active');
-                }
-              }
-            }
-          `);
-        }
-      }
+                } // 结束if-else careMode判断
+              } // 结束if body判断
+            } // 结束if document判断
+          `); // 结束evalJS方法的字符串参数
+        } // 结束if currentWebview判断
+      } // 结束if pages.length判断
       // #endif
 
       // #ifdef H5

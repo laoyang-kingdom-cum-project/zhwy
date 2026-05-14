@@ -118,44 +118,65 @@ export default {
       return `${hours}:${minutes}`
     },
 
-    // 发送消息
+    // 发送消息方法（异步）
     async sendMessage() {
+      // 从输入框获取消息内容并去除首尾空格
       const message = this.inputMessage.trim()
+      // 如果消息为空或者正在加载中则直接返回，不发送空消息或重复发送
       if (!message || this.loading) return
 
-      // 添加用户消息
+      // 将用户消息添加到消息列表中
+      // role: 'user' 表示这是一条用户发送的消息
+      // content: message 是消息的实际内容
+      // time: getCurrentTime() 获取发送时的时间戳
       this.messages.push({
         role: 'user',
         content: message,
         time: this.getCurrentTime()
       })
 
+      // 清空输入框内容，为下一次输入做准备
       this.inputMessage = ''
+      // 调用滚动到底部方法，确保新消息可见
       this.scrollToBottom()
+      // 设置loading状态为true，防止用户重复点击发送按钮
       this.loading = true
 
       // 调用AI接口
       try {
+        // 等待AI接口返回结果，callAI方法传入用户消息作为参数
         let aiResponse = await this.callAI(message)
-        // 处理AI回复：删除 <think> 标签及其内容，以及开头的 <br> 标签和换行
+        // 处理AI回复：删除<think>标签及其内容，以及开头的<br>标签和换行
+        // formatAIResponse方法用于清洗AI返回的原始数据，移除不必要的标签
         aiResponse = this.formatAIResponse(aiResponse)
-        this.messages.push({
-          role: 'assistant',
-          content: aiResponse,
-          time: this.getCurrentTime()
-        })
+        // 将AI回复添加到消息列表
+      // role: 'assistant' 表示这是AI/助手回复的消息
+      this.messages.push({
+        role: 'assistant',
+        content: aiResponse,
+        time: this.getCurrentTime()
+      }) // 结束AI消息对象的构建并添加到消息数组
       } catch (error) {
+        // 如果AI请求失败，在控制台输出错误信息便于调试
         console.error('AI请求失败', error)
-        this.messages.push({
-          role: 'assistant',
-          content: '抱歉，AI服务暂时不可用，请稍后再试。',
-          time: this.getCurrentTime()
-        })
-      } finally {
+        // 使用setTimeout延迟500ms后添加模拟回复，模拟AI思考过程
+        setTimeout(() => {
+          // 向用户显示友好的错误提示消息
+          this.messages.push({
+            role: 'assistant',
+            content: '抱歉，AI服务暂时不可用，请稍后再试。',
+            time: this.getCurrentTime()
+          }) // 结束模拟回复对象的构建并添加到消息数组
+        }, 500) // 结束setTimeout延时回调的设置，延迟500毫秒执行
+      } // 结束catch错误捕获块
+      finally {
+        // finally块中的代码无论成功或失败都会执行
+        // 重置loading状态，允许用户再次发送消息
         this.loading = false
+        // 再次滚动到底部，确保AI的回复可见
         this.scrollToBottom()
-      }
-    },
+      } // 结束finally块，用于清理和收尾工作
+    }, // 结束sendMessage异步方法的定义
 
     // 发送快捷问题
     sendQuickQuestion(question) {

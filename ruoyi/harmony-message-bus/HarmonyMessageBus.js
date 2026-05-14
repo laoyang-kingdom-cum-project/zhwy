@@ -124,27 +124,58 @@ async function escalateToEmergency(payload) {
 
   // TODO Step 1/3: 组装多源聚合载荷（JSON）
   // 提示: 将 room_id、event_type('跌倒')、level('一级高危')、health_record、env_data 封装
+  // 目的: 将来自不同数据源的信息整合为统一格式，便于后续处理和传输
+  // 数据来源: 
+  //   - room_id: 房间编号，标识告警发生位置
+  //   - event_type: 事件类型，固定为'跌倒'表示跌倒检测事件
+  //   - level: 告警级别，'一级高危'表示最高优先级告警
+  //   - health_record: 老人健康档案，包含姓名、年龄、慢性病等信息
+  //   - env_data: 房间环境数据，包含温湿度、PM2.5等传感器数据
 
-  // const eventPayload = {
-  //   room_id: payload.ROOM_ID,
-  //   event_type: '跌倒',
-  //   level: '一级高危',
-  //   health_record: payload.healthRecord,
-  //   env_data: payload.envData
-  // }
-    
+  // 创建告警事件载荷对象，整合所有相关数据
+  const eventPayload = {
+    // room_id: 房间编号，从输入参数payload中获取ROOM_ID属性
+    room_id: payload.ROOM_ID,
+    // event_type: 事件类型，设置为'跌倒'表示这是一个跌倒检测告警
+    event_type: '跌倒',
+    // level: 告警级别，'一级高危'表示紧急程度最高的告警
+    level: '一级高危',
+    // health_record: 健康档案对象，包含老人的健康信息
+    health_record: payload.healthRecord,
+    // env_data: 环境数据对象，包含房间内传感器采集的环境参数
+    env_data: payload.envData
+  } // 结束eventPayload对象定义
+  
+  // 空行用于分隔代码块，提高可读性
 
   // TODO Step 2/3: 通过 fetch 将载荷 POST 到鸿蒙分布式总线
+  // 目的: 将组装好的告警载荷通过HTTP POST请求发送到鸿蒙分布式软总线
+  // 鸿蒙分布式总线会将告警转发到:
+  //   - 小艺音箱 TTS 语音播报
+  //   - 社区大屏联动显示
+  //   - 短信网关通知家属
+  //   - 物业值班系统
 
-  // await fetch(HARMONY_WEBHOOK, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(eventPayload)
-  // })
+  // 使用Node.js原生fetch API发送HTTP POST请求
+  // await关键字等待请求完成（异步操作）
+  await fetch(HARMONY_WEBHOOK, {
+    // method: 'POST' 指定HTTP方法为POST
+    method: 'POST',
+    // headers: 设置请求头，指定Content-Type为application/json
+    // 告知服务器请求体是JSON格式
+    headers: { 'Content-Type': 'application/json' },
+    // body: 请求体内容，将eventPayload对象序列化为JSON字符串
+    // JSON.stringify()将JavaScript对象转换为JSON字符串
+    body: JSON.stringify(eventPayload)
+  }) // 结束fetch调用
 
   // TODO Step 3/3: 打印推送结果确认日志
+  // 目的: 在控制台输出日志，确认告警已成功推送到鸿蒙分布式总线
+  // 便于开发人员调试和运维人员监控系统运行状态
 
-  // console.log('[消息总线] ✅ 告警已推送到鸿蒙分布式总线')
+  // console.log输出成功日志，使用✅图标标识成功状态
+  // [消息总线] 前缀用于区分日志来源
+  console.log('[消息总线] ✅ 告警已推送到鸿蒙分布式总线')
 
   // ╔══════════════════════════════════════════════════════════════════════╗
   // ║                    ↑ 请在以上区域编写代码 ↑                        ║
