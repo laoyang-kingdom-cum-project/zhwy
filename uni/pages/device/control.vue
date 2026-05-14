@@ -222,7 +222,7 @@ export default {
 
     // 切换设备开关状态（异步方法）
     // 参数e：开关组件的事件对象，包含开关的新状态
-    toggleDevice(e) {
+    async toggleDevice(e) {
       // 从事件对象中获取开关的新状态值
       // e.detail.value为true表示开启，false表示关闭
       // 转换为1表示开启，0表示关闭的数值格式
