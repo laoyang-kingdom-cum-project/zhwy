@@ -35,6 +35,20 @@
           <span class="sub-title">Basic Info</span>
         </div>
         <div ref="householdChart" class="chart-container"></div>
+        <div class="household-stats">
+          <div class="stat-item online">
+            <span class="stat-value">856</span>
+            <span class="stat-label">在线户数</span>
+          </div>
+          <div class="stat-item offline">
+            <span class="stat-value">144</span>
+            <span class="stat-label">离线户数</span>
+          </div>
+          <div class="stat-item total">
+            <span class="stat-value">1000</span>
+            <span class="stat-label">总户数</span>
+          </div>
+        </div>
       </div>
 
       <!-- 传感器状态 -->
@@ -137,7 +151,7 @@
     </div>
 
     <!-- 事件详情弹窗 -->
-    <el-dialog :visible.sync="detailVisible" title="事件详情" width="500px" custom-class="event-dialog" :modal="false">
+    <el-dialog :visible.sync="detailVisible" title="事件详情" width="600px" custom-class="event-dialog" :modal="false">
       <div class="detail-content" v-if="currentEvent">
         <div class="detail-row">
           <span class="label">事件时间：</span>
@@ -159,6 +173,35 @@
           <span class="label">事件状态：</span>
           <span class="value" :class="currentEvent.status">{{ currentEvent.statusText }}</span>
         </div>
+        
+        <!-- AI 应急方案 -->
+        <div class="ai-emergency-section">
+          <div class="ai-title">
+            <i class="el-icon-connection"></i>
+            <span>AI 应急方案</span>
+            <div class="ai-loading" v-if="aiLoading">
+              <span class="loading-dot"></span>
+              <span class="loading-dot"></span>
+              <span class="loading-dot"></span>
+            </div>
+          </div>
+          <div class="ai-content" v-if="emergencyPlan">
+            <div class="ai-text">{{ emergencyPlan }}</div>
+          </div>
+          <div class="ai-placeholder" v-if="!emergencyPlan && !aiLoading">
+            点击获取 AI 应急处理方案
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部按钮 -->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="detailVisible = false" v-if="!emergencyPlan && !aiLoading">取 消</el-button>
+        <el-button type="primary" @click="loadAIPlan" :loading="aiLoading" v-if="!emergencyPlan && !aiLoading">
+          <i class="el-icon-connection"></i>
+          获取 AI 应急方案
+        </el-button>
+        <el-button @click="detailVisible = false" v-if="emergencyPlan || aiLoading">关 闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -181,6 +224,8 @@ export default {
       currentTime: '',           // 当前时间（实时更新）
       detailVisible: false,      // 事件详情弹窗显示状态
       currentEvent: null,        // 当前选中的事件详情
+      emergencyPlan: '',         // AI 应急方案
+      aiLoading: false,          // AI 加载状态
 
       // === Three.js 场景核心对象 ===
       scene: null,               // 3D场景对象
@@ -331,6 +376,90 @@ export default {
       showDetail(event) {
         this.currentEvent = event
         this.detailVisible = true
+        // 重置 AI 应急方案
+        this.emergencyPlan = ''
+        this.aiLoading = false
+      },
+      
+      /**
+       * 加载 AI 应急方案
+       */
+      async loadAIPlan() {
+        if (!this.currentEvent) return
+        
+        this.aiLoading = true
+        this.emergencyPlan = ''
+        
+        try {
+          const message = `请为以下养老社区预警提供应急处理方案：
+预警类型：${this.currentEvent.type}
+发生位置：${this.currentEvent.location || '未知'}
+事件描述：${this.currentEvent.message}
+
+请提供详细的应急处理步骤、注意事项和建议措施。`
+          
+          const plan = await this.callDifyAI(message)
+          this.emergencyPlan = this.formatAIResponse(plan)
+        } catch (error) {
+          console.error('获取 AI 应急方案失败', error)
+          this.emergencyPlan = '获取 AI 方案失败，请根据现场情况采取相应措施，确保人员安全。'
+        } finally {
+          this.aiLoading = false
+        }
+      },
+      
+      /**
+       * 调用 Dify AI 接口
+       */
+      async callDifyAI(message) {
+        const config = {
+          apiUrl: 'https://api.dify.ai/v1/chat-messages',
+          apiKey: 'app-GgkaxIhg0WQAP8b1lzd9ct9L',
+          userId: 'sandbox-web-user'
+        }
+        
+        const response = await fetch(config.apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`
+          },
+          body: JSON.stringify({
+            inputs: {},
+            query: message,
+            user: config.userId,
+            response_mode: 'blocking'
+          })
+        })
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('401 Unauthorized: API 密钥无效')
+          }
+          throw new Error(`AI 请求失败：${response.status}`)
+        }
+        
+        const data = await response.json()
+        if (data.answer) {
+          return data.answer
+        }
+        throw new Error(data.message || 'AI 请求失败')
+      },
+      
+      /**
+       * 格式化 AI 回复，去除 think 标签及其内容
+       */
+      formatAIResponse(response) {
+        if (!response) return ''
+        // 删除 think 标签及其内部内容（包括多行内容）
+        let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
+        // 删除开头的 <br> 标签和换行
+        formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
+        // 删除多余的空行
+        formatted = formatted.replace(/\n{3,}/g, '\n\n')
+        // 去除首尾空白
+        formatted = formatted.trim()
+        return formatted
       },
       /**
        * 动态生成建筑纹理（Canvas绘制）
@@ -423,11 +552,9 @@ export default {
        * 2. 每3秒自动轮换一条（模拟实时推送）
        */
       initLogStream() {
-        // 初始化显示5条日志
         for (let i = 0; i < 5; i++) {
           this.addNewLog()
         }
-        // 每3秒轮换一条日志
         this.logTimer = setInterval(() => {
           this.rotateLog()
         }, 3000)
@@ -842,41 +969,26 @@ export default {
         
         // 定义图表配置项对象
         const option = {
-          // tooltip配置：鼠标悬停时的提示框
-          // trigger: 'item'表示触发类型为数据项触发
           tooltip: { trigger: 'item' },
-          
-          // legend配置：图例设置
-          // bottom: 0 图例位于底部
-          // textStyle: 图例文字样式，颜色#94a3b8，字号10px
-          // itemWidth/itemHeight: 图例标记的宽高
           legend: { 
             bottom: 0, 
-            textStyle: { color: '#94a3b8', fontSize: 10 }, 
+            textStyle: { color: '#cbd5e1', fontSize: 10 }, 
             itemWidth: 10, 
             itemHeight: 10 
           },
-          
-          // series配置：图表系列数据
           series: [{
-            // type: 'pie'表示饼图类型
             type: 'pie',
-            // radius: ['40%', '70%'] 设置内外半径，形成环形饼图（环形图）
-            // 内半径40%，外半径70%
-            radius: ['40%', '70%'],    // 环形饼图
-            // center: ['50%', '45%'] 设置饼图圆心位置，相对于容器的百分比
+            radius: ['40%', '70%'],
             center: ['50%', '45%'],
-            // avoidLabelOverlap: false 禁止标签重叠
             avoidLabelOverlap: false,
-            // itemStyle: 数据项样式
-            // borderRadius: 5 圆角半径5px
-            // borderColor: '#0a1628' 边框颜色（深色背景）
-            // borderWidth: 2 边框宽度2px
-            itemStyle: { borderRadius: 5, borderColor: '#0a1628', borderWidth: 2 },
-            // label: 标签配置，show: false表示不显示标签
-            label: { show: false },
-            // emphasis: 高亮状态配置
-            // 鼠标悬停时显示标签，字号14px，加粗，白色文字
+            itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },
+            label: { 
+              show: true, 
+              fontSize: 12, 
+              fontWeight: 'bold',
+              color: '#e2e8f0',
+              formatter: '{b}\n{c}户'
+            },
             emphasis: { 
               label: { 
                 show: true, 
@@ -885,14 +997,12 @@ export default {
                 color: '#fff' 
               } 
             },
-            // data: 饼图数据数组
             data: [
-              // value: 数值，name: 名称，itemStyle: 自定义样式
-              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } }, // 绿色
-              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }  // 灰色
+              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },
+              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }
             ]
-          }] // 结束series数组
-        } // 结束option配置对象
+          }]
+        }
         
         // 将配置项应用到图表实例
         // setOption方法将配置和数据设置到echarts实例中，触发图表渲染
@@ -912,14 +1022,14 @@ export default {
         xAxis: {
           type: 'category',
           data: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
-          axisLabel: { color: '#94a3b8', fontSize: 9 }
+          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+          axisLabel: { color: '#cbd5e1', fontSize: 9 }
         },
         yAxis: {
           type: 'value',
           axisLine: { show: false },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-          axisLabel: { color: '#94a3b8', fontSize: 9 }
+          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
+          axisLabel: { color: '#cbd5e1', fontSize: 9 }
         },
         series: [
           {
@@ -961,19 +1071,19 @@ export default {
         this.alertChart = echarts.init(chartDom)
         const option = {
           tooltip: { trigger: 'axis' },
-          legend: { top: 0, textStyle: { color: '#94a3b8', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
+          legend: { top: 0, textStyle: { color: '#cbd5e1', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
           grid: { top: 30, right: 10, bottom: 25, left: 40 },
           xAxis: {
             type: 'category',
             data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
-            axisLabel: { color: '#94a3b8', fontSize: 9 }
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            axisLabel: { color: '#cbd5e1', fontSize: 9 }
           },
           yAxis: {
             type: 'value',
             axisLine: { show: false },
-            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-            axisLabel: { color: '#94a3b8', fontSize: 9 }
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
+            axisLabel: { color: '#cbd5e1', fontSize: 9 }
           },
           series: [
             {
@@ -1016,7 +1126,7 @@ export default {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0a1628;  /* 深蓝色背景，营造科技感 */
+  background: #0f2847;
   overflow: hidden;
 }
 
@@ -1040,7 +1150,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 0 30px;
-  background: linear-gradient(180deg, rgba(10, 22, 40, 0.95) 0%, rgba(10, 22, 40, 0.7) 70%, transparent 100%);
+  background: linear-gradient(180deg, rgba(15, 40, 71, 0.95) 0%, rgba(15, 40, 71, 0.7) 70%, transparent 100%);
   z-index: 100;
 }
 
@@ -1078,7 +1188,7 @@ export default {
 }
 
 .header-right .weather {
-  color: #a0aec0;
+  color: #cbd5e1;
   font-size: 14px;
 }
 
@@ -1113,8 +1223,8 @@ export default {
 /* ==================== 通用面板样式 ==================== */
 /* 面板盒子 - 带毛玻璃效果的卡片容器 */
 .panel-box {
-  background: rgba(16, 30, 50, 0.85);
-  border: 1px solid rgba(0, 212, 255, 0.2);
+  background: rgba(20, 45, 75, 0.9);
+  border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 8px;
   padding: 12px;
   backdrop-filter: blur(10px);
@@ -1124,7 +1234,12 @@ export default {
 }
 
 .panel-box:nth-child(3) {
-  flex: 1.5;
+  flex: 2;
+  min-height: 0;
+}
+
+.panel-right .panel-box:nth-child(3) {
+  flex: 2;
   min-height: 0;
 }
 
@@ -1159,6 +1274,46 @@ export default {
 .chart-container {
   height: 140px;
   width: 100%;
+}
+
+/* 基本信息数字统计 */
+.household-stats {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.stat-item .stat-value {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.stat-item .stat-label {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.stat-item.online .stat-value {
+  color: #22c55e;
+}
+
+.stat-item.offline .stat-value {
+  color: #64748b;
+}
+
+.stat-item.total .stat-value {
+  color: #00d4ff;
 }
 
 /* 告警统计 */
@@ -1236,7 +1391,7 @@ export default {
 }
 
 .alert-info .label {
-  color: #94a3b8;
+  color: #cbd5e1;
   font-size: 12px;
   margin-bottom: 4px;
 }
@@ -1249,7 +1404,7 @@ export default {
 
 /* 日志列表 */
 .log-list {
-  height: 180px;
+  flex: 1;
   overflow: hidden;
   position: relative;
 }
@@ -1325,7 +1480,7 @@ export default {
 
 .log-type {
   flex: 1;
-  color: #cbd5e1;
+  color: #e2e8f0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1355,7 +1510,7 @@ export default {
 
 /* 事件列表 */
 .event-list {
-  height: 180px;
+  flex: 1;
   overflow-y: auto;
 }
 
@@ -1420,7 +1575,7 @@ export default {
 }
 
 .event-location {
-  color: #94a3b8;
+  color: #cbd5e1;
   font-size: 12px;
   margin-bottom: 4px;
 }
@@ -1511,5 +1666,108 @@ export default {
 .detail-row .value.resolved {
   color: #2e7d32;
   font-weight: bold;
+}
+
+/* AI 应急方案样式 */
+.ai-emergency-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border-radius: 8px;
+  border: 1px solid #d0d7e2;
+}
+
+.ai-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.ai-title i {
+  margin-right: 8px;
+  color: #667eea;
+  font-size: 18px;
+}
+
+.ai-loading {
+  display: flex;
+  gap: 6px;
+  margin-left: 12px;
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: aiLoading 1.4s infinite ease-in-out both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes aiLoading {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ai-content {
+  background: #fff;
+  border-radius: 6px;
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.ai-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-content::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 3px;
+}
+
+.ai-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}
+
+.ai-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.ai-placeholder {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 14px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialog-footer .el-button {
+  min-width: 100px;
 }
 </style>
