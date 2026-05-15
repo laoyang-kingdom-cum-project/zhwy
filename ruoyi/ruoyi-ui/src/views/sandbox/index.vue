@@ -350,98 +350,67 @@ export default {
   methods: {
       // 更新当前时间
       updateTime() {
-        const now = new Date()
-        this.currentTime = now.toLocaleString('zh-CN', {
+        const now = new Date()  // 第一步：获取当前时间
+        this.currentTime = now.toLocaleString('zh-CN', {  // 第二步：格式化为中文时间
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit'
-        }).replace(/\//g, '-')
+        }).replace(/\//g, '-')  // 第三步：替换斜杠为横杠
       },
       // 显示事件详情弹窗
       showDetail(event) {
-        this.currentEvent = event
-        this.detailVisible = true
-        // 重置 AI 应急方案
-        this.emergencyPlan = ''
-        this.aiLoading = false
+        this.currentEvent = event  // 第一步：保存当前事件数据
+        this.detailVisible = true  // 第二步：显示弹窗
+        this.emergencyPlan = ''    // 第三步：重置AI方案
+        this.aiLoading = false     // 第四步：重置加载状态
       },
       
       // 加载AI应急方案
       async loadAIPlan() {
-        console.log('=== loadAIPlan 被调用 ===')
-        console.log('currentEvent:', this.currentEvent)
-        
-        if (!this.currentEvent) {
-          console.log('❌ currentEvent 为空，请先选择一个事件')
+        if (!this.currentEvent) {  // 第一步：检查是否有选中事件
           this.$message.warning('请先选择一个事件，再获取AI应急方案')
           return
         }
-        
-        this.aiLoading = true
-        this.emergencyPlan = ''
-        
+        this.aiLoading = true     // 第二步：设置加载状态
+        this.emergencyPlan = ''   // 第三步：清空旧方案
         try {
-          const message = `请为以下养老社区预警提供应急处理方案：
+          const message = `请为以下养老社区预警提供应急处理方案：  // 第四步：组装请求消息
 预警类型：${this.currentEvent.type}
 发生位置：${this.currentEvent.location || '未知'}
 事件描述：${this.currentEvent.message}
 
 请提供详细的应急处理步骤、注意事项和建议措施。`
-          
-          const plan = await this.callDifyAI(message)
-          this.emergencyPlan = this.formatAIResponse(plan)
+          const plan = await this.callDifyAI(message)  // 第五步：调用AI接口
+          this.emergencyPlan = this.formatAIResponse(plan)  // 第六步：格式化并显示方案
         } catch (error) {
-          console.error('获取 AI 应急方案失败', error)
-          // 显示详细错误信息给用户
-          this.emergencyPlan = `获取 AI 方案失败：${error.message}\n\n请根据现场情况采取相应措施，确保人员安全。`
+          this.emergencyPlan = `获取 AI 方案失败：${error.message}\n\n请根据现场情况采取相应措施，确保人员安全。`  // 第七步：错误处理
         } finally {
-          this.aiLoading = false
+          this.aiLoading = false  // 第八步：结束加载状态
         }
       },
       
       // 调用Dify AI接口
       async callDifyAI(message) {
-        const config = {
+        const config = {  // 第一步：配置API参数
           apiUrl: '/dify-api/v1/chat-messages',
           apiKey: 'app-GgkaxIhg0WQAP8b1lzd9ct9L',
           userId: 'sandbox-web-user'
         }
-        
-        console.log('=== AI 请求配置 ===')
-        console.log('API URL:', config.apiUrl)
-        console.log('API Key:', config.apiKey ? '已配置' : '未配置')
-        console.log('User ID:', config.userId)
-        console.log('请求消息长度:', message.length)
-        
-        const requestBody = {
+        const requestBody = {  // 第二步：组装请求体
           inputs: {},
           query: message,
           user: config.userId,
           response_mode: 'blocking'
         }
-        
-        console.log('=== 发送请求 ===')
-        console.log('请求方法:', 'POST')
-        console.log('请求URL:', config.apiUrl)
-        console.log('请求头:', {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.apiKey.substring(0, 10)}...`
-        })
-        console.log('请求体:', requestBody)
-        console.log('超时时间:', '60000ms (60秒)')
-        
-        // 设置 60 秒超时
-        const controller = new AbortController()
+        const controller = new AbortController()  // 第三步：创建超时控制器
         const timeoutId = setTimeout(() => {
           controller.abort()
-          console.log('❌ 请求超时')
-        }, 60000) // 60秒超时
-        
+        }, 60000)
         try {
-          const response = await fetch(config.apiUrl, {
+          const response = await fetch(config.apiUrl, {  // 第四步：发送请求
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -450,21 +419,9 @@ export default {
             body: JSON.stringify(requestBody),
             signal: controller.signal
           })
-          
-          // 清除超时定时器
-          clearTimeout(timeoutId)
-          
-          console.log('=== 响应状态 ===')
-          console.log('状态码:', response.status)
-          console.log('状态文本:', response.statusText)
-          console.log('响应头:', response.headers)
-          
-          if (!response.ok) {
+          clearTimeout(timeoutId)  // 第五步：清除超时
+          if (!response.ok) {  // 第六步：检查响应状态
             let errorText = await response.text()
-            console.log('=== 错误响应内容 ===')
-            console.log('错误文本:', errorText)
-            
-            // 尝试解析 JSON 错误信息
             let errorMessage = `AI 请求失败：${response.status} - ${response.statusText}`
             try {
               const errorData = JSON.parse(errorText)
@@ -472,651 +429,453 @@ export default {
                 errorMessage += `\n详细信息：${errorData.detail || errorData.message || errorData.error}`
               }
             } catch (e) {
-              // 不是 JSON 格式，直接使用文本
               if (errorText && errorText.length > 0) {
                 errorMessage += `\n响应内容：${errorText.substring(0, 500)}`
               }
             }
-            
             throw new Error(errorMessage)
           }
-          
-          const data = await response.json()
-          console.log('=== 响应数据 ===')
-          console.log('完整响应:', data)
-          
-          if (data.answer) {
-            console.log('AI 回答获取成功，长度:', data.answer.length)
+          const data = await response.json()  // 第七步：解析响应数据
+          if (data.answer) {  // 第八步：返回AI回答
             return data.answer
           }
-          
-          console.log('响应中没有 answer 字段')
           throw new Error(data.message || data.error || 'AI 请求失败，未返回有效数据')
-          
         } catch (error) {
-          // 清除超时定时器
-          clearTimeout(timeoutId)
-          
-          // 处理超时错误
-          if (error.name === 'AbortError') {
-            console.log('=== 请求超时 ===')
+          clearTimeout(timeoutId)  // 第九步：异常时清除超时
+          if (error.name === 'AbortError') {  // 第十步：处理超时错误
             throw new Error('请求超时（60秒），请稍后重试')
           }
-          
-          console.log('=== 请求异常 ===')
-          console.log('错误类型:', error.name)
-          console.log('错误消息:', error.message)
-          console.log('错误堆栈:', error.stack)
           throw error
         }
       },
       
-      /**
-       * 格式化 AI 回复，去除 think 标签及其内容
-       */
+      // 格式化 AI 回复
       formatAIResponse(response) {
-        if (!response) return ''
-        // 删除 think 标签及其内部内容（包括多行内容）
-        let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
-        // 删除开头的 <br> 标签和换行
-        formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
-        // 删除多余的空行
-        formatted = formatted.replace(/\n{3,}/g, '\n\n')
-        // 去除首尾空白
-        formatted = formatted.trim()
+        if (!response) return ''  // 第一步：空值检查
+        let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')  // 第二步：去除think标签
+        formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')  // 第三步：去除开头br标签
+        formatted = formatted.replace(/\n{3,}/g, '\n\n')  // 第四步：合并多余空行
+        formatted = formatted.trim()  // 第五步：去除首尾空白
         return formatted
       },
-      /**
-       * 动态生成建筑纹理（Canvas绘制）
-       * @param {number} width - 建筑宽度
-       * @param {number} height - 建筑高度
-       * @param {number} depth - 建筑深度
-       * @param {number} baseColor - 基础颜色（十六进制）
-       * @returns {THREE.CanvasTexture} 生成的纹理对象
-       */
+      // 动态生成建筑纹理
       generateBuildingTexture(width, height, depth, baseColor) {
-      const canvas = document.createElement('canvas')
-      const size = 512
-      canvas.width = size
-      canvas.height = size
-      const ctx = canvas.getContext('2d')
-
-      // 解析颜色
-      const r = (baseColor >> 16) & 255
-      const g = (baseColor >> 8) & 255
-      const b = baseColor & 255
-
-      // 绘制墙面背景
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
-      ctx.fillRect(0, 0, size, size)
-
-      // 添加噪点纹理
-      for (let i = 0; i < 5000; i++) {
-        const x = Math.random() * size
-        const y = Math.random() * size
-        const brightness = Math.random() * 40 - 20
-        ctx.fillStyle = `rgba(${r + brightness}, ${g + brightness}, ${b + brightness}, 0.3)`
-        ctx.fillRect(x, y, 2, 2)
-      }
-
-      // 窗户参数
-      const windowRows = Math.floor(height / 15)
-      const windowCols = Math.floor(width / 10)
-      const windowW = size / (windowCols + 1) * 0.6
-      const windowH = size / (windowRows + 1) * 0.5
-      const spacingX = size / (windowCols + 1)
-      const spacingY = size / (windowRows + 1)
-
-      // 绘制窗户
-      for (let row = 0; row < windowRows; row++) {
-        for (let col = 0; col < windowCols; col++) {
-          const x = spacingX * (col + 0.5) - windowW / 2
-          const y = spacingY * (row + 0.5) - windowH / 2
-
-          // 随机决定窗户是否亮灯
-          const isLit = Math.random() > 0.4
-
-          if (isLit) {
-            // 亮灯窗户 - 暖黄色
-            const lightIntensity = 0.5 + Math.random() * 0.5
-            ctx.fillStyle = `rgba(255, 220, 100, ${lightIntensity})`
-            ctx.fillRect(x, y, windowW, windowH)
-
-            // 窗户光晕
-            const gradient = ctx.createRadialGradient(
-              x + windowW / 2, y + windowH / 2, 0,
-              x + windowW / 2, y + windowH / 2, windowW
-            )
-            gradient.addColorStop(0, `rgba(255, 220, 100, ${lightIntensity * 0.5})`)
-            gradient.addColorStop(1, 'rgba(255, 220, 100, 0)')
-            ctx.fillStyle = gradient
-            ctx.fillRect(x - 5, y - 5, windowW + 10, windowH + 10)
-          } else {
-            // 暗窗户 - 深蓝色
-            ctx.fillStyle = '#1a2332'
-            ctx.fillRect(x, y, windowW, windowH)
-          }
-
-          // 窗框
-          ctx.strokeStyle = '#2a3a4a'
-          ctx.lineWidth = 2
-          ctx.strokeRect(x, y, windowW, windowH)
+        const canvas = document.createElement('canvas')  // 第一步：创建canvas
+        const size = 512
+        canvas.width = size
+        canvas.height = size
+        const ctx = canvas.getContext('2d')
+        const r = (baseColor >> 16) & 255  // 第二步：解析颜色R分量
+        const g = (baseColor >> 8) & 255   // 第三步：解析颜色G分量
+        const b = baseColor & 255          // 第四步：解析颜色B分量
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`  // 第五步：绘制墙面背景
+        ctx.fillRect(0, 0, size, size)
+        for (let i = 0; i < 5000; i++) {  // 第六步：添加噪点纹理
+          const x = Math.random() * size
+          const y = Math.random() * size
+          const brightness = Math.random() * 40 - 20
+          ctx.fillStyle = `rgba(${r + brightness}, ${g + brightness}, ${b + brightness}, 0.3)`
+          ctx.fillRect(x, y, 2, 2)
         }
-      }
-
-      // 创建纹理
-      const texture = new THREE.CanvasTexture(canvas)
-      texture.wrapS = THREE.RepeatWrapping
-      texture.wrapT = THREE.RepeatWrapping
-
-      return texture
-    },
+        const windowRows = Math.floor(height / 15)  // 第七步：计算窗户行列数
+        const windowCols = Math.floor(width / 10)
+        const windowW = size / (windowCols + 1) * 0.6
+        const windowH = size / (windowRows + 1) * 0.5
+        const spacingX = size / (windowCols + 1)
+        const spacingY = size / (windowRows + 1)
+        for (let row = 0; row < windowRows; row++) {  // 第八步：绘制窗户
+          for (let col = 0; col < windowCols; col++) {
+            const x = spacingX * (col + 0.5) - windowW / 2
+            const y = spacingY * (row + 0.5) - windowH / 2
+            const isLit = Math.random() > 0.4
+            if (isLit) {
+              const lightIntensity = 0.5 + Math.random() * 0.5
+              ctx.fillStyle = `rgba(255, 220, 100, ${lightIntensity})`
+              ctx.fillRect(x, y, windowW, windowH)
+              const gradient = ctx.createRadialGradient(
+                x + windowW / 2, y + windowH / 2, 0,
+                x + windowW / 2, y + windowH / 2, windowW
+              )
+              gradient.addColorStop(0, `rgba(255, 220, 100, ${lightIntensity * 0.5})`)
+              gradient.addColorStop(1, 'rgba(255, 220, 100, 0)')
+              ctx.fillStyle = gradient
+              ctx.fillRect(x - 5, y - 5, windowW + 10, windowH + 10)
+            } else {
+              ctx.fillStyle = '#1a2332'
+              ctx.fillRect(x, y, windowW, windowH)
+            }
+            ctx.strokeStyle = '#2a3a4a'
+            ctx.lineWidth = 2
+            ctx.strokeRect(x, y, windowW, windowH)
+          }
+        }
+        const texture = new THREE.CanvasTexture(canvas)  // 第九步：创建纹理
+        texture.wrapS = THREE.RepeatWrapping
+        texture.wrapT = THREE.RepeatWrapping
+        return texture
+      },
       // 初始化实时日志流
       initLogStream() {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {  // 第一步：预填充5条日志
           this.addNewLog()
         }
-        this.logTimer = setInterval(() => {
+        this.logTimer = setInterval(() => {  // 第二步：启动定时轮换
           this.rotateLog()
         }, 3000)
       },
       // 添加一条新日志
       addNewLog() {
-        // 从日志池中随机选取一条
-        const poolItem = this.logPool[Math.floor(Math.random() * this.logPool.length)]
-        const now = new Date()
+        const poolItem = this.logPool[Math.floor(Math.random() * this.logPool.length)]  // 第一步：随机选取日志模板
+        const now = new Date()  // 第二步：获取当前时间
         const timeStr = now.toTimeString().slice(0, 8)
-        const newLog = {
-          id: Date.now() + Math.random(),  // 唯一ID
-          time: timeStr,                   // 当前时间
-          isNew: true,                     // 标记为新日志（用于高亮动画）
-          ...poolItem                      // 展开日志内容
+        const newLog = {  // 第三步：组装新日志对象
+          id: Date.now() + Math.random(),
+          time: timeStr,
+          isNew: true,
+          ...poolItem
         }
-        this.displayLogs.unshift(newLog)   // 插入到列表头部
-        // 保持最多6条日志
-        if (this.displayLogs.length > 6) {
+        this.displayLogs.unshift(newLog)  // 第四步：插入到列表头部
+        if (this.displayLogs.length > 6) {  // 第五步：限制最多6条
           this.displayLogs.pop()
         }
-        // 1秒后移除高亮标记
-        setTimeout(() => {
+        setTimeout(() => {  // 第六步：1秒后移除高亮
           newLog.isNew = false
         }, 1000)
         return newLog
       },
       // 轮换日志
       rotateLog() {
-        this.displayLogs.pop()             // 移除最旧的日志
-        this.addNewLog()                   // 添加新日志
+        this.displayLogs.pop()  // 第一步：移除最旧日志
+        this.addNewLog()        // 第二步：添加新日志
       },
       // 初始化Three.js 3D场景
       initScene() {
-      const canvas = this.$refs.canvas
-      const width = canvas.clientWidth
-      const height = canvas.clientHeight
-
-      this.scene = new THREE.Scene()
-      this.scene.background = new THREE.Color(0x0a1628)
-      this.scene.fog = new THREE.Fog(0x0a1628, 400, 1500)
-
-      this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000)
-      this.updateCameraPosition()
-
-      this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
-      this.renderer.setSize(width, height)
-      this.renderer.setPixelRatio(window.devicePixelRatio)
-      this.renderer.shadowMap.enabled = true
-      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)
-      this.scene.add(ambientLight)
-
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8)
-      dirLight.position.set(200, 400, 200)
-      dirLight.castShadow = true
-      dirLight.shadow.mapSize.width = 2048
-      dirLight.shadow.mapSize.height = 2048
-      this.scene.add(dirLight)
-
-      const groundGeometry = new THREE.PlaneGeometry(1200, 1200)
-      const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x0a1628 })
-      const ground = new THREE.Mesh(groundGeometry, groundMaterial)
-      ground.rotation.x = -Math.PI / 2
-      ground.receiveShadow = true
-      this.scene.add(ground)
-
-      // 预加载建筑贴图
-      const textureLoader = new THREE.TextureLoader()
-      console.log('开始加载贴图:', buildingTextureImg)
-      const self = this
-      textureLoader.load(
-        buildingTextureImg,
-        function(texture) {
-          console.log('贴图加载成功:', texture)
-          self.buildingTexture = texture
-          self.buildingTexture.wrapS = THREE.RepeatWrapping
-          self.buildingTexture.wrapT = THREE.RepeatWrapping
-          // 重新生成建筑以应用贴图
-          console.log('准备调用 rebuildBuildings')
-          self.rebuildBuildings()
-        },
-        function(progress) {
-          console.log('贴图加载进度:', progress)
-        },
-        function(error) {
-          console.error('建筑贴图加载失败:', error)
-        }
-      )
-    },
+        const canvas = this.$refs.canvas  // 第一步：获取canvas元素
+        const width = canvas.clientWidth
+        const height = canvas.clientHeight
+        this.scene = new THREE.Scene()  // 第二步：创建场景
+        this.scene.background = new THREE.Color(0x0a1628)
+        this.scene.fog = new THREE.Fog(0x0a1628, 400, 1500)
+        this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000)  // 第三步：创建相机
+        this.updateCameraPosition()
+        this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true })  // 第四步：创建渲染器
+        this.renderer.setSize(width, height)
+        this.renderer.setPixelRatio(window.devicePixelRatio)
+        this.renderer.shadowMap.enabled = true
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)  // 第五步：添加环境光
+        this.scene.add(ambientLight)
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8)  // 第六步：添加方向光
+        dirLight.position.set(200, 400, 200)
+        dirLight.castShadow = true
+        dirLight.shadow.mapSize.width = 2048
+        dirLight.shadow.mapSize.height = 2048
+        this.scene.add(dirLight)
+        const groundGeometry = new THREE.PlaneGeometry(1200, 1200)  // 第七步：创建地面
+        const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x0a1628 })
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial)
+        ground.rotation.x = -Math.PI / 2
+        ground.receiveShadow = true
+        this.scene.add(ground)
+        const textureLoader = new THREE.TextureLoader()  // 第八步：加载建筑贴图
+        const self = this
+        textureLoader.load(
+          buildingTextureImg,
+          function(texture) {
+            self.buildingTexture = texture
+            self.buildingTexture.wrapS = THREE.RepeatWrapping
+            self.buildingTexture.wrapT = THREE.RepeatWrapping
+            self.rebuildBuildings()
+          },
+          undefined,
+          function(error) {
+            console.error('建筑贴图加载失败:', error)
+          }
+        )
+      },
       // 重新生成建筑
       rebuildBuildings() {
-        console.log('重新生成建筑，贴图:', this.buildingTexture)
-        // 清除现有建筑（释放资源）
-        this.buildings.forEach(building => {
+        this.buildings.forEach(building => {  // 第一步：清除现有建筑
           this.scene.remove(building)
-          building.geometry.dispose()    // 释放几何体资源
-          building.material.dispose()    // 释放材质资源
+          building.geometry.dispose()
+          building.material.dispose()
         })
-        this.buildings = []
-        // 重新生成建筑
-        this.initBuildings()
+        this.buildings = []  // 第二步：清空建筑数组
+        this.initBuildings()  // 第三步：重新生成建筑
       },
       // 初始化建筑群
       initBuildings() {
-      const grayColors = [0x4a5568, 0x5a6578, 0x6a7588, 0x7a8598, 0x8a95a8]
-      const specialColors = [0xe53e3e, 0xdd6b20, 0x3182ce]
-      const blockSize = 80
-      const streetWidth = 24
-      const sidewalkWidth = 6
-      const gridSize = 6
-      const cellSize = blockSize + streetWidth
-      const startPos = -((gridSize - 1) * cellSize) / 2
-      const citySize = gridSize * cellSize
-
-      const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x1a1a2e })
-      const sidewalkMaterial = new THREE.MeshLambertMaterial({ color: 0x2a2a3e })
-      const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x444466 })
-
-      for (let i = 0; i < gridSize - 1; i++) {
-        const z = startPos + i * cellSize + blockSize / 2 + streetWidth / 2
-
-        const roadGeo = new THREE.PlaneGeometry(citySize, streetWidth - sidewalkWidth * 2)
-        const road = new THREE.Mesh(roadGeo, roadMaterial)
-        road.rotation.x = -Math.PI / 2
-        road.position.set(0, 0.1, z)
-        this.scene.add(road)
-
-        const sidewalkGeo1 = new THREE.PlaneGeometry(citySize, sidewalkWidth)
-        const sidewalk1 = new THREE.Mesh(sidewalkGeo1, sidewalkMaterial)
-        sidewalk1.rotation.x = -Math.PI / 2
-        sidewalk1.position.set(0, 0.15, z - streetWidth / 2 + sidewalkWidth / 2)
-        this.scene.add(sidewalk1)
-
-        const sidewalk2 = sidewalk1.clone()
-        sidewalk2.position.set(0, 0.15, z + streetWidth / 2 - sidewalkWidth / 2)
-        this.scene.add(sidewalk2)
-
-        const lineGeo = new THREE.PlaneGeometry(citySize, 0.5)
-        const line = new THREE.Mesh(lineGeo, lineMaterial)
-        line.rotation.x = -Math.PI / 2
-        line.position.set(0, 0.12, z)
-        this.scene.add(line)
-      }
-
-      for (let i = 0; i < gridSize - 1; i++) {
-        const x = startPos + i * cellSize + blockSize / 2 + streetWidth / 2
-
-        const roadGeo = new THREE.PlaneGeometry(streetWidth - sidewalkWidth * 2, citySize)
-        const road = new THREE.Mesh(roadGeo, roadMaterial)
-        road.rotation.x = -Math.PI / 2
-        road.position.set(x, 0.1, 0)
-        this.scene.add(road)
-
-        const sidewalkGeo1 = new THREE.PlaneGeometry(sidewalkWidth, citySize)
-        const sidewalk1 = new THREE.Mesh(sidewalkGeo1, sidewalkMaterial)
-        sidewalk1.rotation.x = -Math.PI / 2
-        sidewalk1.position.set(x - streetWidth / 2 + sidewalkWidth / 2, 0.15, 0)
-        this.scene.add(sidewalk1)
-
-        const sidewalk2 = sidewalk1.clone()
-        sidewalk2.position.set(x + streetWidth / 2 - sidewalkWidth / 2, 0.15, 0)
-        this.scene.add(sidewalk2)
-
-        const lineGeo = new THREE.PlaneGeometry(0.5, citySize)
-        const line = new THREE.Mesh(lineGeo, lineMaterial)
-        line.rotation.x = -Math.PI / 2
-        line.position.set(x, 0.12, 0)
-        this.scene.add(line)
-      }
-
-      const buildingCount = 150
-      const placedBuildings = []
-      const minDistance = 25
-      let attempts = 0
-      const maxAttempts = 3000
-
-      while (placedBuildings.length < buildingCount && attempts < maxAttempts) {
-        attempts++
-
-        const bi = Math.floor(Math.random() * gridSize)
-        const bj = Math.floor(Math.random() * gridSize)
-
-        const blockX = startPos + bi * cellSize
-        const blockZ = startPos + bj * cellSize
-
-        const width = 10 + Math.random() * 14
-        const depth = 10 + Math.random() * 14
-
-        const halfBlock = blockSize / 2
-        const margin = 4
-        const minX = blockX - halfBlock + width / 2 + margin
-        const maxX = blockX + halfBlock - width / 2 - margin
-        const minZ = blockZ - halfBlock + depth / 2 + margin
-        const maxZ = blockZ + halfBlock - depth / 2 - margin
-
-        if (minX >= maxX || minZ >= maxZ) continue
-
-        const x = minX + Math.random() * (maxX - minX)
-        const z = minZ + Math.random() * (maxZ - minZ)
-
-        let overlap = false
-        for (const existing of placedBuildings) {
-          const dx = x - existing.x
-          const dz = z - existing.z
-          const dist = Math.sqrt(dx * dx + dz * dz)
-          if (dist < minDistance) {
-            overlap = true
-            break
-          }
+        const grayColors = [0x4a5568, 0x5a6578, 0x6a7588, 0x7a8598, 0x8a95a8]  // 第一步：定义颜色配置
+        const specialColors = [0xe53e3e, 0xdd6b20, 0x3182ce]
+        const blockSize = 80
+        const streetWidth = 24
+        const sidewalkWidth = 6
+        const gridSize = 6
+        const cellSize = blockSize + streetWidth
+        const startPos = -((gridSize - 1) * cellSize) / 2
+        const citySize = gridSize * cellSize
+        const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x1a1a2e })  // 第二步：创建道路材质
+        const sidewalkMaterial = new THREE.MeshLambertMaterial({ color: 0x2a2a3e })
+        const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x444466 })
+        for (let i = 0; i < gridSize - 1; i++) {  // 第三步：创建横向道路
+          const z = startPos + i * cellSize + blockSize / 2 + streetWidth / 2
+          const roadGeo = new THREE.PlaneGeometry(citySize, streetWidth - sidewalkWidth * 2)
+          const road = new THREE.Mesh(roadGeo, roadMaterial)
+          road.rotation.x = -Math.PI / 2
+          road.position.set(0, 0.1, z)
+          this.scene.add(road)
+          const sidewalkGeo1 = new THREE.PlaneGeometry(citySize, sidewalkWidth)
+          const sidewalk1 = new THREE.Mesh(sidewalkGeo1, sidewalkMaterial)
+          sidewalk1.rotation.x = -Math.PI / 2
+          sidewalk1.position.set(0, 0.15, z - streetWidth / 2 + sidewalkWidth / 2)
+          this.scene.add(sidewalk1)
+          const sidewalk2 = sidewalk1.clone()
+          sidewalk2.position.set(0, 0.15, z + streetWidth / 2 - sidewalkWidth / 2)
+          this.scene.add(sidewalk2)
+          const lineGeo = new THREE.PlaneGeometry(citySize, 0.5)
+          const line = new THREE.Mesh(lineGeo, lineMaterial)
+          line.rotation.x = -Math.PI / 2
+          line.position.set(0, 0.12, z)
+          this.scene.add(line)
         }
-        if (overlap) continue
-
-        const distFromCenter = Math.sqrt(x * x + z * z)
-        const maxDist = Math.sqrt(2) * Math.abs(startPos)
-        const heightFactor = Math.max(0.3, 1 - distFromCenter / maxDist * 0.6)
-        const baseHeight = Math.random() * 100 + 40
-        const height = baseHeight * heightFactor + Math.random() * 30
-
-        const isSpecial = Math.random() < 0.1
-        const buildingColor = isSpecial
-          ? specialColors[Math.floor(Math.random() * specialColors.length)]
-          : grayColors[Math.floor(Math.random() * grayColors.length)]
-
-        const geometry = new THREE.BoxGeometry(width, height, depth)
-
-        // 创建材质 - 使用纯色或贴图
-         let material
-         if (this.buildingTexture) {
-           console.log('使用贴图创建建筑, 尺寸:', width, height)
-           // 克隆贴图以支持不同的重复次数
-           const texture = this.buildingTexture.clone()
-           texture.wrapS = THREE.RepeatWrapping
-           texture.wrapT = THREE.RepeatWrapping
-           // 根据建筑尺寸调整贴图重复
-           const repeatX = Math.max(1, width / 10)
-           const repeatY = Math.max(1, height / 10)
-           texture.repeat.set(repeatX, repeatY)
-           texture.needsUpdate = true
-           material = new THREE.MeshStandardMaterial({
-             map: texture,
-             color: 0xffffff,
-             roughness: 0.8,
-             metalness: 0.1
-           })
-         } else {
-           console.log('使用纯色创建建筑')
-           // 备用：使用纯色
-           material = new THREE.MeshLambertMaterial({ color: buildingColor })
-         }
-        const building = new THREE.Mesh(geometry, material)
-
-        building.position.set(x, height / 2 + 0.5, z)
-        building.castShadow = true
-        building.receiveShadow = true
-
-        this.scene.add(building)
-        this.buildings.push(building)
-        placedBuildings.push({ x, z, width, depth })
-      }
-    },
+        for (let i = 0; i < gridSize - 1; i++) {  // 第四步：创建纵向道路
+          const x = startPos + i * cellSize + blockSize / 2 + streetWidth / 2
+          const roadGeo = new THREE.PlaneGeometry(streetWidth - sidewalkWidth * 2, citySize)
+          const road = new THREE.Mesh(roadGeo, roadMaterial)
+          road.rotation.x = -Math.PI / 2
+          road.position.set(x, 0.1, 0)
+          this.scene.add(road)
+          const sidewalkGeo1 = new THREE.PlaneGeometry(sidewalkWidth, citySize)
+          const sidewalk1 = new THREE.Mesh(sidewalkGeo1, sidewalkMaterial)
+          sidewalk1.rotation.x = -Math.PI / 2
+          sidewalk1.position.set(x - streetWidth / 2 + sidewalkWidth / 2, 0.15, 0)
+          this.scene.add(sidewalk1)
+          const sidewalk2 = sidewalk1.clone()
+          sidewalk2.position.set(x + streetWidth / 2 - sidewalkWidth / 2, 0.15, 0)
+          this.scene.add(sidewalk2)
+          const lineGeo = new THREE.PlaneGeometry(0.5, citySize)
+          const line = new THREE.Mesh(lineGeo, lineMaterial)
+          line.rotation.x = -Math.PI / 2
+          line.position.set(x, 0.12, 0)
+          this.scene.add(line)
+        }
+        const buildingCount = 150  // 第五步：生成建筑
+        const placedBuildings = []
+        const minDistance = 25
+        let attempts = 0
+        const maxAttempts = 3000
+        while (placedBuildings.length < buildingCount && attempts < maxAttempts) {
+          attempts++
+          const bi = Math.floor(Math.random() * gridSize)
+          const bj = Math.floor(Math.random() * gridSize)
+          const blockX = startPos + bi * cellSize
+          const blockZ = startPos + bj * cellSize
+          const width = 10 + Math.random() * 14
+          const depth = 10 + Math.random() * 14
+          const halfBlock = blockSize / 2
+          const margin = 4
+          const minX = blockX - halfBlock + width / 2 + margin
+          const maxX = blockX + halfBlock - width / 2 - margin
+          const minZ = blockZ - halfBlock + depth / 2 + margin
+          const maxZ = blockZ + halfBlock - depth / 2 - margin
+          if (minX >= maxX || minZ >= maxZ) continue
+          const x = minX + Math.random() * (maxX - minX)
+          const z = minZ + Math.random() * (maxZ - minZ)
+          let overlap = false
+          for (const existing of placedBuildings) {
+            const dx = x - existing.x
+            const dz = z - existing.z
+            const dist = Math.sqrt(dx * dx + dz * dz)
+            if (dist < minDistance) {
+              overlap = true
+              break
+            }
+          }
+          if (overlap) continue
+          const distFromCenter = Math.sqrt(x * x + z * z)
+          const maxDist = Math.sqrt(2) * Math.abs(startPos)
+          const heightFactor = Math.max(0.3, 1 - distFromCenter / maxDist * 0.6)
+          const baseHeight = Math.random() * 100 + 40
+          const height = baseHeight * heightFactor + Math.random() * 30
+          const isSpecial = Math.random() < 0.1
+          const buildingColor = isSpecial
+            ? specialColors[Math.floor(Math.random() * specialColors.length)]
+            : grayColors[Math.floor(Math.random() * grayColors.length)]
+          const geometry = new THREE.BoxGeometry(width, height, depth)
+          let material
+          if (this.buildingTexture) {
+            const texture = this.buildingTexture.clone()
+            texture.wrapS = THREE.RepeatWrapping
+            texture.wrapT = THREE.RepeatWrapping
+            const repeatX = Math.max(1, width / 10)
+            const repeatY = Math.max(1, height / 10)
+            texture.repeat.set(repeatX, repeatY)
+            texture.needsUpdate = true
+            material = new THREE.MeshStandardMaterial({
+              map: texture,
+              color: 0xffffff,
+              roughness: 0.8,
+              metalness: 0.1
+            })
+          } else {
+            material = new THREE.MeshLambertMaterial({ color: buildingColor })
+          }
+          const building = new THREE.Mesh(geometry, material)
+          building.position.set(x, height / 2 + 0.5, z)
+          building.castShadow = true
+          building.receiveShadow = true
+          this.scene.add(building)
+          this.buildings.push(building)
+          placedBuildings.push({ x, z, width, depth })
+        }
+      },
       // 初始化鼠标交互控制
       initControls() {
-        const canvas = this.$refs.canvas
-        canvas.addEventListener('mousedown', this.onMouseDown)   // 鼠标按下
-        canvas.addEventListener('mousemove', this.onMouseMove)   // 鼠标移动
-        canvas.addEventListener('mouseup', this.onMouseUp)       // 鼠标释放
-        canvas.addEventListener('wheel', this.onWheel)           // 滚轮缩放
-        canvas.addEventListener('contextmenu', this.onContextMenu) // 右键菜单（禁用）
+        const canvas = this.$refs.canvas  // 第一步：获取canvas元素
+        canvas.addEventListener('mousedown', this.onMouseDown)  // 第二步：绑定鼠标按下
+        canvas.addEventListener('mousemove', this.onMouseMove)  // 第三步：绑定鼠标移动
+        canvas.addEventListener('mouseup', this.onMouseUp)      // 第四步：绑定鼠标释放
+        canvas.addEventListener('wheel', this.onWheel)          // 第五步：绑定滚轮缩放
+        canvas.addEventListener('contextmenu', this.onContextMenu)  // 第六步：禁用右键菜单
       },
       // 禁用右键菜单
       onContextMenu(e) {
-        e.preventDefault()
+        e.preventDefault()  // 第一步：阻止默认右键菜单
       },
       // 鼠标按下事件
       onMouseDown(e) {
-        this.isDragging = true
-      this.lastMouseX = e.clientX
-      this.lastMouseY = e.clientY
-      this.dragButton = e.button
-    },
-      // 鼠标移动事件（左键旋转/右键平移）
+        this.isDragging = true  // 第一步：设置拖拽状态
+        this.lastMouseX = e.clientX  // 第二步：记录鼠标X位置
+        this.lastMouseY = e.clientY  // 第三步：记录鼠标Y位置
+        this.dragButton = e.button   // 第四步：记录按键类型
+      },
+      // 鼠标移动事件
       onMouseMove(e) {
-        if (!this.isDragging) return
-
-        const deltaX = e.clientX - this.lastMouseX
-        const deltaY = e.clientY - this.lastMouseY
-
-        if (this.dragButton === 0) {
-          // 左键：旋转视角
-          this.cameraTheta += deltaX * 0.01  // 水平旋转
-          this.cameraPhi -= deltaY * 0.01    // 垂直旋转
-          // 限制垂直角度范围（避免翻转）
+        if (!this.isDragging) return  // 第一步：检查是否正在拖拽
+        const deltaX = e.clientX - this.lastMouseX  // 第二步：计算X位移
+        const deltaY = e.clientY - this.lastMouseY  // 第三步：计算Y位移
+        if (this.dragButton === 0) {  // 第四步：左键旋转视角
+          this.cameraTheta += deltaX * 0.01
+          this.cameraPhi -= deltaY * 0.01
           this.cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, this.cameraPhi))
-        } else if (this.dragButton === 2) {
-          // 右键：平移视角
+        } else if (this.dragButton === 2) {  // 第五步：右键平移视角
           const speed = this.cameraRadius * 0.001
           this.cameraTargetX = (this.cameraTargetX || 0) - deltaX * speed * Math.cos(this.cameraTheta) + deltaY * speed * Math.sin(this.cameraTheta)
           this.cameraTargetZ = (this.cameraTargetZ || 0) - deltaX * speed * Math.sin(this.cameraTheta) - deltaY * speed * Math.cos(this.cameraTheta)
         }
-
-        this.lastMouseX = e.clientX
+        this.lastMouseX = e.clientX  // 第六步：更新鼠标位置
         this.lastMouseY = e.clientY
-        this.updateCameraPosition()
+        this.updateCameraPosition()  // 第七步：更新相机位置
       },
       // 鼠标释放事件
       onMouseUp() {
-        this.isDragging = false
-        this.dragButton = null
+        this.isDragging = false  // 第一步：结束拖拽状态
+        this.dragButton = null   // 第二步：清空按键记录
       },
       // 滚轮缩放事件
       onWheel(e) {
-        e.preventDefault()
-        this.cameraRadius += e.deltaY * 0.5  // 调整相机距离
-        // 限制缩放范围
-        this.cameraRadius = Math.max(100, Math.min(1200, this.cameraRadius))
-        this.updateCameraPosition()
+        e.preventDefault()  // 第一步：阻止默认滚动
+        this.cameraRadius += e.deltaY * 0.5  // 第二步：调整相机距离
+        this.cameraRadius = Math.max(100, Math.min(1200, this.cameraRadius))  // 第三步：限制缩放范围
+        this.updateCameraPosition()  // 第四步：更新相机位置
       },
-      // 更新相机位置（球坐标转笛卡尔坐标）
+      // 更新相机位置
       updateCameraPosition() {
-        const targetX = this.cameraTargetX || 0
-        const targetZ = this.cameraTargetZ || 0
-
-        // 球坐标转笛卡尔坐标
-        this.camera.position.x = targetX + this.cameraRadius * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta)
-        this.camera.position.y = this.cameraRadius * Math.cos(this.cameraPhi)
-        this.camera.position.z = targetZ + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta)
-        this.camera.lookAt(targetX, 0, targetZ)  // 始终看向目标点
+        const targetX = this.cameraTargetX || 0  // 第一步：获取目标X
+        const targetZ = this.cameraTargetZ || 0  // 第二步：获取目标Z
+        this.camera.position.x = targetX + this.cameraRadius * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta)  // 第三步：计算相机X
+        this.camera.position.y = this.cameraRadius * Math.cos(this.cameraPhi)  // 第四步：计算相机Y
+        this.camera.position.z = targetZ + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta)  // 第五步：计算相机Z
+        this.camera.lookAt(targetX, 0, targetZ)  // 第六步：相机看向目标点
       },
       // 渲染动画循环
       animate() {
-        requestAnimationFrame(this.animate)  // 递归调用实现动画
-        this.cameraTheta += 0.001            // 自动缓慢旋转
-        this.updateCameraPosition()
-        this.renderer.render(this.scene, this.camera)  // 渲染场景
+        requestAnimationFrame(this.animate)  // 第一步：递归调用实现动画循环
+        this.cameraTheta += 0.001  // 第二步：自动缓慢旋转
+        this.updateCameraPosition()  // 第三步：更新相机位置
+        this.renderer.render(this.scene, this.camera)  // 第四步：渲染场景
       },
       // 窗口大小变化处理
       handleResize() {
-      const canvas = this.$refs.canvas
-      const width = canvas.clientWidth
-      const height = canvas.clientHeight
-      this.camera.aspect = width / height
-      this.camera.updateProjectionMatrix()
-      this.renderer.setSize(width, height)
-      if (this.householdChart) this.householdChart.resize()
-      if (this.sensorChart) this.sensorChart.resize()
-      if (this.alertChart) this.alertChart.resize()
-    },
+        const canvas = this.$refs.canvas  // 第一步：获取canvas
+        const width = canvas.clientWidth
+        const height = canvas.clientHeight
+        this.camera.aspect = width / height  // 第二步：更新相机宽高比
+        this.camera.updateProjectionMatrix()  // 第三步：更新投影矩阵
+        this.renderer.setSize(width, height)  // 第四步：更新渲染器尺寸
+        if (this.householdChart) this.householdChart.resize()  // 第五步：调整图表尺寸
+        if (this.sensorChart) this.sensorChart.resize()
+        if (this.alertChart) this.alertChart.resize()
+      },
       // 初始化所有图表
       initCharts() {
-        this.$nextTick(() => {
-          this.initHouseholdChart()  // 基本信息饼图
-          this.initSensorChart()     // 传感器状态折线图
-          this.initAlertChart()      // 告警趋势折线图
+        this.$nextTick(() => {  // 第一步：等待DOM更新
+          this.initHouseholdChart()  // 第二步：初始化住户饼图
+          this.initSensorChart()     // 第三步：初始化传感器图表
+          this.initAlertChart()      // 第四步：初始化告警趋势图
         })
       },
       // 初始化住户饼图
       initHouseholdChart() {
-        const chartDom = this.$refs.householdChart
-        if (!chartDom) return
-        this.householdChart = echarts.init(chartDom)
-        
-        const option = {
-          tooltip: { trigger: 'item' },
-          legend: { 
-            bottom: 0, 
-            textStyle: { color: '#cbd5e1', fontSize: 10 }, 
-            itemWidth: 10, 
-            itemHeight: 10 
-          },
-          series: [{
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: ['50%', '45%'],
-            avoidLabelOverlap: false,
-            itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },
-            label: { 
-              show: true, 
-              fontSize: 12, 
-              fontWeight: 'bold',
-              color: '#e2e8f0',
-              formatter: '{b}\n{c}户'
-            },
-            emphasis: { 
-              label: { 
-                show: true, 
-                fontSize: 14, 
-                fontWeight: 'bold', 
-                color: '#fff' 
-              } 
-            },
-            data: [
-              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },
-              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }
-            ]
-          }]
-        }
-        
-        this.householdChart.setOption(option)
+        const chartDom = this.$refs.householdChart  // 第一步：获取图表DOM
+        if (!chartDom) return  // 第二步：DOM不存在则退出
+        this.householdChart = echarts.init(chartDom)  // 第三步：初始化ECharts实例
+        const option = {  // 第四步：配置图表选项
+          tooltip: { trigger: 'item' },  // 第五步：设置提示框
+          legend: { bottom: 0, textStyle: { color: '#cbd5e1', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },  // 第六步：设置图例
+          series: [{  // 第七步：配置数据系列
+            type: 'pie',  // 第八步：设置图表类型为饼图
+            radius: ['40%', '70%'],  // 第九步：设置环形半径
+            center: ['50%', '45%'],  // 第十步：设置中心位置
+            avoidLabelOverlap: false,  // 第十一步：允许标签重叠
+            itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },  // 第十二步：设置扇区样式
+            label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#e2e8f0', formatter: '{b}\n{c}户' },  // 第十三步：设置标签
+            emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold', color: '#fff' } },  // 第十四步：设置高亮样式
+            data: [  // 第十五步：设置数据
+              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },  // 第十六步：在线户数数据
+              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }  // 第十七步：离线户数数据
+            ]  // 第十八步：数据结束
+          }]  // 第十九步：系列结束
+        }  // 第二十步：配置结束
+        this.householdChart.setOption(option)  // 第二十一步：应用配置
       },
       // 初始化传感器状态折线图
       initSensorChart() {
-      const chartDom = this.$refs.sensorChart
-      if (!chartDom) return
-      this.sensorChart = echarts.init(chartDom)
-      const option = {
-        tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 25, left: 40 },
-        xAxis: {
-          type: 'category',
-          data: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
-          axisLabel: { color: '#cbd5e1', fontSize: 9 }
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: { show: false },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
-          axisLabel: { color: '#cbd5e1', fontSize: 9 }
-        },
-        series: [
-          {
-            name: '在线',
-            type: 'line',
-            smooth: true,
-            data: [120, 132, 101, 134, 90, 230],
-            lineStyle: { color: '#22c55e' },
-            itemStyle: { color: '#22c55e' },
-            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(34, 197, 94, 0.3)' }, { offset: 1, color: 'rgba(34, 197, 94, 0)' }]) }
-          },
-          {
-            name: '离线',
-            type: 'line',
-            smooth: true,
-            data: [220, 182, 191, 234, 290, 330],
-            lineStyle: { color: '#64748b' },
-            itemStyle: { color: '#64748b' }
-          },
-          {
-            name: '异常',
-            type: 'line',
-            smooth: true,
-            data: [15, 12, 18, 25, 20, 30],
-            lineStyle: { color: '#ef4444' },
-            itemStyle: { color: '#ef4444' }
-          }
-        ]
-      }
-      this.sensorChart.setOption(option)
-    },
+        const chartDom = this.$refs.sensorChart  // 第一步：获取图表DOM
+        if (!chartDom) return
+        this.sensorChart = echarts.init(chartDom)  // 第二步：初始化ECharts
+        const option = {  // 第三步：配置图表选项
+          tooltip: { trigger: 'axis' },
+          grid: { top: 10, right: 10, bottom: 25, left: 40 },
+          xAxis: { type: 'category', data: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'], axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } }, axisLabel: { color: '#cbd5e1', fontSize: 9 } },
+          yAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }, axisLabel: { color: '#cbd5e1', fontSize: 9 } },
+          series: [
+            { name: '在线', type: 'line', smooth: true, data: [120, 132, 101, 134, 90, 230], lineStyle: { color: '#22c55e' }, itemStyle: { color: '#22c55e' }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(34, 197, 94, 0.3)' }, { offset: 1, color: 'rgba(34, 197, 94, 0)' }]) } },
+            { name: '离线', type: 'line', smooth: true, data: [220, 182, 191, 234, 290, 330], lineStyle: { color: '#64748b' }, itemStyle: { color: '#64748b' } },
+            { name: '异常', type: 'line', smooth: true, data: [15, 12, 18, 25, 20, 30], lineStyle: { color: '#ef4444' }, itemStyle: { color: '#ef4444' } }
+          ]
+        }
+        this.sensorChart.setOption(option)  // 第四步：应用配置
+      },
       // 初始化告警趋势折线图
       initAlertChart() {
-        const chartDom = this.$refs.alertChart
+        const chartDom = this.$refs.alertChart  // 第一步：获取图表DOM
         if (!chartDom) return
-        this.alertChart = echarts.init(chartDom)
-        const option = {
+        this.alertChart = echarts.init(chartDom)  // 第二步：初始化ECharts
+        const option = {  // 第三步：配置图表选项
           tooltip: { trigger: 'axis' },
           legend: { top: 0, textStyle: { color: '#cbd5e1', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
           grid: { top: 30, right: 10, bottom: 25, left: 40 },
-          xAxis: {
-            type: 'category',
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
-            axisLabel: { color: '#cbd5e1', fontSize: 9 }
-          },
-          yAxis: {
-            type: 'value',
-            axisLine: { show: false },
-            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
-            axisLabel: { color: '#cbd5e1', fontSize: 9 }
-          },
+          xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'], axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } }, axisLabel: { color: '#cbd5e1', fontSize: 9 } },
+          yAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }, axisLabel: { color: '#cbd5e1', fontSize: 9 } },
           series: [
-            {
-              name: '正在进行',
-              type: 'line',
-              smooth: true,
-              data: [12, 15, 8, 20, 18, 25, 22],
-              lineStyle: { color: '#3b82f6' },
-              itemStyle: { color: '#3b82f6' }
-            },
-          {
-            name: '已解决',
-            type: 'line',
-            smooth: true,
-            data: [25, 28, 32, 30, 35, 40, 38],
-            lineStyle: { color: '#22c55e' },
-            itemStyle: { color: '#22c55e' }
-          },
-          {
-            name: '需关注',
-            type: 'line',
-            smooth: true,
-            data: [8, 10, 12, 15, 10, 18, 14],
-            lineStyle: { color: '#f97316' },
-            itemStyle: { color: '#f97316' }
-          }
-        ]
+            { name: '正在进行', type: 'line', smooth: true, data: [12, 15, 8, 20, 18, 25, 22], lineStyle: { color: '#3b82f6' }, itemStyle: { color: '#3b82f6' } },
+            { name: '已解决', type: 'line', smooth: true, data: [25, 28, 32, 30, 35, 40, 38], lineStyle: { color: '#22c55e' }, itemStyle: { color: '#22c55e' } },
+            { name: '需关注', type: 'line', smooth: true, data: [8, 10, 12, 15, 10, 18, 14], lineStyle: { color: '#f97316' }, itemStyle: { color: '#f97316' } }
+          ]
+        }
+        this.alertChart.setOption(option)  // 第四步：应用配置
       }
-      this.alertChart.setOption(option)
-    }
   }
 }
 </script>

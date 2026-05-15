@@ -120,112 +120,156 @@ export default {
 
     // 发送消息方法
     async sendMessage() {
-      // 第一步：获取输入内容并校验
+      // 获取输入内容并去除首尾空格
       const message = this.inputMessage.trim()
+      // 如果消息为空或正在加载则返回
       if (!message || this.loading) return
 
-      // 第二步：将用户消息添加到列表
+      // 将用户消息添加到消息列表
       this.messages.push({
+        // 设置消息角色为用户
         role: 'user',
+        // 设置消息内容
         content: message,
+        // 获取当前时间
         time: this.getCurrentTime()
       })
 
-      // 第三步：清空输入框并滚动到底部
+      // 清空输入框内容
       this.inputMessage = ''
+      // 滚动到聊天底部
       this.scrollToBottom()
+      // 设置加载状态为true
       this.loading = true
 
-      // 第四步：调用AI接口获取回复
+      // 开始try块捕获异常
       try {
+        // 调用AI接口获取回复
         let aiResponse = await this.callAI(message)
-        // 第五步：清洗AI回复中的think标签
+        // 清洗AI回复中的think标签
         aiResponse = this.formatAIResponse(aiResponse)
-        // 第六步：将AI回复添加到列表
+        // 将AI回复添加到消息列表
         this.messages.push({
+          // 设置消息角色为助手
           role: 'assistant',
+          // 设置回复内容
           content: aiResponse,
+          // 获取当前时间
           time: this.getCurrentTime()
         })
+      // 捕获异常
       } catch (error) {
-        // 第七步：请求失败时显示错误提示
+        // 输出错误信息到控制台
         console.error('AI请求失败', error)
+        // 延迟500ms后执行
         setTimeout(() => {
+          // 将错误消息添加到消息列表
           this.messages.push({
+            // 设置消息角色为助手
             role: 'assistant',
+            // 设置错误提示内容
             content: '抱歉，AI服务暂时不可用，请稍后再试。',
+            // 获取当前时间
             time: this.getCurrentTime()
           })
         }, 500)
+      // finally块必定执行
       } finally {
-        // 第八步：重置loading状态并滚动到底部
+        // 重置加载状态为false
         this.loading = false
+        // 滚动到聊天底部
         this.scrollToBottom()
       }
+      // sendMessage方法结束
     },
 
     // 发送快捷问题
     sendQuickQuestion(question) {
+      // 将快捷问题设置为输入内容
       this.inputMessage = question
+      // 调用发送消息方法
       this.sendMessage()
+      // sendQuickQuestion方法结束
     },
 
     // 滚动到底部
     scrollToBottom() {
+      // 延迟100ms执行滚动
       setTimeout(() => {
+        // 设置滚动位置到底部
         this.scrollTop = this.messages.length * 1000
       }, 100)
+      // scrollToBottom方法结束
     },
 
     // 格式化AI回复，去除 think 标签及其内容
     formatAIResponse(response) {
+      // 如果响应为空则返回空字符串
       if (!response) return ''
-      // 第一步：删除think标签及其内部内容
+      // 删除think标签及其内部内容
       let formatted = response.replace(/<think>[\s\S]*?<\/think>/gi, '')
-      // 第二步：删除开头的br标签和换行
+      // 删除开头的br标签和换行
       formatted = formatted.replace(/^(<br\s*\/?>\s*)+|^\n+/, '')
-      // 第三步：删除多余的空行
+      // 删除多余的空行
       formatted = formatted.replace(/\n{3,}/g, '\n\n')
-      // 第四步：去除首尾空白
+      // 去除首尾空白
       formatted = formatted.trim()
+      // 返回格式化后的内容
       return formatted
+      // formatAIResponse方法结束
     },
 
     // 调用Dify AI接口
     async callAI(message) {
-      // 第一步：构建请求数据
+      // 构建请求数据对象
       const requestData = {
+        // 输入参数为空对象
         inputs: {},
+        // 设置查询消息
         query: message,
+        // 设置用户ID
         user: uniAiConfig.userId,
+        // 设置响应模式为阻塞
         response_mode: 'blocking'
       }
 
-      // 第二步：如果有会话ID则传入以保持上下文
+      // 如果有会话ID则传入
       if (this.conversationId) {
+        // 将会话ID添加到请求数据
         requestData.conversation_id = this.conversationId
       }
 
-      // 第三步：发送HTTP请求
+      // 发送HTTP请求
       const res = await uni.request({
+        // 设置API地址
         url: uniAiConfig.apiUrl,
+        // 设置请求方法为POST
         method: 'POST',
+        // 设置请求头
         header: {
+          // 设置内容类型为JSON
           'Content-Type': 'application/json',
+          // 设置授权头
           'Authorization': `Bearer ${uniAiConfig.apiKey}`
         },
+        // 设置请求数据
         data: requestData
       })
 
-      // 第四步：处理响应结果
+      // 处理响应结果
       if (res.statusCode === 200 && res.data.answer) {
+        // 如果返回了会话ID则保存
         if (res.data.conversation_id) {
-          this.conversationId = res.data.conversation_id
+          // 保存会话ID
+          this.conversationId = res.data.conversationId
         }
+        // 返回AI回复内容
         return res.data.answer
       } else {
+        // 抛出错误异常
         throw new Error(res.data.message || 'AI请求失败')
       }
+      // callAI方法结束
     }
   }
 }
