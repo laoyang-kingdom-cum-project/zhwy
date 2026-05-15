@@ -208,47 +208,42 @@
 </template>
 
 <script>
-/**
- * 智慧养老社区监测平台 - 3D可视化组件
- * 依赖库：Three.js（3D渲染）、ECharts（数据图表）、Element UI（弹窗组件）
- */
-import * as THREE from 'three'      // Three.js 3D图形库
-import * as echarts from 'echarts'  // ECharts 数据可视化图表库
-import buildingTextureImg from './tt.png'  // 建筑纹理贴图
+import * as THREE from 'three'
+import * as echarts from 'echarts'
+import buildingTextureImg from './tt.png'
 
 export default {
-  name: 'Sandbox',  // 组件名称
+  name: 'Sandbox',
   data() {
     return {
-      // === 页面状态 ===
-      currentTime: '',           // 当前时间（实时更新）
-      detailVisible: false,      // 事件详情弹窗显示状态
-      currentEvent: null,        // 当前选中的事件详情
-      emergencyPlan: '',         // AI 应急方案
-      aiLoading: false,          // AI 加载状态
+      // 页面状态
+      currentTime: '',
+      detailVisible: false,
+      currentEvent: null,
+      emergencyPlan: '',
+      aiLoading: false,
 
-      // === Three.js 场景核心对象 ===
-      scene: null,               // 3D场景对象
-      camera: null,              // 透视相机
-      renderer: null,            // WebGL渲染器
-      buildings: [],             // 建筑网格对象数组
-      buildingTexture: null,     // 建筑纹理贴图
+      // Three.js 场景核心对象
+      scene: null,
+      camera: null,
+      renderer: null,
+      buildings: [],
+      buildingTexture: null,
 
-      // === 相机控制参数（球坐标系）===
-      cameraTheta: Math.PI / 4,  // 水平角度（绕Y轴）
-      cameraPhi: Math.PI / 3,    // 垂直角度（与Y轴夹角）
-      cameraRadius: 600,         // 相机距离原点距离
-      cameraTargetX: 0,          // 相机观察目标X坐标（平移用）
-      cameraTargetZ: 0,          // 相机观察目标Z坐标（平移用）
+      // 相机控制参数（球坐标系）
+      cameraTheta: Math.PI / 4,
+      cameraPhi: Math.PI / 3,
+      cameraRadius: 600,
+      cameraTargetX: 0,
+      cameraTargetZ: 0,
 
-      // === 鼠标交互状态 ===
-      isDragging: false,         // 是否正在拖拽
-      lastMouseX: 0,             // 上一帧鼠标X位置
-      lastMouseY: 0,             // 上一帧鼠标Y位置
-      dragButton: null,          // 当前拖拽的鼠标按键（0=左键, 2=右键）
+      // 鼠标交互状态
+      isDragging: false,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      dragButton: null,
 
-      // === 日志数据池 ===
-      // 用于模拟实时日志流，从池中随机选取日志展示
+      // 日志数据池
       logPool: [
         { type: '老人跌倒检测', level: 'high', levelText: '高', message: '客厅红外传感器检测到老人跌倒，已持续3分钟未移动', location: '5栋2单元301室', status: 'urgent', statusText: '紧急处理' },
         { type: '心率异常报警', level: 'high', levelText: '高', message: '智能手环检测到心率持续高于120次/分，持续15分钟', location: '3栋1单元502室', status: 'processing', statusText: '处理中' },
@@ -278,12 +273,11 @@ export default {
         { type: '电视长时间开启', level: 'low', levelText: '低', message: '客厅电视从昨日20点持续播放至今', location: '6栋3单元402室', status: 'resolved', statusText: '已处理' }
       ],
 
-      // === 当前显示的日志列表 ===
-      displayLogs: [],           // 当前显示的日志（最多6条，带入场动画）
-      logTimer: null,            // 日志自动轮换定时器
+      // 当前显示的日志列表
+      displayLogs: [],
+      logTimer: null,
 
-      // === 需关注事件列表 ===
-      // 按时间倒序排列的重要告警事件，供右侧面板展示
+      // 需关注事件列表
       focusEvents: [
         { time: '2025-05-06 09:47:23', type: '老人跌倒检测', level: 'high', levelText: '高', location: '5栋2单元301室', message: '客厅红外传感器检测到老人跌倒，已持续3分钟未移动', status: 'urgent', statusText: '紧急处理' },
         { time: '2025-05-06 09:32:18', type: '心率异常报警', level: 'high', levelText: '高', location: '3栋1单元502室', message: '智能手环检测到心率持续高于120次/分，持续15分钟', status: 'processing', statusText: '处理中' },
@@ -314,50 +308,47 @@ export default {
       ]
     }
   },
-  /**
-   * 组件挂载后初始化
-   * 按顺序执行：时间更新、3D场景、建筑、交互控制、动画循环、日志流、图表
-   */
+  // 组件挂载后初始化
   mounted() {
-    this.updateTime()                              // 初始化时间显示
-    setInterval(this.updateTime, 1000)            // 每秒更新时间
-    this.initScene()                              // 初始化Three.js场景
-    this.initBuildings()                          // 生成建筑群
-    this.initControls()                           // 绑定鼠标交互事件
-    this.animate()                                // 启动渲染循环
-    this.initLogStream()                          // 启动实时日志流
-    window.addEventListener('resize', this.handleResize)  // 监听窗口大小变化
+    // 第一步：初始化时间显示
+    this.updateTime()
+    setInterval(this.updateTime, 1000)
+    // 第二步：初始化3D场景和建筑
+    this.initScene()
+    this.initBuildings()
+    // 第三步：绑定交互控制并启动渲染
+    this.initControls()
+    this.animate()
+    // 第四步：启动日志流和图表
+    this.initLogStream()
+    window.addEventListener('resize', this.handleResize)
     setTimeout(() => {
-      this.initCharts()                           // 延迟初始化图表（等待DOM渲染）
+      this.initCharts()
     }, 100)
   },
-  /**
-   * 组件销毁前清理资源
-   * 移除事件监听、停止定时器、释放Three.js资源
-   */
+  // 组件销毁前清理资源
   beforeDestroy() {
+    // 第一步：移除事件监听
     window.removeEventListener('resize', this.handleResize)
     if (this.logTimer) {
-      clearInterval(this.logTimer)                // 停止日志轮换定时器
+      clearInterval(this.logTimer)
     }
+    // 第二步：移除鼠标事件
     const canvas = this.$refs.canvas
     if (canvas) {
-      // 移除所有鼠标事件监听
       canvas.removeEventListener('mousedown', this.onMouseDown)
       canvas.removeEventListener('mousemove', this.onMouseMove)
       canvas.removeEventListener('mouseup', this.onMouseUp)
       canvas.removeEventListener('wheel', this.onWheel)
       canvas.removeEventListener('contextmenu', this.onContextMenu)
     }
+    // 第三步：释放WebGL资源
     if (this.renderer) {
-      this.renderer.dispose()                     // 释放WebGL资源
+      this.renderer.dispose()
     }
   },
   methods: {
-      /**
-       * 更新当前时间显示
-       * 格式：YYYY-MM-DD HH:MM:SS
-       */
+      // 更新当前时间
       updateTime() {
         const now = new Date()
         this.currentTime = now.toLocaleString('zh-CN', {
@@ -369,10 +360,7 @@ export default {
           second: '2-digit'
         }).replace(/\//g, '-')
       },
-      /**
-       * 显示事件详情弹窗
-       * @param {Object} event - 事件对象
-       */
+      // 显示事件详情弹窗
       showDetail(event) {
         this.currentEvent = event
         this.detailVisible = true
@@ -381,9 +369,7 @@ export default {
         this.aiLoading = false
       },
       
-      /**
-       * 加载 AI 应急方案
-       */
+      // 加载AI应急方案
       async loadAIPlan() {
         console.log('=== loadAIPlan 被调用 ===')
         console.log('currentEvent:', this.currentEvent)
@@ -416,9 +402,7 @@ export default {
         }
       },
       
-      /**
-       * 调用 Dify AI 接口
-       */
+      // 调用Dify AI接口
       async callDifyAI(message) {
         const config = {
           apiUrl: '/dify-api/v1/chat-messages',
@@ -627,11 +611,7 @@ export default {
 
       return texture
     },
-      /**
-       * 初始化实时日志流
-       * 1. 初始显示5条日志
-       * 2. 每3秒自动轮换一条（模拟实时推送）
-       */
+      // 初始化实时日志流
       initLogStream() {
         for (let i = 0; i < 5; i++) {
           this.addNewLog()
@@ -640,10 +620,7 @@ export default {
           this.rotateLog()
         }, 3000)
       },
-      /**
-       * 从日志池中随机添加一条新日志
-       * @returns {Object} 新创建的日志对象
-       */
+      // 添加一条新日志
       addNewLog() {
         // 从日志池中随机选取一条
         const poolItem = this.logPool[Math.floor(Math.random() * this.logPool.length)]
@@ -666,17 +643,12 @@ export default {
         }, 1000)
         return newLog
       },
-      /**
-       * 轮换日志（移除最旧的，添加新的）
-       */
+      // 轮换日志
       rotateLog() {
         this.displayLogs.pop()             // 移除最旧的日志
         this.addNewLog()                   // 添加新日志
       },
-      /**
-       * 初始化Three.js 3D场景
-       * 创建场景、相机、渲染器、光照和地面
-       */
+      // 初始化Three.js 3D场景
       initScene() {
       const canvas = this.$refs.canvas
       const width = canvas.clientWidth
@@ -735,10 +707,7 @@ export default {
         }
       )
     },
-      /**
-       * 重新生成建筑（用于贴图加载完成后）
-       * 先销毁现有建筑，再重新生成以应用新贴图
-       */
+      // 重新生成建筑
       rebuildBuildings() {
         console.log('重新生成建筑，贴图:', this.buildingTexture)
         // 清除现有建筑（释放资源）
@@ -751,10 +720,7 @@ export default {
         // 重新生成建筑
         this.initBuildings()
       },
-      /**
-       * 初始化建筑群
-       * 生成道路网络和随机分布的建筑
-       */
+      // 初始化建筑群
       initBuildings() {
       const grayColors = [0x4a5568, 0x5a6578, 0x6a7588, 0x7a8598, 0x8a95a8]
       const specialColors = [0xe53e3e, 0xdd6b20, 0x3182ce]
@@ -912,10 +878,7 @@ export default {
         placedBuildings.push({ x, z, width, depth })
       }
     },
-      /**
-       * 初始化鼠标交互控制
-       * 绑定Canvas的鼠标事件：拖拽旋转、滚轮缩放、右键平移
-       */
+      // 初始化鼠标交互控制
       initControls() {
         const canvas = this.$refs.canvas
         canvas.addEventListener('mousedown', this.onMouseDown)   // 鼠标按下
@@ -924,26 +887,18 @@ export default {
         canvas.addEventListener('wheel', this.onWheel)           // 滚轮缩放
         canvas.addEventListener('contextmenu', this.onContextMenu) // 右键菜单（禁用）
       },
-      /**
-       * 禁用右键菜单（避免与右键平移冲突）
-       */
+      // 禁用右键菜单
       onContextMenu(e) {
         e.preventDefault()
       },
-      /**
-       * 鼠标按下事件处理
-       */
+      // 鼠标按下事件
       onMouseDown(e) {
         this.isDragging = true
       this.lastMouseX = e.clientX
       this.lastMouseY = e.clientY
       this.dragButton = e.button
     },
-      /**
-       * 鼠标移动事件处理
-       * - 左键拖拽：旋转视角
-       * - 右键拖拽：平移视角
-       */
+      // 鼠标移动事件（左键旋转/右键平移）
       onMouseMove(e) {
         if (!this.isDragging) return
 
@@ -967,17 +922,12 @@ export default {
         this.lastMouseY = e.clientY
         this.updateCameraPosition()
       },
-      /**
-       * 鼠标释放事件处理
-       */
+      // 鼠标释放事件
       onMouseUp() {
         this.isDragging = false
         this.dragButton = null
       },
-      /**
-       * 滚轮缩放事件处理
-       * @param {WheelEvent} e - 滚轮事件
-       */
+      // 滚轮缩放事件
       onWheel(e) {
         e.preventDefault()
         this.cameraRadius += e.deltaY * 0.5  // 调整相机距离
@@ -985,10 +935,7 @@ export default {
         this.cameraRadius = Math.max(100, Math.min(1200, this.cameraRadius))
         this.updateCameraPosition()
       },
-      /**
-       * 根据球坐标参数更新相机位置
-       * 使用球坐标系：theta(水平角), phi(垂直角), radius(距离)
-       */
+      // 更新相机位置（球坐标转笛卡尔坐标）
       updateCameraPosition() {
         const targetX = this.cameraTargetX || 0
         const targetZ = this.cameraTargetZ || 0
@@ -999,20 +946,14 @@ export default {
         this.camera.position.z = targetZ + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta)
         this.camera.lookAt(targetX, 0, targetZ)  // 始终看向目标点
       },
-      /**
-       * 渲染动画循环
-       * 持续更新相机角度并渲染场景
-       */
+      // 渲染动画循环
       animate() {
         requestAnimationFrame(this.animate)  // 递归调用实现动画
         this.cameraTheta += 0.001            // 自动缓慢旋转
         this.updateCameraPosition()
         this.renderer.render(this.scene, this.camera)  // 渲染场景
       },
-      /**
-       * 窗口大小变化处理
-       * 更新相机宽高比和渲染器尺寸
-       */
+      // 窗口大小变化处理
       handleResize() {
       const canvas = this.$refs.canvas
       const width = canvas.clientWidth
@@ -1024,10 +965,7 @@ export default {
       if (this.sensorChart) this.sensorChart.resize()
       if (this.alertChart) this.alertChart.resize()
     },
-      /**
-       * 初始化所有ECharts图表
-       * 在nextTick中执行确保DOM已渲染
-       */
+      // 初始化所有图表
       initCharts() {
         this.$nextTick(() => {
           this.initHouseholdChart()  // 基本信息饼图
@@ -1035,20 +973,12 @@ export default {
           this.initAlertChart()      // 告警趋势折线图
         })
       },
-      /**
-       * 初始化基本信息饼图
-       * 展示在线/离线户数比例
-       */
+      // 初始化住户饼图
       initHouseholdChart() {
-        // 通过$refs获取DOM元素，householdChart是模板中定义的ref名称
         const chartDom = this.$refs.householdChart
-        // 如果DOM元素不存在，直接返回，防止初始化失败
         if (!chartDom) return
-        // 使用echarts.init()方法初始化图表实例
-        // 参数为DOM元素，会在此元素内渲染图表
         this.householdChart = echarts.init(chartDom)
         
-        // 定义图表配置项对象
         const option = {
           tooltip: { trigger: 'item' },
           legend: { 
@@ -1085,14 +1015,9 @@ export default {
           }]
         }
         
-        // 将配置项应用到图表实例
-        // setOption方法将配置和数据设置到echarts实例中，触发图表渲染
         this.householdChart.setOption(option)
-      }, // 结束initHouseholdChart方法
-      /**
-       * 初始化传感器状态折线图
-       * 展示在线/离线/异常传感器数量随时间变化
-       */
+      },
+      // 初始化传感器状态折线图
       initSensorChart() {
       const chartDom = this.$refs.sensorChart
       if (!chartDom) return
@@ -1142,10 +1067,7 @@ export default {
       }
       this.sensorChart.setOption(option)
     },
-      /**
-       * 初始化告警趋势折线图
-       * 展示一周内告警事件数量变化（正在进行/已解决/需关注）
-       */
+      // 初始化告警趋势折线图
       initAlertChart() {
         const chartDom = this.$refs.alertChart
         if (!chartDom) return
