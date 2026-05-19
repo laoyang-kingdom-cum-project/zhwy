@@ -49,8 +49,6 @@
         </view>
       </view>
     </view>
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="3"></custom-tabbar>
   </view>
 </template>
 
@@ -71,7 +69,7 @@ export default {
     this.loadCareList()
   },
   onShow() {
-    uni.hideTabBar()
+    uni.showTabBar()
     this.loadCareList()
   },
   methods: {

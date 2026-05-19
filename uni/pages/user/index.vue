@@ -97,8 +97,6 @@
     <view class="logout-btn" @click="logout">
       <text>退出登录</text>
     </view>
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="4"></custom-tabbar>
   </view>
 </template>
 
@@ -147,7 +145,7 @@ export default {
     this.userAddress = uni.getStorageSync('userAddress') || ''
   },
   onShow() {
-    uni.hideTabBar()
+    uni.showTabBar()
     this.loadUserInfo()
     this.loadCareMode()
     // 加载住址

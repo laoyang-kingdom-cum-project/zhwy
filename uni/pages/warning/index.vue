@@ -41,8 +41,6 @@
         </view>
       </view>
     </view>
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="2"></custom-tabbar>
   </view>
 </template>
 
@@ -66,7 +64,7 @@ export default {
     this.loadWarningList()
   },
   onShow() {
-    uni.hideTabBar()
+    uni.showTabBar()
     this.loadWarningList()
   },
   methods: {

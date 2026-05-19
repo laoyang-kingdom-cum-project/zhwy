@@ -84,8 +84,6 @@
         </view>
       </view>
     </view>
-    <!-- 自定义 TabBar -->
-    <custom-tabbar :current-index="0"></custom-tabbar>
   </view>
 </template>
 
@@ -130,7 +128,7 @@ export default {
     this.generateTemperature()
   },
   onShow() {
-    uni.hideTabBar()
+    uni.showTabBar()
     this.loadAddress()
     this.generateTemperature()
   },
