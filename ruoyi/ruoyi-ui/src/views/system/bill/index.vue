@@ -64,13 +64,11 @@
           placeholder="请选择缴费时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="支付方式：wechat微信支付，alipay支付宝" prop="payMethod">
-        <el-input
-          v-model="queryParams.payMethod"
-          placeholder="请输入支付方式：wechat微信支付，alipay支付宝"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="支付方式" prop="payMethod">
+        <el-select v-model="queryParams.payMethod" placeholder="请选择支付方式" clearable>
+          <el-option label="微信支付" value="wechat" />
+          <el-option label="支付宝" value="alipay" />
+        </el-select>
       </el-form-item>
       <el-form-item label="账单周期" prop="billPeriod">
         <el-input
@@ -169,7 +167,13 @@
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="支付方式：wechat微信支付，alipay支付宝" align="center" prop="payMethod" />
+      <el-table-column label="支付方式" align="center" prop="payMethod">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.payMethod === 'wechat'" type="success">微信支付</el-tag>
+          <el-tag v-else-if="scope.row.payMethod === 'alipay'" type="primary">支付宝</el-tag>
+          <el-tag v-else>{{ scope.row.payMethod }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="账单周期" align="center" prop="billPeriod" />
       <el-table-column label="截止日期" align="center" prop="dueDate" width="180">
         <template slot-scope="scope">
@@ -243,8 +247,11 @@
             placeholder="请选择缴费时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="支付方式：wechat微信支付，alipay支付宝" prop="payMethod">
-          <el-input v-model="form.payMethod" placeholder="请输入支付方式：wechat微信支付，alipay支付宝" />
+        <el-form-item label="支付方式" prop="payMethod">
+          <el-select v-model="form.payMethod" placeholder="请选择支付方式">
+            <el-option label="微信支付" value="wechat" />
+            <el-option label="支付宝" value="alipay" />
+          </el-select>
         </el-form-item>
         <el-form-item label="账单周期" prop="billPeriod">
           <el-input v-model="form.billPeriod" placeholder="请输入账单周期" />
