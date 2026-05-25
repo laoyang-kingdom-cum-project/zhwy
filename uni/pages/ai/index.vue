@@ -34,7 +34,8 @@
           </view>
         </view>
 
-        <!-- 加载中 -->
+
+      <!-- 加载中 -->
         <view class="message-row ai-row" v-if="loading">
           <view class="avatar ai-avatar">
             <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
@@ -198,15 +199,8 @@ export default {
         requestData.conversation_id = this.conversationId
       }
 
-      const aiMsgIndex = this.messages.length
-      this.messages.push({
-        role: 'assistant',
-        content: '',
-        time: this.getCurrentTime()
-      })
-
-      return new Promise((resolve, reject) => {
-        uni.request({
+      try {
+        const res = await uni.request({
           url: uniAiConfig.apiUrl,
           method: 'POST',
           header: {
@@ -214,44 +208,43 @@ export default {
             'Authorization': `Bearer ${uniAiConfig.apiKey}`
           },
           data: requestData,
-          success: (res) => {
-            if (res.statusCode === 200 && res.data) {
-              if (res.data.answer) {
-                this.messages[aiMsgIndex].content = this.formatAIResponse(res.data.answer)
-              }
-              if (res.data.conversation_id) {
-                this.conversationId = res.data.conversation_id
-              }
-              this.loading = false
-              this.scrollToBottom()
-              resolve(res.data)
-            } else {
-              this.messages[aiMsgIndex].content = 'AI请求失败，请稍后重试'
-              this.loading = false
-              this.scrollToBottom()
-              reject(new Error(res.data?.message || 'AI请求失败'))
-            }
-          },
-          fail: (err) => {
-            this.messages[aiMsgIndex].content = '网络请求失败，请检查网络连接'
-            this.loading = false
-            this.scrollToBottom()
-            reject(err)
-          }
+          timeout: 60000
         })
 
-        let mockText = ''
-        const mockStream = setInterval(() => {
-          if (!this.loading) {
-            clearInterval(mockStream)
-            return
+        if (res.statusCode === 200 && res.data) {
+          if (res.data.answer) {
+            this.messages.push({
+              role: 'assistant',
+              content: this.formatAIResponse(res.data.answer),
+              time: this.getCurrentTime()
+            })
           }
-          mockText += '·'
-          this.messages[aiMsgIndex].content = '思考中' + mockText
+          if (res.data.conversation_id) {
+            this.conversationId = res.data.conversation_id
+          }
+          this.loading = false
           this.scrollToBottom()
-          if (mockText.length > 6) mockText = ''
-        }, 300)
-      })
+          return res.data
+        } else {
+          this.messages.push({
+            role: 'assistant',
+            content: 'AI请求失败，请稍后重试',
+            time: this.getCurrentTime()
+          })
+          this.loading = false
+          this.scrollToBottom()
+          throw new Error(res.data?.message || 'AI请求失败')
+        }
+      } catch (err) {
+        this.messages.push({
+          role: 'assistant',
+          content: '网络请求失败，请检查网络连接',
+          time: this.getCurrentTime()
+        })
+        this.loading = false
+        this.scrollToBottom()
+        throw err
+      }
     },
 
     // 调用Dify AI接口（阻塞模式，备用）
