@@ -33,13 +33,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="账单类型：property物业费，water水费，electric电费，gas燃气费，parking停车费" prop="billType">
-        <el-input
-          v-model="queryParams.billType"
-          placeholder="请输入账单类型：property物业费，water水费，electric电费，gas燃气费，parking停车费"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="账单类型" prop="billType">
+        <el-select v-model="queryParams.billType" placeholder="请选择账单类型" clearable>
+          <el-option label="物业费" value="property" />
+          <el-option label="水费" value="water" />
+          <el-option label="电费" value="electric" />
+          <el-option label="燃气费" value="gas" />
+          <el-option label="停车费" value="parking" />
+        </el-select>
       </el-form-item>
       <el-form-item label="金额" prop="amount">
         <el-input
@@ -49,13 +50,11 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态：0未缴费，1已缴费" prop="status">
-        <el-input
-          v-model="queryParams.status"
-          placeholder="请输入状态：0未缴费，1已缴费"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+          <el-option label="未缴费" value="0" />
+          <el-option label="已缴费" value="1" />
+        </el-select>
       </el-form-item>
       <el-form-item label="缴费时间" prop="payTime">
         <el-date-picker clearable
@@ -147,9 +146,24 @@
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="账单编号" align="center" prop="billNo" />
       <el-table-column label="账单名称" align="center" prop="billName" />
-      <el-table-column label="账单类型：property物业费，water水费，electric电费，gas燃气费，parking停车费" align="center" prop="billType" />
+      <el-table-column label="账单类型" align="center" prop="billType">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.billType === 'property'" type="primary">物业费</el-tag>
+          <el-tag v-else-if="scope.row.billType === 'water'" type="info">水费</el-tag>
+          <el-tag v-else-if="scope.row.billType === 'electric'" type="warning">电费</el-tag>
+          <el-tag v-else-if="scope.row.billType === 'gas'" type="success">燃气费</el-tag>
+          <el-tag v-else-if="scope.row.billType === 'parking'" type="danger">停车费</el-tag>
+          <el-tag v-else>{{ scope.row.billType }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="金额" align="center" prop="amount" />
-      <el-table-column label="状态：0未缴费，1已缴费" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '0'" type="danger">未缴费</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="success">已缴费</el-tag>
+          <el-tag v-else>{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="缴费时间" align="center" prop="payTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d}') }}</span>
@@ -203,14 +217,23 @@
         <el-form-item label="账单名称" prop="billName">
           <el-input v-model="form.billName" placeholder="请输入账单名称" />
         </el-form-item>
-        <el-form-item label="账单类型：property物业费，water水费，electric电费，gas燃气费，parking停车费" prop="billType">
-          <el-input v-model="form.billType" placeholder="请输入账单类型：property物业费，water水费，electric电费，gas燃气费，parking停车费" />
+        <el-form-item label="账单类型" prop="billType">
+          <el-select v-model="form.billType" placeholder="请选择账单类型">
+            <el-option label="物业费" value="property" />
+            <el-option label="水费" value="water" />
+            <el-option label="电费" value="electric" />
+            <el-option label="燃气费" value="gas" />
+            <el-option label="停车费" value="parking" />
+          </el-select>
         </el-form-item>
         <el-form-item label="金额" prop="amount">
           <el-input v-model="form.amount" placeholder="请输入金额" />
         </el-form-item>
-        <el-form-item label="状态：0未缴费，1已缴费" prop="status">
-          <el-input v-model="form.status" placeholder="请输入状态：0未缴费，1已缴费" />
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="未缴费" value="0" />
+            <el-option label="已缴费" value="1" />
+          </el-select>
         </el-form-item>
         <el-form-item label="缴费时间" prop="payTime">
           <el-date-picker clearable

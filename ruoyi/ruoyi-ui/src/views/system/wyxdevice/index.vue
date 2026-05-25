@@ -52,20 +52,16 @@
         />
       </el-form-item>
       <el-form-item label="设备开关状态" prop="status">
-        <el-input
-          v-model="queryParams.status"
-          placeholder="请输入设备开关状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.status" placeholder="请选择设备开关状态" clearable>
+          <el-option label="关闭" value="0" />
+          <el-option label="开启" value="1" />
+        </el-select>
       </el-form-item>
       <el-form-item label="是否在线" prop="online">
-        <el-input
-          v-model="queryParams.online"
-          placeholder="请输入是否在线"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.online" placeholder="请选择是否在线" clearable>
+          <el-option label="离线" value="0" />
+          <el-option label="在线" value="1" />
+        </el-select>
       </el-form-item>
       <el-form-item label="value" prop="value">
         <el-input
@@ -139,8 +135,20 @@
       </el-table-column>
       <el-table-column label="房间id" align="center" prop="roomId" />
       <el-table-column label="房间名称" align="center" prop="roomName" />
-      <el-table-column label="设备开关状态" align="center" prop="status" />
-      <el-table-column label="是否在线" align="center" prop="online" />
+      <el-table-column label="设备开关状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '0'" type="info">关闭</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="success">开启</el-tag>
+          <el-tag v-else>{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否在线" align="center" prop="online">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.online === '0'" type="danger">离线</el-tag>
+          <el-tag v-else-if="scope.row.online === '1'" type="success">在线</el-tag>
+          <el-tag v-else>{{ scope.row.online }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="value" align="center" prop="value" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -196,10 +204,16 @@
           <el-input v-model="form.roomName" placeholder="请输入房间名称" />
         </el-form-item>
         <el-form-item label="设备开关状态" prop="status">
-          <el-input v-model="form.status" placeholder="请输入设备开关状态" />
+          <el-select v-model="form.status" placeholder="请选择设备开关状态">
+            <el-option label="关闭" value="0" />
+            <el-option label="开启" value="1" />
+          </el-select>
         </el-form-item>
         <el-form-item label="是否在线" prop="online">
-          <el-input v-model="form.online" placeholder="请输入是否在线" />
+          <el-select v-model="form.online" placeholder="请选择是否在线">
+            <el-option label="离线" value="0" />
+            <el-option label="在线" value="1" />
+          </el-select>
         </el-form-item>
         <el-form-item label="value" prop="value">
           <el-input v-model="form.value" placeholder="请输入value" />

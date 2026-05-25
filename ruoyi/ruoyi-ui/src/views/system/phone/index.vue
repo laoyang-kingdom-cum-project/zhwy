@@ -17,13 +17,19 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="分类：property物业，repair维修，security保安，medical医疗，other其他" prop="category">
-        <el-input
+      <el-form-item label="分类" prop="category">
+        <el-select
           v-model="queryParams.category"
-          placeholder="请输入分类：property物业，repair维修，security保安，medical医疗，other其他"
+          placeholder="请选择分类"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option label="物业" value="property" />
+          <el-option label="维修" value="repair" />
+          <el-option label="保安" value="security" />
+          <el-option label="医疗" value="medical" />
+          <el-option label="其他" value="other" />
+        </el-select>
       </el-form-item>
       <el-form-item label="排序" prop="sortOrder">
         <el-input
@@ -90,9 +96,24 @@
       <el-table-column label="主键ID" align="center" prop="id" />
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="电话号码" align="center" prop="phone" />
-      <el-table-column label="分类：property物业，repair维修，security保安，medical医疗，other其他" align="center" prop="category" />
+      <el-table-column label="分类" align="center" prop="category">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.category === 'property'" type="success">物业</el-tag>
+          <el-tag v-else-if="scope.row.category === 'repair'" type="warning">维修</el-tag>
+          <el-tag v-else-if="scope.row.category === 'security'" type="primary">保安</el-tag>
+          <el-tag v-else-if="scope.row.category === 'medical'" type="danger">医疗</el-tag>
+          <el-tag v-else-if="scope.row.category === 'other'">其他</el-tag>
+          <span v-else>{{ scope.row.category }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="排序" align="center" prop="sortOrder" />
-      <el-table-column label="状态：0禁用，1启用" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status == '0'" type="danger">禁用</el-tag>
+          <el-tag v-else-if="scope.row.status == '1'" type="success">启用</el-tag>
+          <span v-else>{{ scope.row.status }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -130,8 +151,14 @@
         <el-form-item label="电话号码" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入电话号码" />
         </el-form-item>
-        <el-form-item label="分类：property物业，repair维修，security保安，medical医疗，other其他" prop="category">
-          <el-input v-model="form.category" placeholder="请输入分类：property物业，repair维修，security保安，medical医疗，other其他" />
+        <el-form-item label="分类" prop="category">
+          <el-select v-model="form.category" placeholder="请选择分类">
+            <el-option label="物业" value="property" />
+            <el-option label="维修" value="repair" />
+            <el-option label="保安" value="security" />
+            <el-option label="医疗" value="medical" />
+            <el-option label="其他" value="other" />
+          </el-select>
         </el-form-item>
         <el-form-item label="排序" prop="sortOrder">
           <el-input v-model="form.sortOrder" placeholder="请输入排序" />

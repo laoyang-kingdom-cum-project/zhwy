@@ -33,13 +33,12 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态：0报名中，1进行中，2已结束" prop="status">
-        <el-input
-          v-model="queryParams.status"
-          placeholder="请输入状态：0报名中，1进行中，2已结束"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+          <el-option label="报名中" value="0" />
+          <el-option label="进行中" value="1" />
+          <el-option label="已结束" value="2" />
+        </el-select>
       </el-form-item>
       <el-form-item label="已报名人数" prop="joinCount">
         <el-input
@@ -120,7 +119,14 @@
         </template>
       </el-table-column>
       <el-table-column label="活动地点" align="center" prop="location" />
-      <el-table-column label="状态：0报名中，1进行中，2已结束" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '0'" type="primary">报名中</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="success">进行中</el-tag>
+          <el-tag v-else-if="scope.row.status === '2'" type="info">已结束</el-tag>
+          <el-tag v-else type="warning">{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="已报名人数" align="center" prop="joinCount" />
       <el-table-column label="最大报名人数" align="center" prop="maxCount" />
       <el-table-column label="活动图片URL" align="center" prop="image" width="100">
@@ -176,8 +182,12 @@
         <el-form-item label="活动地点" prop="location">
           <el-input v-model="form.location" placeholder="请输入活动地点" />
         </el-form-item>
-        <el-form-item label="状态：0报名中，1进行中，2已结束" prop="status">
-          <el-input v-model="form.status" placeholder="请输入状态：0报名中，1进行中，2已结束" />
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="报名中" value="0" />
+            <el-option label="进行中" value="1" />
+            <el-option label="已结束" value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="已报名人数" prop="joinCount">
           <el-input v-model="form.joinCount" placeholder="请输入已报名人数" />

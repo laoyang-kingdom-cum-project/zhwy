@@ -959,7 +959,9 @@ export default {
   position: absolute;
   top: 90px;
   left: 15px;
-  width: 300px;
+  width: 18vw;
+  min-width: 220px;
+  max-width: 340px;
   height: calc(100vh - 180px);
   display: flex;
   flex-direction: column;
@@ -973,7 +975,9 @@ export default {
   position: absolute;
   top: 90px;
   right: 15px;
-  width: 300px;
+  width: 18vw;
+  min-width: 220px;
+  max-width: 340px;
   height: calc(100vh - 180px);
   display: flex;
   flex-direction: column;
@@ -1531,5 +1535,106 @@ export default {
 
 .dialog-footer .el-button {
   min-width: 100px;
+}
+
+/* ==================== 响应式适配 ==================== */
+@media screen and (max-width: 1366px) {
+  .panel-left,
+  .panel-right {
+    width: 22vw;
+    min-width: 200px;
+  }
+
+  .header-center .title {
+    font-size: 22px;
+  }
+
+  .header-center .title::before,
+  .header-center .title::after {
+    width: 60px;
+  }
+
+  .panel-title span {
+    font-size: 13px;
+  }
+
+  .chart-container {
+    height: 110px;
+  }
+
+  .stat-item .stat-value {
+    font-size: 16px;
+  }
+
+  .alert-info .value {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .panel-left,
+  .panel-right {
+    width: 26vw;
+    min-width: 180px;
+  }
+
+  .header-center .title {
+    font-size: 18px;
+  }
+
+  .header-center .title::before,
+  .header-center .title::after {
+    display: none;
+  }
+
+  .panel-box {
+    padding: 8px;
+  }
+
+  .chart-container {
+    height: 90px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .panel-left,
+  .panel-right {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 200px;
+  }
+
+  .data-screen {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .canvas-container {
+    position: relative;
+    height: 50vh;
+    min-height: 300px;
+  }
+
+  .screen-header {
+    position: relative;
+    height: auto;
+    padding: 10px 15px;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .header-center .title {
+    font-size: 16px;
+  }
 }
 </style>

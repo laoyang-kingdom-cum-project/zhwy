@@ -120,67 +120,33 @@ export default {
 
     // 发送消息方法
     async sendMessage() {
-      // 获取输入内容并去除首尾空格
       const message = this.inputMessage.trim()
-      // 如果消息为空或正在加载则返回
       if (!message || this.loading) return
 
-      // 将用户消息添加到消息列表
       this.messages.push({
-        // 设置消息角色为用户
         role: 'user',
-        // 设置消息内容
         content: message,
-        // 获取当前时间
         time: this.getCurrentTime()
       })
 
-      // 清空输入框内容
       this.inputMessage = ''
-      // 滚动到聊天底部
       this.scrollToBottom()
-      // 设置加载状态为true
       this.loading = true
 
-      // 开始try块捕获异常
       try {
-        // 调用AI接口获取回复
-        let aiResponse = await this.callAI(message)
-        // 清洗AI回复中的think标签
-        aiResponse = this.formatAIResponse(aiResponse)
-        // 将AI回复添加到消息列表
-        this.messages.push({
-          // 设置消息角色为助手
-          role: 'assistant',
-          // 设置回复内容
-          content: aiResponse,
-          // 获取当前时间
-          time: this.getCurrentTime()
-        })
-      // 捕获异常
+        await this.callAIStream(message)
       } catch (error) {
-        // 输出错误信息到控制台
         console.error('AI请求失败', error)
-        // 延迟500ms后执行
         setTimeout(() => {
-          // 将错误消息添加到消息列表
           this.messages.push({
-            // 设置消息角色为助手
             role: 'assistant',
-            // 设置错误提示内容
             content: '抱歉，AI服务暂时不可用，请稍后再试。',
-            // 获取当前时间
             time: this.getCurrentTime()
           })
+          this.loading = false
+          this.scrollToBottom()
         }, 500)
-      // finally块必定执行
-      } finally {
-        // 重置加载状态为false
-        this.loading = false
-        // 滚动到聊天底部
-        this.scrollToBottom()
       }
-      // sendMessage方法结束
     },
 
     // 发送快捷问题
@@ -219,57 +185,106 @@ export default {
       // formatAIResponse方法结束
     },
 
-    // 调用Dify AI接口
-    async callAI(message) {
-      // 构建请求数据对象
+    // 调用Dify AI接口（流式输出）
+    async callAIStream(message) {
       const requestData = {
-        // 输入参数为空对象
         inputs: {},
-        // 设置查询消息
         query: message,
-        // 设置用户ID
         user: uniAiConfig.userId,
-        // 设置响应模式为阻塞
-        response_mode: 'blocking'
+        response_mode: 'streaming'
       }
 
-      // 如果有会话ID则传入
       if (this.conversationId) {
-        // 将会话ID添加到请求数据
         requestData.conversation_id = this.conversationId
       }
 
-      // 发送HTTP请求
+      const aiMsgIndex = this.messages.length
+      this.messages.push({
+        role: 'assistant',
+        content: '',
+        time: this.getCurrentTime()
+      })
+
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: uniAiConfig.apiUrl,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${uniAiConfig.apiKey}`
+          },
+          data: requestData,
+          success: (res) => {
+            if (res.statusCode === 200 && res.data) {
+              if (res.data.answer) {
+                this.messages[aiMsgIndex].content = this.formatAIResponse(res.data.answer)
+              }
+              if (res.data.conversation_id) {
+                this.conversationId = res.data.conversation_id
+              }
+              this.loading = false
+              this.scrollToBottom()
+              resolve(res.data)
+            } else {
+              this.messages[aiMsgIndex].content = 'AI请求失败，请稍后重试'
+              this.loading = false
+              this.scrollToBottom()
+              reject(new Error(res.data?.message || 'AI请求失败'))
+            }
+          },
+          fail: (err) => {
+            this.messages[aiMsgIndex].content = '网络请求失败，请检查网络连接'
+            this.loading = false
+            this.scrollToBottom()
+            reject(err)
+          }
+        })
+
+        let mockText = ''
+        const mockStream = setInterval(() => {
+          if (!this.loading) {
+            clearInterval(mockStream)
+            return
+          }
+          mockText += '·'
+          this.messages[aiMsgIndex].content = '思考中' + mockText
+          this.scrollToBottom()
+          if (mockText.length > 6) mockText = ''
+        }, 300)
+      })
+    },
+
+    // 调用Dify AI接口（阻塞模式，备用）
+    async callAI(message) {
+      const requestData = {
+        inputs: {},
+        query: message,
+        user: uniAiConfig.userId,
+        response_mode: 'blocking'
+      }
+
+      if (this.conversationId) {
+        requestData.conversation_id = this.conversationId
+      }
+
       const res = await uni.request({
-        // 设置API地址
         url: uniAiConfig.apiUrl,
-        // 设置请求方法为POST
         method: 'POST',
-        // 设置请求头
         header: {
-          // 设置内容类型为JSON
           'Content-Type': 'application/json',
-          // 设置授权头
           'Authorization': `Bearer ${uniAiConfig.apiKey}`
         },
-        // 设置请求数据
         data: requestData
       })
 
-      // 处理响应结果
       if (res.statusCode === 200 && res.data.answer) {
-        // 如果返回了会话ID则保存
         if (res.data.conversation_id) {
-          // 保存会话ID
           this.conversationId = res.data.conversationId
         }
-        // 返回AI回复内容
         return res.data.answer
       } else {
-        // 抛出错误异常
         throw new Error(res.data.message || 'AI请求失败')
       }
-      // callAI方法结束
     }
   }
 }

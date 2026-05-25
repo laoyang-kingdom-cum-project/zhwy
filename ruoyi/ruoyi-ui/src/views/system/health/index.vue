@@ -34,12 +34,12 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="healthStatus">
-        <el-input
-          v-model="queryParams.healthStatus"
-          placeholder="请输入状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.healthStatus" placeholder="请选择状态" clearable>
+          <el-option label="健康" value="0" />
+          <el-option label="一般" value="1" />
+          <el-option label="需关注" value="2" />
+          <el-option label="异常" value="3" />
+        </el-select>
       </el-form-item>
       <el-form-item label="最后活动" prop="lastActive">
         <el-input
@@ -155,7 +155,15 @@
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="年龄" align="center" prop="age" />
       <el-table-column label="住址" align="center" prop="room" />
-      <el-table-column label="状态" align="center" prop="healthStatus" />
+      <el-table-column label="状态" align="center" prop="healthStatus">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.healthStatus === '0'" type="success">健康</el-tag>
+          <el-tag v-else-if="scope.row.healthStatus === '1'" type="primary">一般</el-tag>
+          <el-tag v-else-if="scope.row.healthStatus === '2'" type="warning">需关注</el-tag>
+          <el-tag v-else-if="scope.row.healthStatus === '3'" type="danger">异常</el-tag>
+          <el-tag v-else>{{ scope.row.healthStatus }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="最后活动" align="center" prop="lastActive" />
       <el-table-column label="紧急联系人+手机号" align="center" prop="emergencyContact" />
       <el-table-column label="步数" align="center" prop="steps" />
@@ -204,7 +212,12 @@
           <el-input v-model="form.room" placeholder="请输入住址" />
         </el-form-item>
         <el-form-item label="状态" prop="healthStatus">
-          <el-input v-model="form.healthStatus" placeholder="请输入状态" />
+          <el-select v-model="form.healthStatus" placeholder="请选择状态">
+            <el-option label="健康" value="0" />
+            <el-option label="一般" value="1" />
+            <el-option label="需关注" value="2" />
+            <el-option label="异常" value="3" />
+          </el-select>
         </el-form-item>
         <el-form-item label="最后活动" prop="lastActive">
           <el-input v-model="form.lastActive" placeholder="请输入最后活动" />

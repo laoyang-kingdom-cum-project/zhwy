@@ -41,13 +41,12 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="处理状态：0-待处理、1-处理中、2-已处理" prop="handleStatus">
-        <el-input
-          v-model="queryParams.handleStatus"
-          placeholder="请输入处理状态：0-待处理、1-处理中、2-已处理"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="处理状态" prop="handleStatus">
+        <el-select v-model="queryParams.handleStatus" placeholder="请选择处理状态" clearable>
+          <el-option label="待处理" value="0" />
+          <el-option label="处理中" value="1" />
+          <el-option label="已处理" value="2" />
+        </el-select>
       </el-form-item>
       <el-form-item label="处理人ID" prop="handleBy">
         <el-input
@@ -129,7 +128,14 @@
         </template>
       </el-table-column>
       <el-table-column label="上报人ID" align="center" prop="reportBy" />
-      <el-table-column label="处理状态：0-待处理、1-处理中、2-已处理" align="center" prop="handleStatus" />
+      <el-table-column label="处理状态" align="center" prop="handleStatus">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.handleStatus === '0'" type="danger">待处理</el-tag>
+          <el-tag v-else-if="scope.row.handleStatus === '1'" type="warning">处理中</el-tag>
+          <el-tag v-else-if="scope.row.handleStatus === '2'" type="success">已处理</el-tag>
+          <el-tag v-else>{{ scope.row.handleStatus }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="处理人ID" align="center" prop="handleBy" />
       <el-table-column label="处理时间" align="center" prop="handleTime" width="180">
         <template slot-scope="scope">
@@ -188,8 +194,12 @@
         <el-form-item label="上报人ID" prop="reportBy">
           <el-input v-model="form.reportBy" placeholder="请输入上报人ID" />
         </el-form-item>
-        <el-form-item label="处理状态：0-待处理、1-处理中、2-已处理" prop="handleStatus">
-          <el-input v-model="form.handleStatus" placeholder="请输入处理状态：0-待处理、1-处理中、2-已处理" />
+        <el-form-item label="处理状态" prop="handleStatus">
+          <el-select v-model="form.handleStatus" placeholder="请选择处理状态">
+            <el-option label="待处理" value="0" />
+            <el-option label="处理中" value="1" />
+            <el-option label="已处理" value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="处理人ID" prop="handleBy">
           <el-input v-model="form.handleBy" placeholder="请输入处理人ID" />

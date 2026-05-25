@@ -30,7 +30,7 @@
     </view>
     
     <!-- AI应急方案 -->
-    <view class="ai-card" v-if="emergencyPlan || aiLoading">
+    <view class="ai-card">
       <view class="card-title">
         <image class="ai-icon" src="/static/emojis/emoji_01_robot.png" />
         <text>AI应急方案</text>
@@ -42,6 +42,10 @@
       </view>
       <view class="plan-content" v-if="emergencyPlan">
         <text class="plan-text">{{emergencyPlan}}</text>
+      </view>
+      <view class="plan-placeholder" v-else-if="!aiLoading">
+        <text class="placeholder-text">点击获取AI应急方案</text>
+        <button class="plan-btn" @click="loadAIPlan(warning.title, warning.location)">获取方案</button>
       </view>
     </view>
     
@@ -123,9 +127,6 @@ export default {
             levelText: this.getLevelText(res.data.level),
             statusText: this.getStatusText(res.data.state || '0')
           }
-          
-          // 获取AI应急方案
-          this.loadAIPlan(res.data.title, res.data.location)
           
           // 获取周边资源
           this.loadResources(res.data.location)
@@ -368,6 +369,31 @@ export default {
   color: #333;
   line-height: 1.8;
   white-space: pre-wrap;
+}
+
+.plan-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  gap: 20rpx;
+}
+
+.placeholder-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.plan-btn {
+  font-size: 28rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16rpx 48rpx;
+  border-radius: 32rpx;
+  border: none;
+  line-height: 1.5;
 }
 
 /* 周边资源 */

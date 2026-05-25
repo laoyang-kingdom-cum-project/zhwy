@@ -25,13 +25,13 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态：0待处理，1处理中，2已完成，3已取消" prop="status">
-        <el-input
-          v-model="queryParams.status"
-          placeholder="请输入状态：0待处理，1处理中，2已完成，3已取消"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+          <el-option label="待处理" value="0" />
+          <el-option label="处理中" value="1" />
+          <el-option label="已完成" value="2" />
+          <el-option label="已取消" value="3" />
+        </el-select>
       </el-form-item>
       <el-form-item label="联系人姓名" prop="contactName">
         <el-input
@@ -139,7 +139,15 @@
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="服务类型" align="center" prop="type" />
       <el-table-column label="服务内容描述" align="center" prop="content" />
-      <el-table-column label="状态：0待处理，1处理中，2已完成，3已取消" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '0'" type="danger">待处理</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="warning">处理中</el-tag>
+          <el-tag v-else-if="scope.row.status === '2'" type="success">已完成</el-tag>
+          <el-tag v-else-if="scope.row.status === '3'" type="info">已取消</el-tag>
+          <el-tag v-else>{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="联系人姓名" align="center" prop="contactName" />
       <el-table-column label="联系人电话" align="center" prop="contactPhone" />
       <el-table-column label="服务地址" align="center" prop="address" />
@@ -192,8 +200,13 @@
         <el-form-item label="服务内容描述">
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
-        <el-form-item label="状态：0待处理，1处理中，2已完成，3已取消" prop="status">
-          <el-input v-model="form.status" placeholder="请输入状态：0待处理，1处理中，2已完成，3已取消" />
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="待处理" value="0" />
+            <el-option label="处理中" value="1" />
+            <el-option label="已完成" value="2" />
+            <el-option label="已取消" value="3" />
+          </el-select>
         </el-form-item>
         <el-form-item label="联系人姓名" prop="contactName">
           <el-input v-model="form.contactName" placeholder="请输入联系人姓名" />

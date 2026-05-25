@@ -95,7 +95,13 @@
           <span>{{ parseTime(scope.row.joinTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态：1正常，0取消" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '1'" type="success">正常</el-tag>
+          <el-tag v-else-if="scope.row.status === '0'" type="info">取消</el-tag>
+          <el-tag v-else>{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

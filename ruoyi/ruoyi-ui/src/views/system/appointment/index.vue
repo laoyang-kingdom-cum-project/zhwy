@@ -74,12 +74,11 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-input
-          v-model="queryParams.status"
-          placeholder="请输入状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+          <el-option label="待审核" value="0" />
+          <el-option label="已通过" value="1" />
+          <el-option label="已拒绝" value="2" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -156,7 +155,14 @@
         </template>
       </el-table-column>
       <el-table-column label="访问事由" align="center" prop="visitReason" />
-      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '0'" type="warning">待审核</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="success">已通过</el-tag>
+          <el-tag v-else-if="scope.row.status === '2'" type="danger">已拒绝</el-tag>
+          <el-tag v-else>{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -229,7 +235,11 @@
           <el-input v-model="form.visitReason" placeholder="请输入访问事由" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model="form.status" placeholder="请输入状态" />
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="待审核" value="0" />
+            <el-option label="已通过" value="1" />
+            <el-option label="已拒绝" value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />

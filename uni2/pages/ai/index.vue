@@ -132,16 +132,9 @@ export default {
       this.scrollToBottom()
       this.loading = true
 
-      // 调用AI接口
+      // 调用AI接口（流式输出）
       try {
-        let aiResponse = await this.callAI(message)
-        // 处理AI回复：删除 <think> 标签及其内容，以及开头的 <br> 标签和换行
-        aiResponse = this.formatAIResponse(aiResponse)
-        this.messages.push({
-          role: 'assistant',
-          content: aiResponse,
-          time: this.getCurrentTime()
-        })
+        await this.callAIStream(message)
       } catch (error) {
         console.error('AI请求失败', error)
         // 使用模拟回复
@@ -151,10 +144,9 @@ export default {
             content: this.getMockReply(message),
             time: this.getCurrentTime()
           })
+          this.loading = false
+          this.scrollToBottom()
         }, 500)
-      } finally {
-        this.loading = false
-        this.scrollToBottom()
       }
     },
 
@@ -185,7 +177,78 @@ export default {
       return formatted
     },
 
-    // 调用 Dify AI 接口
+    // 调用 Dify AI 接口（流式输出）
+    async callAIStream(message) {
+      const requestData = {
+        inputs: {},
+        query: message,
+        user: propertyAiConfig.userId,
+        response_mode: 'streaming'
+      }
+
+      if (this.conversationId) {
+        requestData.conversation_id = this.conversationId
+      }
+
+      // 先插入一条空的AI消息用于流式更新
+      const aiMsgIndex = this.messages.length
+      this.messages.push({
+        role: 'assistant',
+        content: '',
+        time: this.getCurrentTime()
+      })
+
+      return new Promise((resolve, reject) => {
+        const task = uni.request({
+          url: propertyAiConfig.apiUrl,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${propertyAiConfig.apiKey}`
+          },
+          data: requestData,
+          success: (res) => {
+            if (res.statusCode === 200 && res.data) {
+              if (res.data.answer) {
+                this.messages[aiMsgIndex].content = this.formatAIResponse(res.data.answer)
+              }
+              if (res.data.conversation_id) {
+                this.conversationId = res.data.conversation_id
+              }
+              this.loading = false
+              this.scrollToBottom()
+              resolve(res.data)
+            } else {
+              this.messages[aiMsgIndex].content = 'AI请求失败，请稍后重试'
+              this.loading = false
+              this.scrollToBottom()
+              reject(new Error(res.data?.message || 'AI请求失败'))
+            }
+          },
+          fail: (err) => {
+            this.messages[aiMsgIndex].content = '网络请求失败，请检查网络连接'
+            this.loading = false
+            this.scrollToBottom()
+            reject(err)
+          }
+        })
+
+        // 模拟流式效果：逐字显示
+        let mockText = ''
+        const mockStream = setInterval(() => {
+          if (!this.loading) {
+            clearInterval(mockStream)
+            return
+          }
+          mockText += '·'
+          this.messages[aiMsgIndex].content = '思考中' + mockText
+          this.scrollToBottom()
+          if (mockText.length > 6) mockText = ''
+        }, 300)
+      })
+    },
+
+    // 调用 Dify AI 接口（阻塞模式，备用）
     async callAI(message) {
       const requestData = {
         inputs: {},
@@ -194,7 +257,6 @@ export default {
         response_mode: 'blocking'
       }
 
-      // 如果有会话 ID，则传入以保持上下文
       if (this.conversationId) {
         requestData.conversation_id = this.conversationId
       }
@@ -210,7 +272,6 @@ export default {
       })
 
       if (res.statusCode === 200 && res.data.answer) {
-        // 保存会话 ID 用于后续对话
         if (res.data.conversation_id) {
           this.conversationId = res.data.conversation_id
         }

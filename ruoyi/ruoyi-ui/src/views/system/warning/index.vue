@@ -34,12 +34,11 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="状态" prop="state">
-        <el-input
-          v-model="queryParams.state"
-          placeholder="请输入状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.state" placeholder="请选择状态" clearable>
+          <el-option label="未处理" value="0" />
+          <el-option label="处理中" value="1" />
+          <el-option label="已处理" value="2" />
+        </el-select>
       </el-form-item>
       <el-form-item label="危险等级" prop="level">
         <el-input
@@ -119,7 +118,14 @@
           <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="state" />
+      <el-table-column label="状态" align="center" prop="state">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.state === '0'" type="danger">未处理</el-tag>
+          <el-tag v-else-if="scope.row.state === '1'" type="warning">处理中</el-tag>
+          <el-tag v-else-if="scope.row.state === '2'" type="success">已处理</el-tag>
+          <el-tag v-else>{{ scope.row.state }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="危险等级" align="center" prop="level" />
       <el-table-column label="用户id" align="center" prop="userid" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -168,7 +174,11 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="状态" prop="state">
-          <el-input v-model="form.state" placeholder="请输入状态" />
+          <el-select v-model="form.state" placeholder="请选择状态">
+            <el-option label="未处理" value="0" />
+            <el-option label="处理中" value="1" />
+            <el-option label="已处理" value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="危险等级" prop="level">
           <el-input v-model="form.level" placeholder="请输入危险等级" />
