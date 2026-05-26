@@ -22,8 +22,8 @@
         {{ value }}%
       </div>
     </div>
-    <div class="mt-2 text-sm text-gray-300">{{ label }}</div>
-    <div class="text-xs text-cyan-400">{{ sub }}</div>
+    <div class="mt-2 text-sm text-gray-300 truncate max-w-[5rem]">{{ label }}</div>
+    <div class="text-xs text-cyan-400 truncate max-w-[5rem]">{{ sub }}</div>
   </div>
 </template>
 
