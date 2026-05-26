@@ -139,7 +139,7 @@ export default {
       }
     },
 
-    // 使用AI接口获取应急方案
+    // 使用AI接口获取应急方案（流式输出）
     async loadAIPlan(title, location) {
       this.aiLoading = true
       this.emergencyPlan = ''
@@ -147,8 +147,7 @@ export default {
       try {
         const message = `请为以下物业预警提供应急处理方案：\n预警类型：${title}\n发生位置：${location}\n\n请提供详细的应急处理步骤和注意事项。`
 
-        const plan = await this.callAI(message)
-        this.emergencyPlan = this.formatAIResponse(plan)
+        await this.callAIStream(message)
       } catch (error) {
         console.error('获取AI应急方案失败', error)
         this.emergencyPlan = '获取AI方案失败，请根据现场情况采取相应措施，确保人员安全。'
@@ -157,29 +156,66 @@ export default {
       }
     },
 
-    // 调用 Dify AI 接口
-    async callAI(message) {
-      const res = await uni.request({
-        url: emergencyAiConfig.apiUrl,
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${emergencyAiConfig.apiKey}`
-        },
-        data: {
-          inputs: {},
-          query: message,
-          user: emergencyAiConfig.userId,
-          response_mode: 'blocking'
-        }
-      })
+    // 调用 Dify AI 接口（流式输出）
+    async callAIStream(message) {
+      const requestData = {
+        inputs: {},
+        query: message,
+        user: emergencyAiConfig.userId,
+        response_mode: 'streaming'
+      }
 
-      if (res.statusCode === 200 && res.data.answer) {
-        return res.data.answer
-      } else if (res.statusCode === 401) {
-        throw new Error('401 Unauthorized: API密钥无效')
-      } else {
-        throw new Error(res.data.message || 'AI请求失败')
+      let fullAnswer = ''
+
+      return new Promise((resolve, reject) => {
+        const requestTask = uni.request({
+          url: emergencyAiConfig.apiUrl,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${emergencyAiConfig.apiKey}`,
+            'Accept': 'text/event-stream'
+          },
+          data: requestData,
+          timeout: 120000,
+          enableChunked: true,
+          success: () => {
+            resolve(fullAnswer)
+          },
+          fail: (err) => {
+            reject(err)
+          }
+        })
+
+        requestTask.onChunkReceived((res) => {
+          const chunk = new Uint8Array(res.data)
+          const text = new TextDecoder('utf-8').decode(chunk)
+          this.parseStreamData(text, (answerText) => {
+            if (answerText) {
+              fullAnswer += answerText
+              this.emergencyPlan = this.formatAIResponse(fullAnswer)
+            }
+          })
+        })
+      })
+    },
+
+    parseStreamData(chunkText, onAnswer) {
+      const lines = chunkText.split('\n')
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('data:')) {
+          const jsonStr = trimmed.slice(5).trim()
+          if (jsonStr === '[DONE]') continue
+          try {
+            const data = JSON.parse(jsonStr)
+            if (data.event === 'message' && data.answer) {
+              onAnswer(data.answer)
+            } else if (data.event === 'agent_message' && data.answer) {
+              onAnswer(data.answer)
+            }
+          } catch (e) {}
+        }
       }
     },
 

@@ -12,21 +12,23 @@
     <!-- Three.js 3D画布容器 -->
     <canvas ref="canvas" class="canvas-container"></canvas>
 
-    <!-- 顶部标题栏 -->
-    <div class="screen-header">
-      <div class="header-left">
-        <span class="time">{{ currentTime }}</span>
+    <div class="main-content">
+      <!-- 顶部标题栏 -->
+      <div class="screen-header">
+        <div class="header-left">
+          <span class="time">{{ currentTime }}</span>
+        </div>
+        <div class="header-center">
+          <h1 class="title">智慧养老社区监测平台</h1>
+        </div>
+        <div class="header-right">
+          <span class="weather">20~28℃ 晴转多云</span>
+        </div>
       </div>
-      <div class="header-center">
-        <h1 class="title">智慧养老社区监测平台</h1>
-      </div>
-      <div class="header-right">
-        <span class="weather">20~28℃ 晴转多云</span>
-      </div>
-    </div>
 
-    <!-- 左侧数据面板 -->
-    <div class="panel-left">
+      <div class="panels-row">
+        <!-- 左侧数据面板 -->
+        <div class="panel-left">
       <!-- 基本信息饼图 -->
       <div class="panel-box">
         <div class="panel-title">
@@ -148,6 +150,8 @@
           </div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
 
     <!-- 事件详情弹窗 -->
@@ -392,35 +396,38 @@ export default {
         }
       },
       
-      // 调用Dify AI接口
+      // 调用Dify AI接口（流式输出）
       async callDifyAI(message) {
-        const config = {  // 第一步：配置API参数
+        const config = {
           apiUrl: '/dify-api/v1/chat-messages',
           apiKey: 'app-GgkaxIhg0WQAP8b1lzd9ct9L',
           userId: 'sandbox-web-user'
         }
-        const requestBody = {  // 第二步：组装请求体
+        const requestBody = {
           inputs: {},
           query: message,
           user: config.userId,
-          response_mode: 'blocking'
+          response_mode: 'streaming'
         }
-        const controller = new AbortController()  // 第三步：创建超时控制器
+        const controller = new AbortController()
         const timeoutId = setTimeout(() => {
           controller.abort()
-        }, 60000)
+        }, 120000)
+        
         try {
-          const response = await fetch(config.apiUrl, {  // 第四步：发送请求
+          const response = await fetch(config.apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${config.apiKey}`
+              'Authorization': `Bearer ${config.apiKey}`,
+              'Accept': 'text/event-stream'
             },
             body: JSON.stringify(requestBody),
             signal: controller.signal
           })
-          clearTimeout(timeoutId)  // 第五步：清除超时
-          if (!response.ok) {  // 第六步：检查响应状态
+          clearTimeout(timeoutId)
+          
+          if (!response.ok) {
             let errorText = await response.text()
             let errorMessage = `AI 请求失败：${response.status} - ${response.statusText}`
             try {
@@ -435,17 +442,51 @@ export default {
             }
             throw new Error(errorMessage)
           }
-          const data = await response.json()  // 第七步：解析响应数据
-          if (data.answer) {  // 第八步：返回AI回答
-            return data.answer
+
+          // 流式读取响应
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder('utf-8')
+          let fullAnswer = ''
+          
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            
+            const chunk = decoder.decode(value, { stream: true })
+            this.parseStreamData(chunk, (text) => {
+              if (text) {
+                fullAnswer += text
+                this.emergencyPlan = this.formatAIResponse(fullAnswer)
+              }
+            })
           }
-          throw new Error(data.message || data.error || 'AI 请求失败，未返回有效数据')
+          
+          return fullAnswer
         } catch (error) {
-          clearTimeout(timeoutId)  // 第九步：异常时清除超时
-          if (error.name === 'AbortError') {  // 第十步：处理超时错误
-            throw new Error('请求超时（60秒），请稍后重试')
+          clearTimeout(timeoutId)
+          if (error.name === 'AbortError') {
+            throw new Error('请求超时（120秒），请稍后重试')
           }
           throw error
+        }
+      },
+
+      parseStreamData(chunkText, onAnswer) {
+        const lines = chunkText.split('\n')
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (trimmed.startsWith('data:')) {
+            const jsonStr = trimmed.slice(5).trim()
+            if (jsonStr === '[DONE]') continue
+            try {
+              const data = JSON.parse(jsonStr)
+              if (data.event === 'message' && data.answer) {
+                onAnswer(data.answer)
+              } else if (data.event === 'agent_message' && data.answer) {
+                onAnswer(data.answer)
+              }
+            } catch (e) {}
+          }
         }
       },
       
@@ -899,14 +940,28 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 0;
+}
+
+/* 主内容区域 */
+.main-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.main-content > * {
+  pointer-events: auto;
 }
 
 /* ==================== 顶部标题栏 ==================== */
 .screen-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  flex-shrink: 0;
   height: 80px;
   display: flex;
   align-items: center;
@@ -954,15 +1009,23 @@ export default {
   font-size: 14px;
 }
 
+/* ==================== 面板行容器 ==================== */
+.panels-row {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  min-height: 0;
+  padding: 10px 0;
+}
+
 /* ==================== 左侧数据面板 ==================== */
 .panel-left {
-  position: absolute;
-  top: 90px;
-  left: 15px;
+  position: relative;
+  margin-left: 15px;
   width: 18vw;
   min-width: 220px;
   max-width: 340px;
-  height: calc(100vh - 180px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -972,13 +1035,12 @@ export default {
 
 /* ==================== 右侧数据面板 ==================== */
 .panel-right {
-  position: absolute;
-  top: 90px;
-  right: 15px;
+  position: relative;
+  margin-right: 15px;
   width: 18vw;
   min-width: 220px;
   max-width: 340px;
-  height: calc(100vh - 180px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;

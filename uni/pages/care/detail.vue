@@ -219,28 +219,66 @@ export default {
 健康状态：${this.careInfo.healthStatus === '0' ? '正常' : this.careInfo.healthStatus === '1' ? '关注' : '异常'}
 最后活动：${this.formatTime(this.careInfo.lastActive)}`
 
-      const res = await uni.request({
-        url: healthAiConfig.apiUrl,
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${healthAiConfig.apiKey}`
+      const requestData = {
+        inputs: {
+          health_data: healthData
         },
-        data: {
-          inputs: {
-            health_data: healthData
-          },
-          query: '请分析这位家人的健康状况，并给出专业建议。',
-          user: healthAiConfig.userId,
-          response_mode: 'blocking'
-        }
-      })
+        query: '请分析这位家人的健康状况，并给出专业建议。',
+        user: healthAiConfig.userId,
+        response_mode: 'streaming'
+      }
 
-      if (res.statusCode === 200 && res.data.answer) {
-        // 处理AI回复：删除 <think> 标签及其内容
-        return this.formatAIResponse(res.data.answer)
-      } else {
-        throw new Error(res.data.message || 'AI请求失败')
+      let fullAnswer = ''
+
+      return new Promise((resolve, reject) => {
+        const requestTask = uni.request({
+          url: healthAiConfig.apiUrl,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${healthAiConfig.apiKey}`,
+            'Accept': 'text/event-stream'
+          },
+          data: requestData,
+          timeout: 120000,
+          enableChunked: true,
+          success: () => {
+            resolve(fullAnswer)
+          },
+          fail: (err) => {
+            reject(err)
+          }
+        })
+
+        requestTask.onChunkReceived((res) => {
+          const chunk = new Uint8Array(res.data)
+          const text = new TextDecoder('utf-8').decode(chunk)
+          this.parseStreamData(text, (answerText) => {
+            if (answerText) {
+              fullAnswer += answerText
+              this.aiAnalysis = this.formatAIResponse(fullAnswer)
+            }
+          })
+        })
+      })
+    },
+
+    parseStreamData(chunkText, onAnswer) {
+      const lines = chunkText.split('\n')
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('data:')) {
+          const jsonStr = trimmed.slice(5).trim()
+          if (jsonStr === '[DONE]') continue
+          try {
+            const data = JSON.parse(jsonStr)
+            if (data.event === 'message' && data.answer) {
+              onAnswer(data.answer)
+            } else if (data.event === 'agent_message' && data.answer) {
+              onAnswer(data.answer)
+            }
+          } catch (e) {}
+        }
       }
     },
 

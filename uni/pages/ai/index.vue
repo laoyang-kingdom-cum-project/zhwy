@@ -23,7 +23,13 @@
           <!-- 消息内容 -->
           <view class="message-body" :class="item.role === 'user' ? 'user-body' : ''">
             <view class="message-bubble" :class="item.role === 'assistant' ? 'ai-bubble' : 'user-bubble'">
-              <text class="message-text">{{ item.content }}</text>
+              <!-- AI 消息且内容为空时显示加载动画 -->
+              <view class="loading-bubble-inline" v-if="item.role === 'assistant' && !item.content && loading">
+                <view class="loading-dot"></view>
+                <view class="loading-dot"></view>
+                <view class="loading-dot"></view>
+              </view>
+              <text class="message-text" v-else>{{ item.content }}</text>
             </view>
             <text class="message-time" :class="item.role === 'user' ? 'user-time' : ''">{{ item.time }}</text>
           </view>
@@ -31,19 +37,6 @@
           <!-- 用户头像 -->
           <view class="avatar user-avatar" v-if="item.role === 'user'">
             <image class="avatar-icon" src="/static/emojis/emoji_02_person.png" />
-          </view>
-        </view>
-
-
-      <!-- 加载中 -->
-        <view class="message-row ai-row" v-if="loading">
-          <view class="avatar ai-avatar">
-            <image class="avatar-icon" src="/static/emojis/emoji_01_robot.png" />
-          </view>
-          <view class="loading-bubble">
-            <view class="loading-dot"></view>
-            <view class="loading-dot"></view>
-            <view class="loading-dot"></view>
           </view>
         </view>
       </view>
@@ -186,7 +179,7 @@ export default {
       // formatAIResponse方法结束
     },
 
-    // 调用Dify AI接口（流式输出）
+    // 调用Dify AI接口（真正流式输出）
     async callAIStream(message) {
       const requestData = {
         inputs: {},
@@ -199,52 +192,87 @@ export default {
         requestData.conversation_id = this.conversationId
       }
 
-      try {
-        const res = await uni.request({
+      // 先插入一条空消息用于流式更新
+      const aiMsgIndex = this.messages.length
+      this.messages.push({
+        role: 'assistant',
+        content: '',
+        time: this.getCurrentTime()
+      })
+
+      let fullAnswer = ''
+      let hasError = false
+
+      return new Promise((resolve, reject) => {
+        const requestTask = uni.request({
           url: uniAiConfig.apiUrl,
           method: 'POST',
           header: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${uniAiConfig.apiKey}`
+            'Authorization': `Bearer ${uniAiConfig.apiKey}`,
+            'Accept': 'text/event-stream'
           },
           data: requestData,
-          timeout: 60000
+          timeout: 120000,
+          enableChunked: true,
+          success: (res) => {
+            if (hasError) return
+            
+            this.loading = false
+            this.scrollToBottom()
+            resolve({ answer: fullAnswer })
+          },
+          fail: (err) => {
+            hasError = true
+            this.loading = false
+            this.messages[aiMsgIndex].content = '网络请求失败，请检查网络连接'
+            this.scrollToBottom()
+            reject(err)
+          }
         })
 
-        if (res.statusCode === 200 && res.data) {
-          if (res.data.answer) {
-            this.messages.push({
-              role: 'assistant',
-              content: this.formatAIResponse(res.data.answer),
-              time: this.getCurrentTime()
-            })
-          }
-          if (res.data.conversation_id) {
-            this.conversationId = res.data.conversation_id
-          }
-          this.loading = false
-          this.scrollToBottom()
-          return res.data
-        } else {
-          this.messages.push({
-            role: 'assistant',
-            content: 'AI请求失败，请稍后重试',
-            time: this.getCurrentTime()
+        // 监听分块数据（真正流式）
+        requestTask.onChunkReceived((res) => {
+          const chunk = new Uint8Array(res.data)
+          const text = this.arrayBufferToString(chunk)
+          
+          this.parseStreamData(text, (answerText) => {
+            if (answerText) {
+              fullAnswer += answerText
+              this.messages[aiMsgIndex].content = this.formatAIResponse(fullAnswer)
+              this.scrollToBottom()
+            }
           })
-          this.loading = false
-          this.scrollToBottom()
-          throw new Error(res.data?.message || 'AI请求失败')
-        }
-      } catch (err) {
-        this.messages.push({
-          role: 'assistant',
-          content: '网络请求失败，请检查网络连接',
-          time: this.getCurrentTime()
         })
-        this.loading = false
-        this.scrollToBottom()
-        throw err
+      })
+    },
+
+    // 解析 SSE 流数据
+    parseStreamData(chunkText, onAnswer) {
+      const lines = chunkText.split('\n')
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('data:')) {
+          const jsonStr = trimmed.slice(5).trim()
+          if (jsonStr === '[DONE]') continue
+          try {
+            const data = JSON.parse(jsonStr)
+            if (data.event === 'message' && data.answer) {
+              onAnswer(data.answer)
+            } else if (data.event === 'agent_message' && data.answer) {
+              onAnswer(data.answer)
+            }
+          } catch (e) {
+            // 忽略解析失败的行
+          }
+        }
       }
+    },
+
+    // Uint8Array 转字符串
+    arrayBufferToString(buffer) {
+      const decoder = new TextDecoder('utf-8')
+      return decoder.decode(buffer)
     },
 
     // 调用Dify AI接口（阻塞模式，备用）
@@ -404,6 +432,30 @@ export default {
   border-radius: 24rpx;
   border-top-left-radius: 8rpx;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+
+  .loading-dot {
+    width: 16rpx;
+    height: 16rpx;
+    background: #ccc;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+  }
+}
+
+// 内联加载动画
+.loading-bubble-inline {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 0;
 
   .loading-dot {
     width: 16rpx;
