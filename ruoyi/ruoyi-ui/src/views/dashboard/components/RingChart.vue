@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col items-center">
-    <div class="relative w-20 h-20">
+  <div class="flex flex-col items-center w-full min-w-0">
+    <div class="relative w-20 h-20 flex-shrink-0">
       <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
         <path
           class="text-gray-700"
@@ -22,8 +22,8 @@
         {{ value }}%
       </div>
     </div>
-    <div class="mt-2 text-sm text-gray-300 truncate max-w-[5rem]">{{ label }}</div>
-    <div class="text-xs text-cyan-400 truncate max-w-[5rem]">{{ sub }}</div>
+    <div class="mt-2 text-sm text-gray-300 w-full text-center truncate px-1">{{ label }}</div>
+    <div class="text-xs text-cyan-400 w-full text-center truncate px-1">{{ sub }}</div>
   </div>
 </template>
 
@@ -31,22 +31,10 @@
 export default {
   name: 'RingChart',
   props: {
-    value: {
-      type: Number,
-      required: true
-    },
-    color: {
-      type: String,
-      default: '#22d3ee'
-    },
-    label: {
-      type: String,
-      required: true
-    },
-    sub: {
-      type: String,
-      default: ''
-    }
+    value: { type: Number, required: true },
+    color: { type: String, default: '#22d3ee' },
+    label: { type: String, required: true },
+    sub: { type: String, default: '' }
   },
   computed: {
     dashArray() {
