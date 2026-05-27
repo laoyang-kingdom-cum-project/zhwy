@@ -861,23 +861,25 @@ export default {
           },
           series: [{
             type: 'pie',
-            radius: ['45%', '75%'],
-            center: ['50%', '50%'],
+            radius: ['40%', '65%'],
+            center: ['50%', '55%'],
             avoidLabelOverlap: false,
             itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },
             label: { show: false },
             emphasis: {
+              scale: true,
+              scaleSize: 8,
               label: {
                 show: true,
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 'bold',
                 color: '#fff',
-                formatter: '{b}\n{c}户\n({d}%)'
+                formatter: '{b}\n{c}户 ({d}%)'
               },
               itemStyle: {
-                shadowBlur: 10,
+                shadowBlur: 15,
                 shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                shadowColor: 'rgba(0, 0, 0, 0.6)'
               }
             },
             data: [
@@ -956,7 +958,6 @@ export default {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   pointer-events: none;
@@ -1108,8 +1109,9 @@ export default {
 
 /* 图表容器 */
 .chart-container {
-  height: 140px;
+  height: 160px;
   width: 100%;
+  min-height: 120px;
 }
 
 /* 基本信息数字统计 */
@@ -1243,6 +1245,7 @@ export default {
   flex: 1;
   overflow: hidden;
   position: relative;
+  max-height: 180px;
 }
 
 .log-item {
@@ -1347,16 +1350,7 @@ export default {
 /* 事件列表 */
 .event-list {
   flex: 1;
-  overflow-y: auto;
-}
-
-.event-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.event-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.6);
-  border-radius: 2px;
+  overflow: hidden;
 }
 
 .event-item {
@@ -1566,20 +1560,7 @@ export default {
   border-radius: 6px;
   padding: 15px;
   max-height: 400px;
-  overflow-y: auto;
-}
-
-.ai-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ai-content::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.3);
-  border-radius: 3px;
-}
-
-.ai-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.5);
+  overflow: hidden;
 }
 
 .ai-text {
@@ -1684,7 +1665,7 @@ export default {
     width: 100%;
     height: auto;
     min-height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
