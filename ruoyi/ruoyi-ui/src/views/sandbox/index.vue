@@ -858,27 +858,51 @@ export default {
       },
       // 初始化住户饼图
       initHouseholdChart() {
-        const chartDom = this.$refs.householdChart  // 第一步：获取图表DOM
-        if (!chartDom) return  // 第二步：DOM不存在则退出
-        this.householdChart = echarts.init(chartDom)  // 第三步：初始化ECharts实例
-        const option = {  // 第四步：配置图表选项
-          tooltip: { trigger: 'item' },  // 第五步：设置提示框
-          legend: { bottom: 0, textStyle: { color: '#cbd5e1', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },  // 第六步：设置图例
-          series: [{  // 第七步：配置数据系列
-            type: 'pie',  // 第八步：设置图表类型为饼图
-            radius: ['40%', '70%'],  // 第九步：设置环形半径
-            center: ['50%', '45%'],  // 第十步：设置中心位置
-            avoidLabelOverlap: false,  // 第十一步：允许标签重叠
-            itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },  // 第十二步：设置扇区样式
-            label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#e2e8f0', formatter: '{b}\n{c}户' },  // 第十三步：设置标签
-            emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold', color: '#fff' } },  // 第十四步：设置高亮样式
-            data: [  // 第十五步：设置数据
-              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },  // 第十六步：在线户数数据
-              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }  // 第十七步：离线户数数据
-            ]  // 第十八步：数据结束
-          }]  // 第十九步：系列结束
-        }  // 第二十步：配置结束
-        this.householdChart.setOption(option)  // 第二十一步：应用配置
+        const chartDom = this.$refs.householdChart
+        if (!chartDom) return
+        this.householdChart = echarts.init(chartDom)
+        const option = {
+          tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(15, 40, 71, 0.95)',
+            borderColor: 'rgba(0, 212, 255, 0.3)',
+            textStyle: { color: '#e2e8f0', fontSize: 13 },
+            formatter: function(params) {
+              return '<div style="font-weight:bold;margin-bottom:4px;">' + params.name + '</div>' +
+                     '<div>数量：<span style="color:#00d4ff;font-weight:bold;">' + params.value + '</span> 户</div>' +
+                     '<div>占比：<span style="color:#00d4ff;font-weight:bold;">' + params.percent + '</span>%</div>'
+            }
+          },
+          series: [{
+            type: 'pie',
+            radius: ['40%', '65%'],
+            center: ['50%', '55%'],
+            avoidLabelOverlap: false,
+            itemStyle: { borderRadius: 5, borderColor: '#0f2847', borderWidth: 2 },
+            label: { show: false },
+            emphasis: {
+              scale: true,
+              scaleSize: 8,
+              label: {
+                show: true,
+                fontSize: 13,
+                fontWeight: 'bold',
+                color: '#fff',
+                formatter: '{b}\n{c}户 ({d}%)'
+              },
+              itemStyle: {
+                shadowBlur: 15,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.6)'
+              }
+            },
+            data: [
+              { value: 856, name: '在线户数', itemStyle: { color: '#22c55e' } },
+              { value: 144, name: '离线户数', itemStyle: { color: '#64748b' } }
+            ]
+          }]
+        }
+        this.householdChart.setOption(option)
       },
       // 初始化传感器状态折线图
       initSensorChart() {
@@ -948,7 +972,6 @@ export default {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   pointer-events: none;
@@ -1100,8 +1123,9 @@ export default {
 
 /* 图表容器 */
 .chart-container {
-  height: 140px;
+  height: 160px;
   width: 100%;
+  min-height: 120px;
 }
 
 /* 基本信息数字统计 */
@@ -1235,6 +1259,7 @@ export default {
   flex: 1;
   overflow: hidden;
   position: relative;
+  max-height: 180px;
 }
 
 .log-item {
@@ -1339,16 +1364,7 @@ export default {
 /* 事件列表 */
 .event-list {
   flex: 1;
-  overflow-y: auto;
-}
-
-.event-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.event-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.6);
-  border-radius: 2px;
+  overflow: hidden;
 }
 
 .event-item {
@@ -1558,20 +1574,7 @@ export default {
   border-radius: 6px;
   padding: 15px;
   max-height: 400px;
-  overflow-y: auto;
-}
-
-.ai-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ai-content::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.3);
-  border-radius: 3px;
-}
-
-.ai-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.5);
+  overflow: hidden;
 }
 
 .ai-text {
@@ -1676,7 +1679,7 @@ export default {
     width: 100%;
     height: auto;
     min-height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
