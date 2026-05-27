@@ -37,6 +37,20 @@
           <span class="sub-title">Basic Info</span>
         </div>
         <div ref="householdChart" class="chart-container"></div>
+        <div class="household-stats">
+          <div class="stat-item online">
+            <span class="stat-value">856</span>
+            <span class="stat-label">在线户数</span>
+          </div>
+          <div class="stat-item offline">
+            <span class="stat-value">144</span>
+            <span class="stat-label">离线户数</span>
+          </div>
+          <div class="stat-item total">
+            <span class="stat-value">1000</span>
+            <span class="stat-label">总户数</span>
+          </div>
+        </div>
       </div>
 
       <!-- 传感器状态 -->
