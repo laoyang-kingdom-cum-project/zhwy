@@ -1364,16 +1364,27 @@ export default {
 /* 事件列表 */
 .event-list {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.event-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.event-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.4);
+  border-radius: 2px;
 }
 
 .event-item {
-  padding: 10px;
-  margin-bottom: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .event-item:hover {

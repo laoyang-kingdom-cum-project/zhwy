@@ -112,25 +112,33 @@ export default {
 
     // 发送消息
     async sendMessage() {
+      // 获取并去除输入消息的前后空白字符
       const message = this.inputMessage.trim()
+      // 如果消息为空或正在加载中，则直接返回
       if (!message || this.loading) return
 
-      // 添加用户消息
+      // 添加用户消息到消息列表
       this.messages.push({
-        role: 'user',
-        content: message,
-        time: this.getCurrentTime()
+        role: 'user', // 角色为用户
+        content: message, // 消息内容
+        time: this.getCurrentTime() // 当前时间
       })
 
+      // 清空输入框内容
       this.inputMessage = ''
+      // 滚动到聊天区域底部
       this.scrollToBottom()
+      // 设置加载状态为true
       this.loading = true
 
       // 调用AI接口（流式输出）
       try {
+        // 调用流式AI接口发送消息
         await this.callAIStream(message)
       } catch (error) {
+        // 捕获并打印错误信息
         console.error('AI请求失败', error)
+        // 重置加载状态
         this.loading = false
       }
     },

@@ -221,49 +221,6 @@ export default {
         uni.showToast({ title: '获取设备详情失败', icon: 'none' })
       })
     },
-
-    // 根据设备类型获取图标
-    getDeviceIcon(type) {
-      // 定义图标映射表
-      const icons = {
-        // 灯光图标
-        light: '/static/emojis/emoji_25_bulb.png',
-        // 空调图标
-        air_conditioner: '/static/emojis/emoji_26_snowflake.png',
-        // 窗帘图标
-        curtain: '/static/emojis/emoji_30_switch.png',
-        // 开关图标
-        switch: '/static/emojis/emoji_30_switch.png',
-        // 门锁图标
-        lock: '/static/emojis/emoji_31_lock.png',
-        // 摄像头图标
-        camera: '/static/emojis/emoji_32_camera.png'
-      }
-      // 返回对应图标或默认图标
-      return icons[type] || '/static/emojis/emoji_33_pager.png'
-    },
-
-    // 根据设备类型获取中文名称
-    getDeviceTypeName(type) {
-      // 定义名称映射表
-      const names = {
-        // 灯光名称
-        light: '智能灯光',
-        // 空调名称
-        air_conditioner: '空调',
-        // 窗帘名称
-        curtain: '智能窗帘',
-        // 开关名称
-        switch: '智能开关',
-        // 门锁名称
-        lock: '智能门锁',
-        // 摄像头名称
-        camera: '摄像头'
-      }
-      // 返回对应名称或默认名称
-      return names[type] || '未知设备'
-    },
-
     // 切换设备开关状态
     async toggleDevice(e) {
       // 获取开关新状态
@@ -330,7 +287,50 @@ export default {
       this.currentMode = mode
       // 显示切换成功提示
       uni.showToast({ title: '模式已切换', icon: 'none' })
-    }
+    },
+
+        // 根据设备类型获取图标
+    getDeviceIcon(type) {
+      // 定义图标映射表
+      const icons = {
+        // 灯光图标
+        light: '/static/emojis/emoji_25_bulb.png',
+        // 空调图标
+        air_conditioner: '/static/emojis/emoji_26_snowflake.png',
+        // 窗帘图标
+        curtain: '/static/emojis/emoji_30_switch.png',
+        // 开关图标
+        switch: '/static/emojis/emoji_30_switch.png',
+        // 门锁图标
+        lock: '/static/emojis/emoji_31_lock.png',
+        // 摄像头图标
+        camera: '/static/emojis/emoji_32_camera.png'
+      }
+      // 返回对应图标或默认图标
+      return icons[type] || '/static/emojis/emoji_33_pager.png'
+    },
+
+    // 根据设备类型获取中文名称
+    getDeviceTypeName(type) {
+      // 定义名称映射表
+      const names = {
+        // 灯光名称
+        light: '智能灯光',
+        // 空调名称
+        air_conditioner: '空调',
+        // 窗帘名称
+        curtain: '智能窗帘',
+        // 开关名称
+        switch: '智能开关',
+        // 门锁名称
+        lock: '智能门锁',
+        // 摄像头名称
+        camera: '摄像头'
+      }
+      // 返回对应名称或默认名称
+      return names[type] || '未知设备'
+    },
+
   }
 }
 </script>
