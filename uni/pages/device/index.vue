@@ -42,17 +42,31 @@ export default {
     openAiLife() {
       try {
         if (typeof plus !== 'undefined' && plus.runtime) {
-          plus.runtime.launchApplication({
-            pname: 'com.huawei.hmos.ailife'
-          }, function(e) {
-            uni.showToast({
-              title: '打开失败，请检查是否已安装智慧生活',
-              icon: 'none'
-            })
-          })
+          // 鸿蒙系统下推荐使用 openURL 和 Scheme 来唤起应用
+          plus.runtime.openURL('ailife://com.huawei.hmos.ailife', function(err) {
+            console.error('打开 ailife:// 失败', err);
+            // 尝试备用/旧版协议
+            plus.runtime.openURL('huaweiailife://', function(err2) {
+              console.error('打开 huaweiailife:// 失败', err2);
+              uni.showToast({
+                title: '打开失败，请检查是否已安装智慧生活',
+                icon: 'none'
+              });
+            });
+          });
+        } else if (uni.openLink) {
+          uni.openLink({
+            url: 'ailife://com.huawei.hmos.ailife',
+            fail: () => {
+              uni.showToast({
+                title: '打开失败，请检查是否已安装智慧生活',
+                icon: 'none'
+              });
+            }
+          });
         } else {
           uni.showToast({
-            title: '暂不支持打开智慧生活',
+            title: '当前环境不支持跳转',
             icon: 'none'
           })
         }

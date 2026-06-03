@@ -70,6 +70,12 @@
     "vueVersion" : "3",
     "app-harmony" : {
         "distribute" : {
+            "module" : {
+                "querySchemes" : [
+                    "ailife",
+                    "huaweiailife"
+                ]
+            },
             "icons" : {
                 "foreground" : "static/logo.png"
             },
