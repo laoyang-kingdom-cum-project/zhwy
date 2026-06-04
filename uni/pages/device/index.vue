@@ -2,10 +2,10 @@
   <view class="device-page">
     <!-- #ifdef APP-HARMONY -->
     <web-view :src="haUrl" class="web-view"></web-view>
-    <cover-view class="fab-btn" @click="openAiLife">
-      <cover-view class="fab-text">智慧</cover-view>
-      <cover-view class="fab-text">生活</cover-view>
-    </cover-view>
+    <view class="fab-btn" @click="openAiLife">
+      <text class="fab-text">智慧</text>
+      <text class="fab-text">生活</text>
+    </view>
     <!-- #endif -->
   </view>
 </template>
@@ -36,6 +36,21 @@ export default {
 
     const currentWebview = this.$scope.$getAppWebview()
     currentWebview.append(wv)
+    // #endif
+
+    // #ifdef APP-HARMONY
+    // 设置 web-view 的高度，留出底部空间给悬浮按钮
+    setTimeout(() => {
+      try {
+        const currentWebview = this.$scope.$getAppWebview()
+        const wv = currentWebview.children()[0]
+        if (wv) {
+          wv.setStyle({ bottom: '150px' })
+        }
+      } catch (e) {
+        console.error('调整webview大小失败', e)
+      }
+    }, 500)
     // #endif
   },
   methods: {
