@@ -116,14 +116,14 @@ public class WyxdeviceController extends BaseController
             }
 
             // 2. 连接设备
-            Process connectProcess = Runtime.getRuntime().exec("./hdc tconn " + ip);
+            Process connectProcess = Runtime.getRuntime().exec("hdc tconn " + ip);
             int connectExitCode = connectProcess.waitFor();
             if (connectExitCode != 0) {
                 return error("无线调试连接失败，IP：" + ip + "，返回码：" + connectExitCode);
             }
 
             // 3. 打开智慧生活
-            Process openProcess = Runtime.getRuntime().exec("./hdc shell aa start -b com.huawei.hmos.ailife -a EntryAbility");
+            Process openProcess = Runtime.getRuntime().exec("hdc shell aa start -b com.huawei.hmos.ailife -a EntryAbility");
             int openExitCode = openProcess.waitFor();
             if (openExitCode != 0) {
                 return error("打开智慧生活指令执行失败，返回码：" + openExitCode);
@@ -136,7 +136,7 @@ public class WyxdeviceController extends BaseController
             }
 
             // 5. 返回原应用
-            Process returnProcess = Runtime.getRuntime().exec("./hdc shell aa start -b com.wyx.lianfanshuang.zhsq -a EntryAbility");
+            Process returnProcess = Runtime.getRuntime().exec("hdc shell aa start -b com.wyx.lianfanshuang.zhsq -a EntryAbility");
             int returnExitCode = returnProcess.waitFor();
             if (returnExitCode != 0) {
                 return error("返回原应用执行失败，返回码：" + returnExitCode);
