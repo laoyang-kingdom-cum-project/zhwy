@@ -2,31 +2,37 @@ import config from '@/config/index.js'
 
 let socketTask = null
 let _connected = false
+let _connecting = false
 
 export function connectRuoyiWs() {
-  if (_connected) return
+  if (_connected || _connecting) return
+  _connecting = true
 
-  // 获取配置中的基础URL，比如 http://localhost:8080，转成 ws://localhost:8080
-  let wsUrl = config.baseUrl.replace('http://', 'ws://').replace('https://', 'wss://')
-  // 加上我们刚才在后端配置的 endpoint
-  wsUrl = wsUrl + '/websocket/device'
+  // 解析出 baseUrl 中的 IP
+  const urlObj = new URL(config.baseUrl)
+  const host = urlObj.hostname
+  
+  // 强制指定为后端的 8080 端口
+  const wsUrl = `ws://${host}:8080/websocket/device`
 
   socketTask = uni.connectSocket({
     url: wsUrl,
     success: () => {
-      console.log('[RuoYi-WS] 连接成功: ' + wsUrl)
+      console.log('[RuoYi-WS] 尝试连接: ' + wsUrl)
     },
     fail: (err) => {
       console.error('[RuoYi-WS] 连接失败:', err)
+      _connecting = false
     }
   })
 
-  uni.onSocketOpen(() => {
+  socketTask.onOpen(() => {
     _connected = true
+    _connecting = false
     console.log('[RuoYi-WS] WebSocket已打开')
   })
 
-  uni.onSocketMessage((res) => {
+  socketTask.onMessage((res) => {
     console.log('[RuoYi-WS] 收到消息:', res.data)
     try {
       const data = JSON.parse(res.data)
@@ -38,6 +44,9 @@ export function connectRuoyiWs() {
           payload: { action: 'return_to_app' },
           success: (res) => {
             console.log('[RuoYi-WS] 本地通知发送成功', res)
+          },
+          fail: (err) => {
+            console.error('[RuoYi-WS] 本地通知发送失败', err)
           }
         })
       }
@@ -46,15 +55,16 @@ export function connectRuoyiWs() {
     }
   })
 
-  uni.onSocketError((err) => {
+  socketTask.onError((err) => {
     _connected = false
+    _connecting = false
     console.error('[RuoYi-WS] 发生错误', err)
   })
 
-  uni.onSocketClose(() => {
+  socketTask.onClose(() => {
     _connected = false
+    _connecting = false
     console.log('[RuoYi-WS] 已关闭')
-    // 可以在这里加重连逻辑
   })
 }
 
@@ -64,4 +74,5 @@ export function closeRuoyiWs() {
     socketTask = null
   }
   _connected = false
+  _connecting = false
 }
