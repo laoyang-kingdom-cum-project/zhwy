@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
@@ -105,6 +106,7 @@ public class WyxdeviceController extends BaseController
     /**
      * 唤起鸿蒙设备智慧生活
      */
+    @Anonymous
     @GetMapping("/openAiLife")
     public AjaxResult openAiLife()
     {
