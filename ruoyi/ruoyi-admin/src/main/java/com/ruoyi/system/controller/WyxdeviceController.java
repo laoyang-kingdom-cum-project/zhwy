@@ -153,18 +153,19 @@ public class WyxdeviceController extends BaseController
 
     private String getHdcDeviceIpFromEnv() {
         try {
-            // 优先查找上级目录（如果是在ruoyi目录下运行）
-            java.io.File envFile = new java.io.File("../.env");
-            if (!envFile.exists()) {
-                envFile = new java.io.File(".env");
-            }
-            if (envFile.exists()) {
-                java.util.List<String> lines = java.nio.file.Files.readAllLines(envFile.toPath());
-                for (String line : lines) {
-                    if (line.trim().startsWith("HDC_DEVICE_IP=")) {
-                        return line.split("=", 2)[1].trim();
+            java.io.File currentDir = new java.io.File(System.getProperty("user.dir"));
+            while (currentDir != null) {
+                java.io.File envFile = new java.io.File(currentDir, ".env");
+                if (envFile.exists()) {
+                    System.out.println("找到.env文件: " + envFile.getAbsolutePath());
+                    java.util.List<String> lines = java.nio.file.Files.readAllLines(envFile.toPath());
+                    for (String line : lines) {
+                        if (line.trim().startsWith("HDC_DEVICE_IP=")) {
+                            return line.split("=", 2)[1].trim();
+                        }
                     }
                 }
+                currentDir = currentDir.getParentFile();
             }
         } catch (Exception e) {
             e.printStackTrace();
