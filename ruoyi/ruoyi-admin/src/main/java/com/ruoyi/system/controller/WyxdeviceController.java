@@ -19,6 +19,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.Wyxdevice;
 import com.ruoyi.system.service.IWyxdeviceService;
+import com.ruoyi.framework.websocket.WebSocketServer;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
@@ -131,18 +132,17 @@ public class WyxdeviceController extends BaseController
                 return error("打开智慧生活指令执行失败，返回码：" + openExitCode);
             }
 
-            // 4. 倒计时10秒
-            for (int i = 10; i > 0; i--) {
-                System.out.println("倒计时：" + i + "秒");
-                Thread.sleep(1000);
-            }
-
-            // 5. 返回原应用
-            Process returnProcess = Runtime.getRuntime().exec("hdc shell aa start -b com.wyx.lianfanshuang.zhsq -a EntryAbility");
-            int returnExitCode = returnProcess.waitFor();
-            if (returnExitCode != 0) {
-                return error("返回原应用执行失败，返回码：" + returnExitCode);
-            }
+            // 4. 异步倒计时10秒，然后通过WebSocket通知前端
+            new Thread(() -> {
+                try {
+                    System.out.println("后台线程开始倒计时10秒...");
+                    Thread.sleep(10000);
+                    // 发送消息通知前端弹窗
+                    WebSocketServer.sendInfo("{\"type\":\"ailife_finished\", \"message\":\"配置已完成，请返回应用\"}");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
             return success("执行成功");
         } catch (Exception e) {
