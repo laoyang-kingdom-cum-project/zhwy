@@ -2,10 +2,10 @@
   <view class="device-page">
     <!-- #ifdef APP-HARMONY -->
     <web-view :src="haUrl" class="web-view"></web-view>
-    <view class="fab-btn" @click="openAiLife">
-      <text class="fab-text">智慧</text>
-      <text class="fab-text">生活</text>
-    </view>
+    <cover-view class="fab-btn" @click="openAiLife">
+      <cover-view class="fab-text">智慧</cover-view>
+      <cover-view class="fab-text">生活</cover-view>
+    </cover-view>
     <!-- #endif -->
   </view>
 </template>
