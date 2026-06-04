@@ -12,6 +12,7 @@
 
 <script>
 import env from '@/config/env.js'
+import { openAiLifeCommand } from '@/api/device.js'
 
 export default {
   data() {
@@ -40,39 +41,19 @@ export default {
   methods: {
     // #ifdef APP-HARMONY
     openAiLife() {
-      try {
-        if (typeof plus !== 'undefined' && plus.runtime) {
-          // 鸿蒙系统下推荐使用 openURL 和 Scheme 来唤起应用
-          plus.runtime.openURL('ailife://com.huawei.hmos.ailife', function(err) {
-            console.error('打开 ailife:// 失败', err);
-            // 尝试备用/旧版协议
-            plus.runtime.openURL('huaweiailife://', function(err2) {
-              console.error('打开 huaweiailife:// 失败', err2);
-              uni.showToast({
-                title: '打开失败，请检查是否已安装智慧生活',
-                icon: 'none'
-              });
-            });
-          });
-        } else if (uni.openLink) {
-          uni.openLink({
-            url: 'ailife://com.huawei.hmos.ailife',
-            fail: () => {
-              uni.showToast({
-                title: '打开失败，请检查是否已安装智慧生活',
-                icon: 'none'
-              });
-            }
-          });
+      uni.showLoading({ title: '正在发送指令...' })
+      openAiLifeCommand().then(res => {
+        uni.hideLoading()
+        if (res.code === 200) {
+          uni.showToast({ title: '已发送打开指令', icon: 'success' })
         } else {
-          uni.showToast({
-            title: '当前环境不支持跳转',
-            icon: 'none'
-          })
+          uni.showToast({ title: res.msg || '执行失败', icon: 'none' })
         }
-      } catch (e) {
-        console.error(e)
-      }
+      }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '网络请求失败', icon: 'none' })
+        console.error('发送指令异常', err)
+      })
     }
     // #endif
   }

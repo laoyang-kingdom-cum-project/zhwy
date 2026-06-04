@@ -14,3 +14,8 @@ export const getDeviceDetail = (deviceId) => {
 export const controlDevice = (deviceId, data) => {
   return put('/system/wyxdevice', { id: deviceId, ...data })
 }
+
+// 通过后端指令打开智慧生活
+export const openAiLifeCommand = () => {
+  return get('/system/wyxdevice/openAiLife')
+}
