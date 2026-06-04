@@ -1,7 +1,14 @@
 <template>
   <view class="device-page">
     <!-- #ifdef APP-HARMONY -->
-    <web-view :src="haUrl" class="web-view"></web-view>
+    <view class="harmony-container">
+      <web-view :src="haUrl" :webview-styles="webviewStyles"></web-view>
+      <view class="bottom-bar">
+        <view class="harmony-btn" @click="openAiLife">
+          <text class="btn-text">🚀 打开智慧生活</text>
+        </view>
+      </view>
+    </view>
     <!-- #endif -->
   </view>
 </template>
@@ -12,18 +19,20 @@ import { openAiLifeCommand } from '@/api/device.js'
 
 export default {
   data() {
+    const sysInfo = uni.getSystemInfoSync()
+    // 留出 80px 给底部的按钮栏
+    const webviewHeight = sysInfo.windowHeight - 80
+    
     return {
-      haUrl: `http://${env.haHost}:${env.haPort}`
+      haUrl: `http://${env.haHost}:${env.haPort}`,
+      webviewStyles: {
+        height: webviewHeight + 'px',
+        width: '100%'
+      }
     }
   },
   onShow() {
     uni.showTabBar()
-  },
-  onNavigationBarButtonTap(e) {
-    // 监听原生导航栏按钮点击 (在 pages.json 中配置)
-    if (e.index === 0) {
-      this.openAiLife()
-    }
   },
   onReady() {
     // #ifdef APP-PLUS
@@ -64,7 +73,41 @@ export default {
 
 <style>
 .device-page { width: 100%; height: 100vh; background: #fff; display: flex; flex-direction: column; position: relative; }
-.web-view {
+
+/* #ifdef APP-HARMONY */
+.harmony-container {
   flex: 1;
+  width: 100%;
+  position: relative;
 }
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  /* 如果有原生 tabbar，需要使用 var(--window-bottom) 确保在 tabbar 之上 */
+  bottom: var(--window-bottom, 0);
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 999;
+}
+
+.harmony-btn {
+  background-color: #007aff;
+  padding: 12px 40px;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+}
+
+.btn-text {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+}
+/* #endif */
 </style>
