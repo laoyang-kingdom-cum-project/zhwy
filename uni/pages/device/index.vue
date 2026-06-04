@@ -2,10 +2,6 @@
   <view class="device-page">
     <!-- #ifdef APP-HARMONY -->
     <web-view :src="haUrl" class="web-view"></web-view>
-    <view class="fab-btn" @click="openAiLife">
-      <text class="fab-text">智慧</text>
-      <text class="fab-text">生活</text>
-    </view>
     <!-- #endif -->
   </view>
 </template>
@@ -23,6 +19,12 @@ export default {
   onShow() {
     uni.showTabBar()
   },
+  onNavigationBarButtonTap(e) {
+    // 监听原生导航栏按钮点击 (在 pages.json 中配置)
+    if (e.index === 0) {
+      this.openAiLife()
+    }
+  },
   onReady() {
     // #ifdef APP-PLUS
     const info = uni.getSystemInfoSync()
@@ -36,21 +38,6 @@ export default {
 
     const currentWebview = this.$scope.$getAppWebview()
     currentWebview.append(wv)
-    // #endif
-
-    // #ifdef APP-HARMONY
-    // 设置 web-view 的高度，留出底部空间给悬浮按钮
-    setTimeout(() => {
-      try {
-        const currentWebview = this.$scope.$getAppWebview()
-        const wv = currentWebview.children()[0]
-        if (wv) {
-          wv.setStyle({ bottom: '150px' })
-        }
-      } catch (e) {
-        console.error('调整webview大小失败', e)
-      }
-    }, 500)
     // #endif
   },
   methods: {
@@ -80,28 +67,4 @@ export default {
 .web-view {
   flex: 1;
 }
-
-/* #ifdef APP-HARMONY */
-.fab-btn {
-  position: absolute;
-  right: 20px;
-  bottom: 80px;
-  z-index: 99999;
-  width: 56px;
-  height: 56px;
-  background-color: #007aff;
-  border-radius: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 122, 255, 0.4);
-}
-
-.fab-text {
-  color: #ffffff;
-  font-size: 12px;
-  line-height: 1.2;
-}
-/* #endif */
 </style>
