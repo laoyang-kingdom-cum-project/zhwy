@@ -1,5 +1,5 @@
 <script>
-	// #ifdef APP-PLUS
+	// #ifdef APP-PLUS || APP-HARMONY
 	import { initFallAlert } from '@/utils/ha-fall-alert.js'
 	import env from '@/config/env.js'
 	import { connectRuoyiWs, closeRuoyiWs } from '@/utils/ruoyi-websocket.js'
@@ -9,7 +9,7 @@
 		onLaunch: function() {
 			console.log('App Launch')
 
-			// #ifdef APP-PLUS
+			// #ifdef APP-PLUS || APP-HARMONY
 			const haToken = uni.getStorageSync('ha_access_token') || env.haAccessToken
 			if (haToken) {
 				initFallAlert(haToken)
@@ -21,7 +21,7 @@
 		onShow: function() {
 			console.log('App Show')
 			this.applyCareMode()
-			// #ifdef APP-PLUS
+			// #ifdef APP-PLUS || APP-HARMONY
 			connectRuoyiWs()
 			// #endif
 		},
