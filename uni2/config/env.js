@@ -1,7 +1,7 @@
 // UniApp 前端统一配置（修改此文件后需重新编译 App 生效）
 const env = {
   // 后端 API 基础地址
-  baseUrl: 'http://192.168.31.114:81',
+  baseUrl: 'http://192.168.0.6:81',
   // API 前缀路径
   apiPrefix: '/por-api',
   // 请求超时时间
@@ -10,7 +10,7 @@ const env = {
   debug: true,
 
   // Home Assistant 主机地址
-  haHost: '192.168.31.71',
+  haHost: '192.168.3.14',
   // Home Assistant 端口号
   haPort: 8123,
 
