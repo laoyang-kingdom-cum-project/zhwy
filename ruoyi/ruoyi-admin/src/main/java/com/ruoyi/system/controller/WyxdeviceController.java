@@ -132,7 +132,7 @@ public class WyxdeviceController extends BaseController
             }
 
             // 4. 倒计时10秒
-            for (int i = 10; i > 0; i--) {
+            for (int i = 15; i > 0; i--) {
                 System.out.println("倒计时：" + i + "秒");
                 Thread.sleep(1000);
             }
