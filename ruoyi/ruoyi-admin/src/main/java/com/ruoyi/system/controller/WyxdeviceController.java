@@ -1,9 +1,19 @@
 package com.ruoyi.system.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
@@ -33,8 +44,16 @@ import com.ruoyi.common.core.page.TableDataInfo;
 @RequestMapping("/system/wyxdevice")
 public class WyxdeviceController extends BaseController
 {
+    private static final Set<String> PUSH_CLIENT_IDS = ConcurrentHashMap.newKeySet();
+
     @Autowired
     private IWyxdeviceService wyxdeviceService;
+
+    @Value("${unipush.webhook-url:}")
+    private String uniPushWebhookUrl;
+
+    @Value("${unipush.webhook-secret:}")
+    private String uniPushWebhookSecret;
 
     /**
      * 查询设备列表列表
@@ -105,6 +124,23 @@ public class WyxdeviceController extends BaseController
     }
 
     /**
+     * 注册uni-push客户端cid
+     */
+    @Anonymous
+    @PostMapping("/pushClientId")
+    public AjaxResult registerPushClientId(@RequestBody PushClientRegisterRequest request)
+    {
+        if (request == null || request.getCid() == null || request.getCid().trim().isEmpty()) {
+            return error("push client id不能为空");
+        }
+
+        PUSH_CLIENT_IDS.add(request.getCid().trim());
+        System.out.println("收到Push客户端注册，cid=" + request.getCid() + "，platform=" + request.getPlatform()
+                + "，当前数量=" + PUSH_CLIENT_IDS.size());
+        return success("注册成功");
+    }
+
+    /**
      * 唤起鸿蒙设备智慧生活
      */
     @Anonymous
@@ -137,8 +173,13 @@ public class WyxdeviceController extends BaseController
                 try {
                     System.out.println("后台线程开始倒计时10秒...");
                     Thread.sleep(10000);
-                    // 发送消息通知前端弹窗
-                    WebSocketServer.sendInfo("{\"type\":\"ailife_finished\", \"message\":\"配置已完成，请返回应用\"}");
+                    String message = "配置已完成，请返回应用";
+                    boolean pushed = sendAiLifeFinishedPush(message);
+                    if (!pushed) {
+                        System.out.println("系统Push未发送成功，继续使用WebSocket兜底");
+                    }
+                    // 前台在线时仍通过WebSocket兜底
+                    WebSocketServer.sendInfo("{\"type\":\"ailife_finished\", \"message\":\"" + message + "\"}");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -171,5 +212,72 @@ public class WyxdeviceController extends BaseController
             e.printStackTrace();
         }
         return null;
+    }
+
+    private boolean sendAiLifeFinishedPush(String message) {
+        if (uniPushWebhookUrl == null || uniPushWebhookUrl.trim().isEmpty()) {
+            System.out.println("未配置UNIPUSH_WEBHOOK_URL，跳过系统Push");
+            return false;
+        }
+        if (PUSH_CLIENT_IDS.isEmpty()) {
+            System.out.println("暂无Push客户端cid，跳过系统Push");
+            return false;
+        }
+
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("action", "return_to_app");
+            payload.put("type", "ailife_finished");
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("secret", uniPushWebhookSecret);
+            body.put("clientIds", new ArrayList<>(PUSH_CLIENT_IDS));
+            body.put("title", "智慧社区");
+            body.put("content", message);
+            body.put("payload", payload);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            ResponseEntity<Map> response = new RestTemplate().postForEntity(
+                    uniPushWebhookUrl.trim(),
+                    new HttpEntity<>(body, headers),
+                    Map.class
+            );
+            System.out.println("系统Push发送结果: " + response.getStatusCode() + " " + response.getBody());
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            System.out.println("系统Push发送失败: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static class PushClientRegisterRequest {
+        private String cid;
+        private String platform;
+        private String appid;
+
+        public String getCid() {
+            return cid;
+        }
+
+        public void setCid(String cid) {
+            this.cid = cid;
+        }
+
+        public String getPlatform() {
+            return platform;
+        }
+
+        public void setPlatform(String platform) {
+            this.platform = platform;
+        }
+
+        public String getAppid() {
+            return appid;
+        }
+
+        public void setAppid(String appid) {
+            this.appid = appid;
+        }
     }
 }

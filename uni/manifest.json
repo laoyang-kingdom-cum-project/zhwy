@@ -15,7 +15,9 @@
             "autoclose" : true,
             "delay" : 0
         },
-        "modules" : {},
+        "modules" : {
+            "Push" : {}
+        },
         "distribute" : {
             "android" : {
                 "minSdkVersion" : 21,
@@ -44,7 +46,11 @@
             "ios" : {
                 "dSYMs" : false
             },
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "push" : {
+                    "unipush" : {}
+                }
+            }
         }
     },
     "quickapp" : {},

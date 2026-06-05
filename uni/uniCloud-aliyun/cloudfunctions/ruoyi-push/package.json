@@ -1,0 +1,6 @@
+{
+  "name": "ruoyi-push",
+  "version": "1.0.0",
+  "description": "RuoYi bridge for uni-push2 system notifications",
+  "main": "index.js"
+}

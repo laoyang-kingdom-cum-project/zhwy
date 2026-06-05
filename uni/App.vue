@@ -3,6 +3,7 @@
 	import { initFallAlert } from '@/utils/ha-fall-alert.js'
 	import env from '@/config/env.js'
 	import { connectRuoyiWs, closeRuoyiWs } from '@/utils/ruoyi-websocket.js'
+	import { initRuoyiPush, refreshRuoyiPushClientId } from '@/utils/ruoyi-push.js'
 	// #endif
 
 	export default {
@@ -14,6 +15,8 @@
 			if (haToken) {
 				initFallAlert(haToken)
 			}
+			// 初始化系统Push，用于应用退到后台后仍能收到系统顶部通知
+			initRuoyiPush()
 			// 初始化若依后端WebSocket，用于接收来自后端的通知（比如倒计时后弹窗）
 			connectRuoyiWs()
 			// #endif
@@ -22,6 +25,7 @@
 			console.log('App Show')
 			this.applyCareMode()
 			// #ifdef APP-PLUS || APP-HARMONY
+			refreshRuoyiPushClientId()
 			connectRuoyiWs()
 			// #endif
 		},
@@ -106,4 +110,3 @@
 		font-size: 1.1em !important;
 	}
 </style>
-
