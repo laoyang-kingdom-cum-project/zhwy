@@ -8,9 +8,17 @@ export function connectRuoyiWs() {
   if (_connected || _connecting) return
   _connecting = true
 
-  // 解析出 baseUrl 中的 IP
-  const urlObj = new URL(config.baseUrl)
-  const host = urlObj.hostname
+  // 解析出 baseUrl 中的 IP (由于原生环境不支持 new URL()，改用正则或字符串分割)
+  let host = 'localhost'
+  try {
+    // 例如从 "http://192.168.0.6:81" 中提取 "192.168.0.6"
+    const match = config.baseUrl.match(/:\/\/(.[^/:]+)/)
+    if (match && match[1]) {
+      host = match[1]
+    }
+  } catch (e) {
+    console.error('[RuoYi-WS] 解析host失败', e)
+  }
   
   // 强制指定为后端的 8080 端口
   const wsUrl = `ws://${host}:8080/websocket/device`
