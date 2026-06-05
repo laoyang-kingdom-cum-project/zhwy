@@ -23,7 +23,7 @@ public class WebSocketServer {
     private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
 
     // 存放每个客户端对应的MyWebSocket对象
-    private static CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
+    private static final CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
 
     // 与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
@@ -53,6 +53,13 @@ public class WebSocketServer {
     @OnMessage
     public void onMessage(String message, Session session) {
         log.info("收到客户端消息: {}", message);
+        if ("ping".equalsIgnoreCase(message)) {
+            try {
+                sendMessage("{\"type\":\"pong\"}");
+            } catch (IOException e) {
+                log.warn("WebSocket pong发送失败: {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -60,28 +67,41 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("发生错误");
-        error.printStackTrace();
+        webSocketSet.remove(this);
+        log.error("WebSocket发生错误，当前在线人数为: {}", webSocketSet.size(), error);
     }
 
     /**
      * 实现服务器主动推送
      */
     public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+        if (this.session == null || !this.session.isOpen()) {
+            throw new IOException("WebSocket session已关闭");
+        }
+        synchronized (this.session) {
+            this.session.getBasicRemote().sendText(message);
+        }
+    }
+
+    public static int getOnlineCount() {
+        return webSocketSet.size();
     }
 
     /**
      * 群发自定义消息
      */
     public static void sendInfo(String message) {
-        log.info("推送消息到全体客户端，推送内容: {}", message);
+        int successCount = 0;
+        log.info("推送消息到全体客户端，当前在线人数: {}，推送内容: {}", webSocketSet.size(), message);
         for (WebSocketServer item : webSocketSet) {
             try {
                 item.sendMessage(message);
+                successCount++;
             } catch (IOException e) {
-                continue;
+                webSocketSet.remove(item);
+                log.warn("WebSocket消息发送失败，已移除失效连接: {}", e.getMessage());
             }
         }
+        log.info("WebSocket消息推送完成，成功: {}，剩余在线人数: {}", successCount, webSocketSet.size());
     }
 }

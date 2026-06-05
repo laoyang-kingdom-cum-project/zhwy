@@ -3,6 +3,9 @@ const env = {
   // 后端 API
   baseUrl: 'http://192.168.0.6:81',
   apiPrefix: '/por-api',
+  ruoyiWsUrl: '',
+  ruoyiWsPath: '/websocket/device',
+  ruoyiWsFallbackPort: 8080,
   timeout: 10000,
   debug: true,
 
